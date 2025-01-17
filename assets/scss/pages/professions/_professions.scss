@@ -1,0 +1,14 @@
+.professions {
+
+}
+
+.professions__container {
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.professions__cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 24px;
+}

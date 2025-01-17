@@ -1,0 +1,18 @@
+.button--tab {
+    background-color: rgba(57, 59, 64, 0.18);
+    color: var(--white);
+    padding: 12px 24px;
+    font-size: 18px;
+    line-height: 24px;
+    border-radius: 8px;
+}
+
+.button--tab:hover {
+    background-color: var(--blue1);
+    color: var(--white);
+}
+
+.button--tab.active {
+    background-color: var(--blue1);
+    color: var(--white);
+}

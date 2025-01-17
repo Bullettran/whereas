@@ -1,0 +1,20 @@
+.admin {
+    padding-top: 80px;
+    padding-bottom: 80px;
+}
+
+.admin__buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.admin__title {
+    text-align: center;
+    color: var(--white);
+    margin-bottom: 48px;
+}
+
+.admin__button {
+    cursor: pointer;
+}

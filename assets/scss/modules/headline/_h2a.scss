@@ -1,0 +1,13 @@
+.h2a {
+    font-weight: 700;
+
+    @include media-breakpoint-up(lg) {
+        font-size: 36px;
+        line-height: 42px;
+    }
+
+    @include media-breakpoint-down(md) {
+        font-size: 30px;
+        line-height: 36px;
+    }
+}

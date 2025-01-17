@@ -1,0 +1,88 @@
+.selection {
+    padding-top: 80px;
+    padding-bottom: 80px;
+}
+
+.selection__tabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-column-gap: 24px;
+    margin-bottom: 24px;
+    padding: 12px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.selection__cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 48px;
+}
+
+.selection__card {
+    cursor: pointer;
+}
+
+.selection__up {
+    background-color: var(--brown1);
+    padding: 24px;
+    border-top-right-radius: 16px;
+    border-top-left-radius: 16px;
+}
+
+.selection__species {
+    color: var(--white);
+    text-align: center;
+
+}
+
+.selection__video {
+    display: block;
+    max-width: 100%;
+}
+
+.selection__down {
+    background-color: var(--brown1);
+    padding: 24px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    color: var(--white);
+    min-height: 200px;
+}
+
+.selection__list:not(:last-child) {
+    margin-bottom: 12px;
+}
+
+.selection__subtitle {
+    margin-bottom: 12px;
+}
+
+.selection__description {
+    display: none;
+}
+
+.selection__block--second {
+    display: none;
+}
+
+.selection__card:hover .selection__block--first {
+    display: none;
+}
+
+.selection__card:hover .selection__block--second {
+    display: block;
+}
+
+.selection__list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 24px;
+}
+
+.selection__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
