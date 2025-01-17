@@ -1,0 +1,26 @@
+.start {
+    min-height: 100vh;
+    background: url("assets/images/pages/index/bg-lk.png") 0 0/cover no-repeat;
+}
+
+.start__container {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+}
+
+.start__buttons {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    justify-content: center;
+    grid-row: 2;
+    margin-bottom: 200px;
+}
+
+.start__button {
+    cursor: pointer;
+    width: 100%;
+    max-width: 400px;
+    font-family: "Germania One", serif;
+}
