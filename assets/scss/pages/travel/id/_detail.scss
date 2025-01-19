@@ -3,7 +3,7 @@
     padding-bottom: 40px;
 }
 
-.detail__container {
+.detail__fight {
     display: grid;
     grid-template-columns: 1fr 1fr;
     justify-content: space-between;
@@ -25,4 +25,17 @@
 .detail__image {
     display: block;
     max-width: 100%;
+}
+
+.detail__start {
+    display: flex;
+    flex-direction: column;
+    grid-row-gap: 24px;
+    position: absolute;
+    top: 40%;
+    left: 40%;
+}
+
+.detail__button-start {
+    cursor: pointer;
 }

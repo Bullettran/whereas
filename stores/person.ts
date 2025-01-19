@@ -11,6 +11,18 @@ export const usePersonState = defineStore({
         image: "" as string,
         isSelectedSpecies: false,
         isAdmin: true,
+        characteristic: {
+            physicalDmg: 0,
+            mageDmg: 0,
+            physicalDef: 0,
+            mageDef: 0,
+            maxHp: 0,
+            maxMana: 0,
+            speed: 0,
+            dodge: 0,
+            criticalDmg: 0,
+            hitChance: 0
+        }
     }) as any,
     getters: {
         getLogin: (state: any) => {
@@ -47,6 +59,9 @@ export const usePersonState = defineStore({
             // @ts-ignore
             this.isAdmin = val.isAdmin;
         },
+        setCharacteristic(val: object): void {
+            Object.assign(this.characteristic, val);
+        },
         clearStore() {
             // @ts-ignore
             this.login = "";
@@ -56,7 +71,7 @@ export const usePersonState = defineStore({
             this.image = "";
             // @ts-ignore
             this.isSelectedSpecies = false;
-        }
+        },
     },
     persist: true
 });

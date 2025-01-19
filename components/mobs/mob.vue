@@ -35,7 +35,7 @@ export default defineComponent({
         },
     },
     data: () => ({
-        currentHp: 5,
+        currentHp: 0,
     }),
     computed: {
         isDied() {
@@ -52,6 +52,9 @@ export default defineComponent({
             if (this.currentHp < 0) this.currentHp = 0; // Не допускаем отрицательного HP
         }
     },
+    mounted() {
+        this.currentHp = this.mob.hp;
+    }
 })
 </script>
 

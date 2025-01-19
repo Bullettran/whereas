@@ -35,10 +35,12 @@ export default defineComponent({
                 />
             </div>
             <div class="detail__mobs">
-                <MobsMob
-                    ref="mob"
-                    @physicsAttack="getDmgValue('person', $event)"
-                />
+                <div class="detail__mob">
+                    <MobsMob
+                        ref="mob"
+                        @physicsAttack="getDmgValue('person', $event)"
+                    />
+                </div>
             </div>
         </div>
     </div>
