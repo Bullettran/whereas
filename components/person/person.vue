@@ -128,6 +128,30 @@ export default defineComponent({
         //@ts-ignore
         this.currentHp = this.maxHp;
         this.currentMana = this.maxMana;
+        //@ts-ignore
+        let obj = {
+            //@ts-ignore
+            physicalDmg: this.physicalDmg,
+            //@ts-ignore
+            mageDmg: this.mageDmg,
+            //@ts-ignore
+            physicalDef: this.physicalDef,
+            //@ts-ignore
+            mageDef: this.mageDef,
+            //@ts-ignore
+            maxHp: this.maxHp,
+            //@ts-ignore
+            maxMana: this.maxMana,
+            //@ts-ignore
+            speed: this.speed,
+            //@ts-ignore
+            dodge: this.dodge,
+            //@ts-ignore
+            criticalDmg: this.criticalDmg,
+            //@ts-ignore
+            hitChance: this.hitChance
+        };
+        this.person.setCharacteristic(obj);
     }
 })
 </script>

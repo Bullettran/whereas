@@ -11,9 +11,6 @@ export default defineComponent({
             <div class="my__person">
                 <Person/>
             </div>
-            <div class="my__inventory">
-                <Inventory/>
-            </div>
         </div>
     </div>
 </template>
