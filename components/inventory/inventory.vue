@@ -28,7 +28,6 @@ export default defineComponent({
             <div class="inventory__slot">
                 <span class="inventory__count">0</span>
             </div>
-
         </div>
     </div>
 </template>

@@ -26,6 +26,7 @@ export default defineComponent({
         characteristic: "first" as string,
         currentHp: 1 as number,
         currentMana: 1 as number,
+        isMageActive: false as boolean,
     }),
     computed: {
         physicalDmg() {
@@ -117,7 +118,24 @@ export default defineComponent({
             video && video.pause();
         },
         physicAttack() {
-            this.$emit("physicsAttack", this.physicalDmg);
+            this.$emit("physicsAttack", {
+                name: "attack",
+                rusName: "Физическая атака",
+                dmg: this.physicalDmg,
+                effect: ""
+            });
+        },
+        onToggleMage(): void {
+            this.isMageActive = !this.isMageActive;
+        },
+        mageAttack(value: any) {
+            this.$emit("magicAttack", value)
+        },
+        onToggleElixirs() {
+
+        },
+        onElixirs() {
+
         },
         receiveDamage(power: any) {
             this.currentHp -= power;
@@ -332,7 +350,11 @@ export default defineComponent({
             </div>
         </div>
         <div class="person__attack" v-if="!isVisibleCharacteristics">
-            <button class="person__button button button--metal person__button--attack" type="button" @click="physicAttack">Атака</button>
+            <button class="person__button button button--metal person__button--attack" type="button" @click="physicAttack">Физическая атака</button>
+            <button class="person__button button button--metal person__button--attack" type="button" @click="onToggleMage">Магическая атака</button>
+            <PersonMagicInventory v-if="isMageActive" @onChoiceMagic="mageAttack($event)"/>
+            <button class="person__button button button--metal person__button--attack" type="button" @click="onToggleElixirs">Использовать эликсиры</button>
+            <div class="person__magic person-elixirs"></div>
         </div>
     </div>
 </template>
