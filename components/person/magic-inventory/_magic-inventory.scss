@@ -32,11 +32,6 @@
     padding: 2px 2px 2px 0;
 }
 
-.magic-inventory__image {
-    display: block;
-    max-width: 100%;
-}
-
 .magic-inventory__tooltip {
     display: none;
 }
@@ -70,4 +65,20 @@
     display: flex;
     justify-content: space-between;
     grid-column-gap: 4px;
+}
+
+.magic-inventory__button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 69px;
+    height: 69px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.magic-inventory__button .magic-inventory__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }

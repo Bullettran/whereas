@@ -350,11 +350,11 @@ export default defineComponent({
             </div>
         </div>
         <div class="person__attack" v-if="!isVisibleCharacteristics">
+            <button class="person__button button button--metal person__button--attack" type="button" @click="onToggleElixirs">Использовать эликсиры</button>
+            <div class="person__magic person-elixirs"></div>
             <button class="person__button button button--metal person__button--attack" type="button" @click="physicAttack">Физическая атака</button>
             <button class="person__button button button--metal person__button--attack" type="button" @click="onToggleMage">Магическая атака</button>
             <PersonMagicInventory v-if="isMageActive" @onChoiceMagic="mageAttack($event)"/>
-            <button class="person__button button button--metal person__button--attack" type="button" @click="onToggleElixirs">Использовать эликсиры</button>
-            <div class="person__magic person-elixirs"></div>
         </div>
     </div>
 </template>
