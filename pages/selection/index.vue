@@ -1132,5 +1132,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "assets/scss/pages/selection/styles";
+@use "assets/scss/pages/selection/styles";
 </style>

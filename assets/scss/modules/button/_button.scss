@@ -1,3 +1,4 @@
+@use "sass:meta";
 .button {
     display: inline-flex;
     align-items: center;
@@ -21,6 +22,6 @@
     }
 }
 
-@import "button--md";
-@import "button--tab";
-@import "button--metal";
+@include meta.load-css("button--md");
+@include meta.load-css("button--tab");
+@include meta.load-css("button--metal");

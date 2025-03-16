@@ -33,5 +33,5 @@ export default defineComponent({
 </template>
 
 <style lang="scss">
-@import "assets/scss/pages/layouts/default/default";
+@use "assets/scss/pages/layouts/default/default";
 </style>

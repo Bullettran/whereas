@@ -52,5 +52,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "header";
+@use "header";
 </style>

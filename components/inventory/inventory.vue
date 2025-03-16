@@ -34,5 +34,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "inventory";
+@use "inventory";
 </style>

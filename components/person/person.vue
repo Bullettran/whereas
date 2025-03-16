@@ -338,7 +338,7 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "person";
-@import "characteristic";
-@import "fight";
+@use "person";
+@use "characteristic";
+@use "fight";
 </style>

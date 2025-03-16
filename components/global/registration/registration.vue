@@ -56,5 +56,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "registration";
+@use "registration";
 </style>

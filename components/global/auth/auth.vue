@@ -66,5 +66,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "auth";
+@use "auth";
 </style>

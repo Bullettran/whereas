@@ -97,5 +97,5 @@ export default defineComponent({
 </template>
 
 <style lang="scss" scoped>
-@import "assets/scss/pages/index/styles";
+@use "assets/scss/pages/index/styles";
 </style>

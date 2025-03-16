@@ -17,5 +17,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "modal";
+@use "modal";
 </style>

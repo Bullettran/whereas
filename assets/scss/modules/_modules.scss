@@ -1,6 +1,6 @@
-@import "container/container";
-@import "button/button";
-@import "animate-button/animate-button";
-@import "list/list";
-@import "link/link";
-@import "headline/headline";
+@use "container/container" as *;
+@use "button/button";
+@use "animate-button/animate-button";
+@use "list/list";
+@use "link/link";
+@use "headline/headline";
