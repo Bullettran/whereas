@@ -25,8 +25,8 @@ export default defineComponent({
             this.$gsap.to(this.currentIcon, {
                 x: -this.currentIcon.offsetLeft, // Смещаем иконку в левый верхний угол
                 y: -this.currentIcon.offsetTop,
-                width: screenWidth - 1000,
-                height: screenHeight - 1000,
+                width: screenWidth - 800,
+                height: screenHeight - 800,
                 duration: 1,
                 ease: 'power2.inOut',
                 onComplete: () => {
