@@ -9,8 +9,8 @@ export default defineComponent({
         }
     },
     data: () => ({
-        currentIcon: '',
-    }),
+        currentIcon: "",
+    }) as any,
     name: "MagicInventory",
     methods: {
         onAnimate(event: any) {
@@ -19,7 +19,9 @@ export default defineComponent({
             const overlay = document.querySelector('.overlay');
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
-            overlay.classList.add('active');
+            if (overlay) {
+                overlay.classList.add('active');
+            }
             this.$gsap.to(this.currentIcon, {
                 x: -this.currentIcon.offsetLeft, // Смещаем иконку в левый верхний угол
                 y: -this.currentIcon.offsetTop,
@@ -36,7 +38,6 @@ export default defineComponent({
         shakeEnemy() {
             const enemy = document.querySelector('.detail__mob');
             const overlay = document.querySelector('.overlay');
-
             // Анимация дергания врага
             this.$gsap.to(enemy, {
                 x: '+=10', // Двигаем врага вправо
@@ -54,7 +55,6 @@ export default defineComponent({
 
         resetIcon() {
             const overlay = document.querySelector('.overlay');
-
             // Анимация возврата иконки
             this.$gsap.to(this.currentIcon, {
                 x: 0,
@@ -65,11 +65,12 @@ export default defineComponent({
                 ease: 'power2.inOut',
                 onComplete: () => {
                     // Выключаем затемнение фона
-                    overlay.classList.remove('active');
+                    if (overlay) {
+                        overlay.classList.remove('active');
+                    }
                 },
             });
         },
-
 
         onActive(name: string, rusName: string, dmg: number, effect: string, event: any): void {
             this.onAnimate(event);
@@ -100,6 +101,38 @@ export default defineComponent({
                         <div class="magic-inventory__dmg">
                             <nuxt-icon class="fight__icon fight__icon--health" name="stats/staff"/>
                             1
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="magic-inventory__item">
+                <button class="magic-inventory__button button" type="button" @click="onActive('fireball', 'Ледянной осколок', 2, '', 'magic-inventory__image--iceshard')">
+                    <img class="magic-inventory__image magic-inventory__image--iceshard" src="/images/components/magic/iceshard.jpg" alt="Декоративное изображение">
+                    <span class="magic-inventory__count">2</span>
+                </button>
+                <div class="magic-inventory__tooltip">
+                    <div class="magic-inventory__name">Ледянной осколок</div>
+                    <div class="magic-inventory__description">Наносит противнику ледянной урон</div>
+                    <div class="magic-inventory__stats">
+                        <div class="magic-inventory__dmg">
+                            <nuxt-icon class="fight__icon fight__icon--health" name="stats/staff"/>
+                            2
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="magic-inventory__item">
+                <button class="magic-inventory__button button" type="button" @click="onActive('fireball', 'Ледянной осколок', 2, '', 'magic-inventory__image--iceshard')">
+                    <img class="magic-inventory__image magic-inventory__image--iceshard" src="/images/components/magic/iceshard.jpg" alt="Декоративное изображение">
+                    <span class="magic-inventory__count">2</span>
+                </button>
+                <div class="magic-inventory__tooltip">
+                    <div class="magic-inventory__name">Ледянной осколок</div>
+                    <div class="magic-inventory__description">Наносит противнику ледянной урон</div>
+                    <div class="magic-inventory__stats">
+                        <div class="magic-inventory__dmg">
+                            <nuxt-icon class="fight__icon fight__icon--health" name="stats/staff"/>
+                            2
                         </div>
                     </div>
                 </div>
