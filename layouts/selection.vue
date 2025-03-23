@@ -4,14 +4,14 @@ import {usePersonState} from "~/stores/person";
 export default defineComponent({
     name: "Selection",
     setup() {
-        const {clear, user, session, loggedIn} = useUserSession();
-        const person = usePersonState();
-        if (!loggedIn.value) {
-            navigateTo("/");
-        }
-        if (person.isSelectedSpecies) {
-            navigateTo("/my/");
-        }
+        // const {clear, user, session, loggedIn} = useUserSession();
+        // const person = usePersonState();
+        // if (!loggedIn.value) {
+        //     navigateTo("/");
+        // }
+        // if (person.isSelectedSpecies) {
+        //     navigateTo("/my/");
+        // }
     }
 })
 </script>

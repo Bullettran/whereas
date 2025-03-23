@@ -5,31 +5,31 @@ import {usePersonState} from "~/stores/person";
 export default defineComponent({
     name: "Default",
     setup() {
-        const {clear, user, session, loggedIn} = useUserSession();
-        const person = usePersonState();
-        if (!loggedIn.value) {
-            navigateTo("/");
-        }
-        if (!person.isSelectedSpecies) {
-            navigateTo("/selection/");
-        }
-        return {
-            loggedIn
-        }
+        // const {clear, user, session, loggedIn} = useUserSession();
+        // const person = usePersonState();
+        // if (!loggedIn.value) {
+        //     navigateTo("/");
+        // }
+        // if (!person.isSelectedSpecies) {
+        //     navigateTo("/selection/");
+        // }
+        // return {
+        //     loggedIn
+        // }
     }
 });
 </script>
 
 <template>
-    <template v-if="loggedIn">
+    <template>
         <Header/>
         <main class="default">
             <slot></slot>
         </main>
     </template>
-    <template v-else>
-        Ошибка
-    </template>
+<!--    <template v-else>-->
+<!--        Ошибка-->
+<!--    </template>-->
 </template>
 
 <style lang="scss">

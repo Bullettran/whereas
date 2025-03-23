@@ -1,0 +1,110 @@
+.selections {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 0;
+    min-height: 100vh;
+    height: 100%;
+    width: 100%;
+    background-color: #333;
+}
+
+.selections__container {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    padding: 32px 24px;
+    background: url("/images/pages/selections/bg.gif") 0 0/cover no-repeat;
+    color: #fff;
+    border-radius: 16px;
+}
+
+.selections__title {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.selections__wrap {
+    display: grid;
+    grid-template-columns: min-content auto 1fr;
+    grid-column-gap: 24px;
+}
+
+.selections__cards {
+    display: grid;
+    grid-row-gap: 24px;
+    justify-content: flex-start;
+}
+
+.selections__card {
+    cursor: pointer;
+    filter: grayscale(80%);
+}
+
+.selections__image {
+    width: 100%;
+    display: block;
+    border-radius: 50%;
+}
+
+.selections__picture {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 8px;
+}
+
+.selections__card:hover {
+    filter: grayscale(0%);
+}
+
+.selections__card--active {
+    filter: grayscale(0%);
+}
+
+.selections__type {
+    color: #fff;
+    text-align: left;
+}
+
+.selections__person {
+    overflow: hidden;
+}
+
+.selections__animate {
+    margin-top: -120px;
+}
+
+.selections__stats, .selections__description, .selections__professions {
+    margin-bottom: 24px;
+}
+
+.selections__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.selections__subtitle {
+    margin-bottom: 12px;
+}
+
+.selections__info {
+    background-color: rgba(#333, 0.7);
+    padding: 24px;
+    border-radius: 8px;
+}
+
+.selections__buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.selections__list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 24px;
+}
+
