@@ -1,36 +1,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-//@ts-ignore
-import { Howl } from "howler";
 
 export default defineComponent({
     name: "Index",
-    data: () => ({
-        backgroundMusic: null as Howl | null,
-        isPlaying: true,
-    }) as any,
-    methods: {
-        onToggleBgSound() {
-            if (!this.backgroundMusic) return;
-            if (this.isPlaying) {
-                this.backgroundMusic.pause();
-                this.isPlaying = false;
-            } else {
-                this.backgroundMusic.play();
-                this.isPlaying = true;
-            }
-        },
-    },
-    mounted() {
-        setTimeout(() => {
-            this.backgroundMusic = new Howl({
-                src: ["/sounds/pages/town/main-theme.mp3"],
-                loop: true,
-                volume: 0.3
-            });
-            this.backgroundMusic.play();
-        }, 1500)
-    }
 });
 </script>
 
@@ -51,12 +23,8 @@ export default defineComponent({
                     <ProgressBar class="person__exp" :value="100">Опыт</ProgressBar>
                 </div>
             </div>
-            <div class="bg-sound">
-                <button class="bg-sound__button button button--metal" type="button" @click="onToggleBgSound()">
-                    <nuxt-icon class="bg-sound__icon" name="global/sound"/>
-                </button>
-            </div>
             <div class="town__person town__person--arcanist town__person--idle"></div>
+            <nuxt-link class="" to="/game/1" style="color:#fff;">ТУда</nuxt-link>
         </div>
     </div>
 </template>
