@@ -87,10 +87,10 @@ export default defineComponent({
             </div>
         </div>
     </div>
-    <Modal id="auth">
+    <Modal size="sm" id="auth">
         <Auth/>
     </Modal>
-    <Modal id="registration">
+    <Modal size="sm" id="registration">
         <Registration/>
     </Modal>
 </template>

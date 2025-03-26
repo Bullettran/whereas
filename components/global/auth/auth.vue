@@ -48,7 +48,7 @@ export default defineComponent({
 
 <template>
     <div class="auth">
-        <h2 class="auth__title">Войти</h2>
+        <h2 class="auth__title">Вход</h2>
         <form enctype="application/x-www-form-urlencoded" @submit.prevent="logIn">
             <div class="auth__field">
                 <input class="auth__input" v-model="form.username" type="text" autocomplete="false" placeholder="Имя пользователя"/>
@@ -57,8 +57,8 @@ export default defineComponent({
                 <input class="auth__input" v-model="form.password" type="password" autocomplete="false" placeholder="Пароль"/>
             </div>
             <div class="auth__buttons">
-                <button class="auth__button button button--md" type="submit">Войти</button>
-                <button class="auth__button button button--md" @click="clear" data-bs-dismiss="modal">Выйти</button>
+                <button class="auth__button button button--metal" type="submit">Войти</button>
+                <button class="auth__button button button--metal" @click="clear" data-bs-dismiss="modal">Выйти</button>
             </div>
             <div v-if="formError">ошибка</div>
         </form>

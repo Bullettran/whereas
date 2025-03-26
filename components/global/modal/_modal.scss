@@ -28,8 +28,20 @@
     }
 }
 
+.modal-dialog--lg {
+    max-width: 800px;
+    margin: 30px auto;
+    position: relative;
+}
+
 .modal-dialog {
     max-width: 600px;
+    margin: 30px auto;
+    position: relative;
+}
+
+.modal-dialog--sm {
+    max-width: 300px;
     margin: 30px auto;
     position: relative;
 }
@@ -50,11 +62,11 @@
 
 .modal-dialog__button {
     position: absolute;
-    right: 24px;
-    top: 24px;
+    right: 12px;
+    top: 2px;
 }
 
 .modal-dialog__icon--close {
     font-size: 14px;
-    color: var(--blue1);
+    color: var(--white);
 }

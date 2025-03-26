@@ -41,7 +41,7 @@ export default defineComponent({
             loop: true,
             volume: 0.3
         });
-        this.backgroundMusic.play();
+        // this.backgroundMusic.play();
     }
 });
 </script>

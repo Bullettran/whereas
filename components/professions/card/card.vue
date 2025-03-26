@@ -14,7 +14,7 @@ export default defineComponent({
                 time: "1 час",
                 value: "mining",
             }
-        }
+        } as any
     },
     methods: {
         onChoice(val: any):void {
