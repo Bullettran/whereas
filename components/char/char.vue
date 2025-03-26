@@ -4,15 +4,19 @@ import { defineComponent } from "vue";
 export default defineComponent({
     name: "Char",
     setup() {
-        const currentHp = 64;
+        const currentHp = 100;
         const currentMp = 20;
         const currentExp = 1;
         const maxExp = 100;
+        const maxHp = 100;
+        const maxMp = 100;
         return {
             currentHp,
             currentMp,
             currentExp,
             maxExp,
+            maxMp,
+            maxHp
         }
     },
     computed: {
@@ -28,79 +32,79 @@ export default defineComponent({
         expPercentage() {
             return (this.currentExp / this.maxExp) * 100;
         },
-        physicalDmg() {
-            let dmg = 1;
-            let bonusStr = Math.floor(this.userCharacteristics.str / 2);
-            let bonusAgi = Math.floor(this.userCharacteristics.agi / 3);
-            return dmg + bonusStr + bonusAgi;
-        },
-        mageDmg() {
-            let dmg = 1;
-            let bonusInt = Math.floor(this.userCharacteristics.int / 2);
-            let bonusAgi = Math.floor(this.userCharacteristics.agi / 3);
-            return dmg + bonusInt + bonusAgi;
-        },
-        physicalDef() {
-            let def = 1;
-            let bonusDef = Math.floor(this.userCharacteristics.def / 2);
-            let bonusStr = Math.floor(this.userCharacteristics.str / 2);
-            let sum = def + bonusDef + bonusStr;
-            return sum;
-        },
-        mageDef() {
-            let def = 1;
-            let bonusDef = Math.floor(this.userCharacteristics.def / 2);
-            let bonusInt = Math.floor(this.userCharacteristics.int / 2);
-            let sum = def + bonusDef + bonusInt;
-            return sum;
-        },
-        maxHp() {
-            let hp = 5;
-            let bonus = Math.floor(this.userCharacteristics.vit / 2);
-            return hp + bonus;
-        },
-        maxMp() {
-            let mp = 5;
-            let bonus = Math.floor(this.userCharacteristics.int / 2);
-            return mp + bonus;
-        },
-        speed() {
-            let spd = 1;
-            let bonusSpb = Math.floor(this.userCharacteristics.spd / 2);
-            let bonusAgi = Math.floor(this.userCharacteristics.agi / 3);
-            return spd + bonusSpb + bonusAgi;
-        },
-        dodge() {
-            let dodge = 0;
-            let bonusAgi = Math.floor(this.userCharacteristics.agi / 2);
-            let bonusLuc = Math.floor(this.userCharacteristics.luc / 2);
-            let sum = dodge + bonusAgi + bonusLuc;
-            if (sum > 30) {
-                return 30
-            } else {
-                return sum
-            }
-        },
-        criticalDmg() {
-            let critical = 0;
-            let bonusAgi = Math.floor(this.userCharacteristics.agi / 3);
-            let bonusLuc = Math.floor(this.userCharacteristics.luc / 3);
-            let bonusAcc = Math.floor(this.userCharacteristics.acc / 2);
-            let sum = critical + bonusAgi + bonusLuc + bonusAcc;
-            if (sum > 50) {
-                return 50
-            } else {
-                return sum
-            }
-        },
-        hitChance() {
-            let hit = 50;
-            let bonusAcc = this.userCharacteristics.acc;
-            let bonusLuc = Math.floor(this.userCharacteristics.luc / 3);
-            let bonusInt = Math.floor(this.userCharacteristics.int / 3);
-            let sum = hit + bonusLuc + bonusAcc + bonusInt;
-            return sum;
-        },
+        // physicalDmg() {
+        //     let dmg = 1;
+        //     let bonusStr = Math.floor(this.userCharacteristics.str / 2);
+        //     let bonusAgi = Math.floor(this.userCharacteristics.agi / 3);
+        //     return dmg + bonusStr + bonusAgi;
+        // },
+        // mageDmg() {
+        //     let dmg = 1;
+        //     let bonusInt = Math.floor(this.userCharacteristics.int / 2);
+        //     let bonusAgi = Math.floor(this.userCharacteristics.agi / 3);
+        //     return dmg + bonusInt + bonusAgi;
+        // },
+        // physicalDef() {
+        //     let def = 1;
+        //     let bonusDef = Math.floor(this.userCharacteristics.def / 2);
+        //     let bonusStr = Math.floor(this.userCharacteristics.str / 2);
+        //     let sum = def + bonusDef + bonusStr;
+        //     return sum;
+        // },
+        // mageDef() {
+        //     let def = 1;
+        //     let bonusDef = Math.floor(this.userCharacteristics.def / 2);
+        //     let bonusInt = Math.floor(this.userCharacteristics.int / 2);
+        //     let sum = def + bonusDef + bonusInt;
+        //     return sum;
+        // },
+        // maxHp() {
+        //     let hp = 5;
+        //     let bonus = Math.floor(this.userCharacteristics.vit / 2);
+        //     return hp + bonus;
+        // },
+        // maxMp() {
+        //     let mp = 5;
+        //     let bonus = Math.floor(this.userCharacteristics.int / 2);
+        //     return mp + bonus;
+        // },
+        // speed() {
+        //     let spd = 1;
+        //     let bonusSpb = Math.floor(this.userCharacteristics.spd / 2);
+        //     let bonusAgi = Math.floor(this.userCharacteristics.agi / 3);
+        //     return spd + bonusSpb + bonusAgi;
+        // },
+        // dodge() {
+        //     let dodge = 0;
+        //     let bonusAgi = Math.floor(this.userCharacteristics.agi / 2);
+        //     let bonusLuc = Math.floor(this.userCharacteristics.luc / 2);
+        //     let sum = dodge + bonusAgi + bonusLuc;
+        //     if (sum > 30) {
+        //         return 30
+        //     } else {
+        //         return sum
+        //     }
+        // },
+        // criticalDmg() {
+        //     let critical = 0;
+        //     let bonusAgi = Math.floor(this.userCharacteristics.agi / 3);
+        //     let bonusLuc = Math.floor(this.userCharacteristics.luc / 3);
+        //     let bonusAcc = Math.floor(this.userCharacteristics.acc / 2);
+        //     let sum = critical + bonusAgi + bonusLuc + bonusAcc;
+        //     if (sum > 50) {
+        //         return 50
+        //     } else {
+        //         return sum
+        //     }
+        // },
+        // hitChance() {
+        //     let hit = 50;
+        //     let bonusAcc = this.userCharacteristics.acc;
+        //     let bonusLuc = Math.floor(this.userCharacteristics.luc / 3);
+        //     let bonusInt = Math.floor(this.userCharacteristics.int / 3);
+        //     let sum = hit + bonusLuc + bonusAcc + bonusInt;
+        //     return sum;
+        // },
     }
 });
 </script>
@@ -141,5 +145,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "char";
+@use "char";
 </style>
