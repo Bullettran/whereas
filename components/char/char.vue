@@ -4,7 +4,7 @@ import { defineComponent } from "vue";
 export default defineComponent({
     name: "Char",
     setup() {
-        const currentHp = 100;
+        const currentHp = 60;
         const currentMp = 20;
         const currentExp = 1;
         const maxExp = 100;
@@ -111,37 +111,41 @@ export default defineComponent({
 
 <template>
     <div class="char">
-        <button class="char__char button" type="button" data-bs-toggle="modal"
+        <button class="char__button button" type="button" data-bs-toggle="modal"
                 data-bs-target="#chars-stats">
             <nuxt-img class="char__image" src="/images/sprites/persons/arcanist/icon-arcanist.png" alt="Иконка персонажа"/>
         </button>
         <div class="char__health">
             <div class="char__wrap">
-                <div class="char__value">
-                    {{currentHp}}/{{maxHp}}
-                </div>
                 <ProgressBar class="char__hp" :value="hpPercentage" :showValue="false"></ProgressBar>
-                <div class="char__description">Здоровье</div>
+                <div class="char__description">
+                    Здоровье
+                    <div class="char__value">
+                        {{ currentHp }}/{{ maxHp }}
+                    </div>
+                </div>
             </div>
             <div class="char__wrap">
-                <div class="char__value">
-                    {{currentMp}}/{{maxMp}}
-                </div>
                 <ProgressBar class="char__mp" :value="mpPercentage" :showValue="false"></ProgressBar>
-                <div class="char__description">Мана</div>
-            </div>
-            <div class="char__wrap">
-                <div class="char__value">
-                    {{currentExp}}/{{maxExp}}
+                <div class="char__description">
+                    Мана
+                    <div class="char__value">
+                        {{currentMp}}/{{maxMp}}
+                    </div>
                 </div>
-                <ProgressBar class="char__exp" :value="expPercentage" :showValue="false"></ProgressBar>
-                <div class="char__description">Опыт</div>
             </div>
+<!--            <div class="char__wrap">-->
+<!--                <div class="char__value">-->
+<!--                    {{currentExp}}/{{maxExp}}-->
+<!--                </div>-->
+<!--                <ProgressBar class="char__exp" :value="expPercentage" :showValue="false"></ProgressBar>-->
+<!--                <div class="char__description">Опыт</div>-->
+<!--            </div>-->
         </div>
     </div>
-    <LazyModal id="chars-stats">
+    <Modal size="sm" id="chars-stats">
         123
-    </LazyModal>
+    </Modal>
 </template>
 
 <style scoped lang="scss">

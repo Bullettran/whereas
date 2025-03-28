@@ -11,7 +11,7 @@ export default defineComponent({
         <div class="town__container container">
             <Char/>
             <div class="town__person town__person--arcanist town__person--idle"></div>
-            <nuxt-link class="" to="/game/1" style="color:#fff;">ТУда</nuxt-link>
+            <nuxt-link class="town__link" to="/game/1" style="color:#fff;">ТУда</nuxt-link>
         </div>
     </div>
 </template>

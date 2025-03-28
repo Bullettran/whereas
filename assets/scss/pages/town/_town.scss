@@ -1,11 +1,9 @@
 .town {
-    z-index: 2;
     overflow: hidden;
 }
 
 .town__container {
     height: 800px;
-    z-index: 2;
     margin-top: 48px;
     margin-bottom: 48px;
     padding: 32px 24px;
@@ -27,10 +25,11 @@
     display: block;
     height: 180px;
     width: 288px;
-    transform: scale(3);
+    transform: scale(4);
     position: absolute;
     bottom: 25%;
     left: 30%;
+    z-index: 1;
 }
 
 .town__person--arcanist {
@@ -64,4 +63,9 @@
     75% { background-position: -1728px 0; } /* Кадр 7 */
     87.5% { background-position: -2016px 0; } /* Кадр 8 */
     100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+}
+
+.town__link {
+    display: block;
+    z-index: 10;
 }
