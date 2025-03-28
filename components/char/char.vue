@@ -143,11 +143,22 @@ export default defineComponent({
 <!--            </div>-->
         </div>
     </div>
-    <Modal size="sm" id="chars-stats">
-        123
+    <Modal size="lg" id="chars-stats">
+        <div class="inventory">
+            <div>123</div>
+            <div>123</div>
+        </div>
     </Modal>
 </template>
 
 <style scoped lang="scss">
 @use "char";
+
+.inventory {
+    background: url("/images/components/modal/big-frame.png") 0 0/cover no-repeat;
+    width: 100%;
+    height: 450px;
+    padding: 32px;
+    border-radius: 12px;
+}
 </style>
