@@ -60,9 +60,15 @@
     opacity: 0.5;
 }
 
-.modal-dialog__button {
+.modal-dialog--sm  .modal-dialog__button {
     position: absolute;
     right: 12px;
+    top: 2px;
+}
+
+.modal-dialog--lg .modal-dialog__button {
+    position: absolute;
+    right: -16px;
     top: 2px;
 }
 

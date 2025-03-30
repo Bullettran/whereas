@@ -1,0 +1,43 @@
+.equip {
+    padding: 12px;
+    margin-right: 6px;
+    border-bottom: 2px solid var(--grey);
+}
+
+.equip__title {
+    margin-bottom: 12px;
+}
+
+.equip__items {
+    display: grid;
+    grid-template-columns: repeat(4, 40px);
+    justify-content: space-between;
+    grid-row-gap: 12px;
+    margin-bottom: 12px;
+}
+
+.equip__plug, .equip__image {
+    display: block;
+    max-width: 100%;
+    border-radius: 4px;
+}
+
+.equip__image {
+    display: none;
+}
+
+.equip__item {
+    border-radius: 4px;
+}
+
+.equip__weapons {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.equip__item--weapon {
+    width: 40px;
+    height: 40px;
+}

@@ -9,10 +9,74 @@ export default defineComponent({
 <template>
     <div class="town">
         <div class="town__container container">
-            <Char/>
+            <Char />
             <div class="town__person town__person--arcanist town__person--idle"></div>
-            <nuxt-link class="town__link" to="/game/1" style="color:#fff;">ТУда</nuxt-link>
+            <ul class="town__items list">
+                <li class="town__item">
+                    <nuxt-link class="town__link link link--white" to="/game/1">Путешествия</nuxt-link>
+                </li>
+                <li class="town__item">
+                    <button class="town__link link link--white" type="button" data-bs-toggle="modal"
+                            data-bs-target="#achievements">Достижения
+                    </button>
+                </li>
+                <li class="town__item">
+                    <button class="town__link link link--white" type="button" data-bs-toggle="modal"
+                            data-bs-target="#professions">Рабочий дом
+                    </button>
+                </li>
+                <li class="town__item">
+                    <button class="town__link link link--white" type="button" data-bs-toggle="modal"
+                            data-bs-target="#craft">Крафт
+                    </button>
+                </li>
+                <li class="town__item">
+                    <button class="town__link link link--white" type="button" data-bs-toggle="modal"
+                            data-bs-target="#citadel">Цитадель
+                    </button>
+                </li>
+                <li class="town__item">
+                    <button class="town__link link link--white" type="button" data-bs-toggle="modal"
+                            data-bs-target="#talants">Таланты
+                    </button>
+                </li>
+                <li class="town__item">
+                    <button class="town__link link link--white" type="button" data-bs-toggle="modal"
+                            data-bs-target="#shop">Магазин
+                    </button>
+                </li>
+            </ul>
         </div>
+        <Modal size="lg" id="achievements">
+            <div>
+                Достижения
+            </div>
+        </Modal>
+        <Modal size="lg" id="professions">
+            <div>
+                Рабочий дом
+            </div>
+        </Modal>
+        <Modal size="lg" id="craft">
+            <div>
+                Крафт
+            </div>
+        </Modal>
+        <Modal size="lg" id="citadel">
+            <div>
+                Цитадель
+            </div>
+        </Modal>
+        <Modal size="lg" id="talants">
+            <div>
+                Таланты
+            </div>
+        </Modal>
+        <Modal size="lg" id="shop">
+            <div>
+                Магазин
+            </div>
+        </Modal>
     </div>
 </template>
 

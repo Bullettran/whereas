@@ -16,8 +16,8 @@ export default defineComponent({
             currentExp,
             maxExp,
             maxMp,
-            maxHp
-        }
+            maxHp,
+        };
     },
     computed: {
         // Процент HP
@@ -105,7 +105,7 @@ export default defineComponent({
         //     let sum = hit + bonusLuc + bonusAcc + bonusInt;
         //     return sum;
         // },
-    }
+    },
 });
 </script>
 
@@ -113,7 +113,8 @@ export default defineComponent({
     <div class="char">
         <button class="char__button button" type="button" data-bs-toggle="modal"
                 data-bs-target="#chars-stats">
-            <nuxt-img class="char__image" src="/images/sprites/persons/arcanist/icon-arcanist.png" alt="Иконка персонажа"/>
+            <nuxt-img class="char__image" src="/images/sprites/persons/arcanist/icon-arcanist.png"
+                      alt="Иконка персонажа" />
         </button>
         <div class="char__health">
             <div class="char__wrap">
@@ -130,35 +131,149 @@ export default defineComponent({
                 <div class="char__description">
                     Мана
                     <div class="char__value">
-                        {{currentMp}}/{{maxMp}}
+                        {{ currentMp }}/{{ maxMp }}
                     </div>
                 </div>
             </div>
-<!--            <div class="char__wrap">-->
-<!--                <div class="char__value">-->
-<!--                    {{currentExp}}/{{maxExp}}-->
-<!--                </div>-->
-<!--                <ProgressBar class="char__exp" :value="expPercentage" :showValue="false"></ProgressBar>-->
-<!--                <div class="char__description">Опыт</div>-->
-<!--            </div>-->
+            <!--            <div class="char__wrap">-->
+            <!--                <div class="char__value">-->
+            <!--                    {{currentExp}}/{{maxExp}}-->
+            <!--                </div>-->
+            <!--                <ProgressBar class="char__exp" :value="expPercentage" :showValue="false"></ProgressBar>-->
+            <!--                <div class="char__description">Опыт</div>-->
+            <!--            </div>-->
         </div>
     </div>
     <Modal size="lg" id="chars-stats">
-        <div class="inventory">
-            <div>123</div>
-            <div>123</div>
+        <div class="block">
+            <div class="block__block">
+                <h3 class="block__title">Характеристики</h3>
+                <div class="block__characteristic characteristic">
+                    <ul class="characteristic__main list">
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Сила</div>
+<!--                            <div class="characteristic__value">{{userCharacteristics.str}}</div>-->
+                            <div class="characteristic__value">
+                                <button class="characteristic__plus button" type="button">+</button>
+                                1
+                            </div>
+                        </li>
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Ловкость</div>
+<!--                            <div class="characteristic__value">{{userCharacteristics.agi}}</div>-->
+                            <div class="characteristic__value">
+                                <button class="characteristic__plus button" type="button">+</button>
+                                1</div>
+                        </li>
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Выносливость</div>
+<!--                            <div class="characteristic__value">{{userCharacteristics.vit}}</div>-->
+                            <div class="characteristic__value">
+                                <button class="characteristic__plus button" type="button">+</button>
+                                1</div>
+                        </li>
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Меткость</div>
+<!--                            <div class="characteristic__value">{{userCharacteristics.acc}}</div>-->
+                            <div class="characteristic__value">
+                                <button class="characteristic__plus button" type="button">+</button>
+                                1</div>
+                        </li>
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Интелект</div>
+<!--                            <div class="characteristic__value">{{userCharacteristics.int}}</div>-->
+                            <div class="characteristic__value">
+                                <button class="characteristic__plus button" type="button">+</button>
+                                1</div>
+                        </li>
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Скорость</div>
+<!--                            <div class="characteristic__value">{{userCharacteristics.spd}}</div>-->
+                            <div class="characteristic__value">
+                                <button class="characteristic__plus button" type="button">+</button>
+                                1</div>
+                        </li>
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Удача</div>
+<!--                            <div class="characteristic__value">{{userCharacteristics.luc}}</div>-->
+                            <div class="characteristic__value">
+                                <button class="characteristic__plus button" type="button">+</button>
+                                1</div>
+                        </li>
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Защита</div>
+<!--                            <div class="characteristic__value">{{userCharacteristics.def}}</div>-->
+                            <div class="characteristic__value">
+                                <button class="characteristic__plus button" type="button">+</button>
+                                1</div>
+                        </li>
+                    </ul>
+                </div>
+                <h3 class="block__title">Статы</h3>
+                <div class="block__stats">
+                    <div class="block__stat">
+                        <nuxt-icon class="block__icon block__icon--" name="stats/heart" />
+                        <div class="block__current">
+                            {{ currentHp }}/{{ maxHp }}
+                        </div>
+                    </div>
+                    <div class="block__stat">
+                        <nuxt-icon class="block__icon block__icon--" name="stats/mana" />
+                        {{ currentMp }}/{{ maxMp }}
+                    </div>
+                    <div class="block__stat">
+                        <nuxt-icon class="block__icon block__icon--health" name="stats/dmg" />
+                        <!--                            {{physicalDmg}}-->
+                        2
+                    </div>
+                    <div class="block__stat">
+                        <nuxt-icon class="block__icon block__icon--health" name="stats/staff" />
+                        <!--                            {{mageDmg}}-->
+                        3
+                    </div>
+                    <div class="block__stat">
+                        <nuxt-icon class="block__icon block__icon--" name="stats/shield" />
+                        <!--                            {{physicalDef}}&nbsp;%-->
+                        3
+                    </div>
+                    <div class="block__stat">
+                        <nuxt-icon class="block__icon block__icon--" name="stats/mage-def" />
+                        <!--                            {{mageDef}}&nbsp;%-->
+                        4
+                    </div>
+                    <div class="block__stat">
+                        <nuxt-icon class="block__icon block__icon--" name="stats/speed" />
+                        <!--                            {{speed}}-->
+                        1
+                    </div>
+                    <div class="block__stat">
+                        <nuxt-icon class="block__icon block__icon--" name="stats/critical" />
+                        <!--                            {{criticalDmg}}&nbsp;%-->
+                        1
+                    </div>
+                    <div class="block__stat">
+                        <nuxt-icon class="block__icon block__icon--" name="stats/dodge" />
+                        <!--                            {{dodge}}&nbsp;%-->
+                        1
+                    </div>
+                    <div class="block__stat">
+                        <nuxt-icon class="block__icon block__icon--" name="stats/hit" />
+                        <!--                            {{hitChance}}&nbsp;%-->
+                        1
+                    </div>
+                </div>
+            </div>
+            <div class="block__wrap">
+                <Equip />
+                <Inventory />
+            </div>
         </div>
+
     </Modal>
 </template>
 
 <style scoped lang="scss">
 @use "char";
-
-.inventory {
-    background: url("/images/components/modal/big-frame.png") 0 0/cover no-repeat;
-    width: 100%;
-    height: 450px;
-    padding: 32px;
-    border-radius: 12px;
-}
+@use "block";
+@use "characteristic";
 </style>

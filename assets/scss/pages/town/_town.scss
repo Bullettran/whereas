@@ -10,7 +10,6 @@
     background: url("/images/pages/town/first-bg.gif") 0 0/cover no-repeat;
     color: #fff;
     border-radius: 16px;
-    display: grid;
     position: relative;
 }
 
@@ -65,7 +64,9 @@
     100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
 }
 
-.town__link {
-    display: block;
+.town__items {
+    position: relative;
+    display: flex;
+    flex-direction: column;
     z-index: 10;
 }
