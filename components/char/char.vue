@@ -1,26 +1,16 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { usePersonState } from "~/stores/person";
+import { createClient } from "@supabase/supabase-js";
 
 export default defineComponent({
     name: "Char",
-    setup() {
+    async setup() {
+        const supabase = createClient("https://qalibeksqgsabiiccnwf.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhbGliZWtzcWdzYWJpaWNjbndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1OTk1MDEsImV4cCI6MjA1OTE3NTUwMX0.U48U65ir4RoFwtICsqTbDIiyYfFNWlrqvc6F8F1aJ58")
         const char = usePersonState();
-        const currentHp = 60;
-        const currentMp = 20;
-        const currentExp = 18;
-        const maxExp = 100;
-        const maxHp = 100;
-        const maxMp = 100;
-        const freeCount = 2;
+        //const { data } = await supabase.from("test").select();
+
         return {
-            currentHp,
-            currentMp,
-            currentExp,
-            maxExp,
-            maxMp,
-            maxHp,
-            freeCount,
             char,
         };
     },
@@ -40,8 +30,20 @@ export default defineComponent({
             return (this.char.currentMp / this.char.characteristic.maxMp) * 100;
         },
         // Процент EXP
-        expPercentage() {
-            return (this.char.currentExp / (this.char.level * 10)) * 100;
+        expPercentage(): any {
+            const expNeeded = this.char.level * 10;
+            // Если опыт превышает необходимый для уровня
+            if (this.char.currentExp >= expNeeded) {
+                const excessExp = this.char.currentExp - expNeeded;
+                this.char.setUpLevel();
+                this.char.currentExp = excessExp; // Переносим избыточный опыт
+
+                // Рекурсивно проверяем, не хватает ли избыточного опыта для следующего уровня
+                if (this.char.currentExp >= this.char.level * 10) {
+                    return this.expPercentage;
+                }
+            }
+            return (this.char.currentExp / expNeeded) * 100;
         },
         physicalDmg() {
             let dmg = 1;
@@ -60,6 +62,11 @@ export default defineComponent({
             let bonusDef = Math.floor(this.char.characteristic.def / 2);
             let bonusStr = Math.floor(this.char.characteristic.str / 2);
             let sum = def + bonusDef + bonusStr;
+            if (sum > 70) {
+                return 70
+            } else {
+                return sum
+            }
             return sum;
         },
         mageDef() {
@@ -67,6 +74,11 @@ export default defineComponent({
             let bonusDef = Math.floor(this.char.characteristic.def / 2);
             let bonusInt = Math.floor(this.char.characteristic.int / 2);
             let sum = def + bonusDef + bonusInt;
+            if (sum > 70) {
+                return 70
+            } else {
+                return sum
+            }
             return sum;
         },
         maxHp() {
@@ -114,15 +126,21 @@ export default defineComponent({
             let bonusLuc = Math.floor(this.char.characteristic.luc / 3);
             let bonusInt = Math.floor(this.char.characteristic.int / 3);
             let sum = hit + bonusLuc + bonusAcc + bonusInt;
-            return sum;
+            if (sum > 100) {
+                return 100
+            } else {
+                return sum;
+            }
         },
     },
+    mounted() {
+    }
 });
 </script>
 
 <template>
     <div class="char">
-        <pre>{{ char }}</pre>
+        <pre>{{ data }}</pre>
         <button class="char__button button" type="button" data-bs-toggle="modal"
                 data-bs-target="#chars-stats">
             <nuxt-img class="char__image" src="/images/sprites/persons/arcanist/icon-arcanist.png"
@@ -134,7 +152,7 @@ export default defineComponent({
                 <div class="char__description">
                     Здоровье
                     <div class="char__value">
-                        {{ char.currentHp }}/{{ char.characteristic.maxHp }}
+                        {{ char.currentHp }}/{{ maxHp }}
                     </div>
                 </div>
             </div>
@@ -143,7 +161,7 @@ export default defineComponent({
                 <div class="char__description">
                     Мана
                     <div class="char__value">
-                        {{ char.currentMp }}/{{ char.characteristic.maxMp }}
+                        {{ char.currentMp }}/{{ maxMp }}
                     </div>
                 </div>
             </div>

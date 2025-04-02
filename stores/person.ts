@@ -12,7 +12,7 @@ export const usePersonState = defineStore({
         isSelectedSpecies: false,
         isAdmin: true,
         currentExp: 4,
-        freeCount: 10,
+        freeCount: 0,
         currentHp: 5,
         currentMp: 5,
         characteristic: {
@@ -24,8 +24,6 @@ export const usePersonState = defineStore({
             acc: 0,
             vit: 0,
             agi: 0,
-            maxHp: 0,
-            maxMp: 0,
         }
     }) as any,
     getters: {
@@ -68,6 +66,10 @@ export const usePersonState = defineStore({
         },
         setValChars(val: number, type: string): void {
             this.characteristic[type] = this.characteristic[type] + val;
+        },
+        setUpLevel() {
+            this.level += 1;
+            this.freeCount += 1;
         },
         clearStore() {
             // @ts-ignore
