@@ -16,8 +16,8 @@ export default defineComponent({
         <div class="inventory__wrap">
             <h3 class="inventory__title">Инвентарь</h3>
             <div class="inventory__filters">
-                <button class="inventory__button button button--metal-sm" type="button">Снаряжение</button>
-                <button class="inventory__button button button--metal-sm active" type="button">Все</button>
+                <button class="inventory__button button button--metal-sm active" type="button">Снаряжение</button>
+                <button class="inventory__button button button--metal-sm " type="button">Все</button>
             </div>
         </div>
         <div class="inventory__slots">
