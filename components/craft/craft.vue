@@ -39,7 +39,7 @@ export default defineComponent({
                 requirements: "Уровень алхимии 2",
             },
             {
-                id: "health_potion",
+                id: "mana_potion",
                 name: "Зелье маны",
                 description: "Восстанавливает 50 Маны",
                 image: "🧪",
@@ -50,7 +50,7 @@ export default defineComponent({
                 requirements: "Уровень алхимии 2",
             },
             {
-                id: "health_potion",
+                id: "health_potion1",
                 name: "Зелье здоровья",
                 description: "Восстанавливает 50 HP",
                 image: "🧪",
@@ -143,8 +143,6 @@ export default defineComponent({
             });
 
             if (hasAllIngredients) {
-                alert(`Успешно создано: ${this.selectedRecipe.name}`);
-
                 // Уменьшаем количество использованных предметов
                 this.selectedRecipe.ingredients.forEach(recipeIng => {
                     const slotIndex = this.craftSlots.findIndex(slot => slot.id === recipeIng.id);
@@ -155,7 +153,20 @@ export default defineComponent({
                         }
                     }
                 });
-
+                // Создаем готовый предмет
+                const craftedItem = {
+                    id: this.selectedRecipe.id,
+                    name: this.selectedRecipe.name,
+                    icon: this.selectedRecipe.image,
+                    count: 1,
+                }
+                // проверяем наличие в инвентаре
+                const exitingItem = this.inventory.find(item => item.id === craftedItem.id);
+                if (exitingItem) {
+                    exitingItem.count += craftedItem.count;
+                } else {
+                    this.inventory.push(craftedItem);
+                }
             } else {
                 alert('Не хватает ингредиентов!');
             }

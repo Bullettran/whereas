@@ -27,8 +27,12 @@ export default defineComponent({
             required: true,
         },
     },
+    data: () => ({
+        isSelected: "" as string,
+    }),
     methods: {
         selectRecipe(recipe: Recipe) {
+            this.isSelected = recipe.id;
             this.$emit("select-recipe", recipe);
         },
     },
@@ -52,9 +56,9 @@ export default defineComponent({
             </div>
         </div>
         <ul class="recipes__items list">
-            <li class="recipes__item" v-for="(recipe, index) in recipes" :key="index" @click="selectRecipe(recipe)">
+            <li :class="[isSelected === recipe.id ? 'recipes__item--active' : '', 'recipes__item']" v-for="(recipe, index) in recipes" :key="index" @click="selectRecipe(recipe)">
                 <div class="recipes__block">
-                    <div class="recipes__name">{{ recipe.name }}</div>
+                    <div class="recipes__name"><strong>{{ recipe.name }}</strong></div>
                     <div class="recipes__image">{{ recipe.image }}</div>
                 </div>
                 <div class="recipes__description">{{ recipe.description }}</div>

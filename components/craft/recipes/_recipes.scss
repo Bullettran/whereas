@@ -12,14 +12,15 @@
 }
 
 .recipes__item {
-    background-color: var(--orange1);
+    background: url("/images/global/bg-parchment.jpg") 0 0/cover no-repeat;
     padding: 4px;
     border-radius: 8px;
     cursor: pointer;
-    border: 1px solid var(--grey);
+    border: 2px solid var(--grey);
+    color: var(--black1);
 }
 
-.recipes__item:hover {
+.recipes__item:hover, .recipes__item--active {
     filter: brightness(120%);
 }
 
