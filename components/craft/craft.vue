@@ -20,11 +20,12 @@ interface Recipe {
 export default defineComponent({
     name: "Craft",
     setup() {
-        const inventory = [
+        // @ts-ignore
+        const inventory = reactive([
             { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 20 },
             { id: "beast-milk", name: "Молоко зверя", icon: "⚗️", count: 40 },
             { id: "test", name: "test", icon: "🛡️", count: 5 },
-        ];
+        ]);
         const recipes = [
             {
                 id: "health_potion",
@@ -75,6 +76,10 @@ export default defineComponent({
             this.craftSlots = []; // Сбрасываем слоты при выборе нового рецепта
         },
         removeAllIngridient() {
+            this.craftSlots.forEach(slot => {
+                const inventoryItem = this.inventory.find(i => i.id === slot.id);
+                if (inventoryItem) inventoryItem.count += slot.count;
+            });
             this.craftSlots = [];
         },
         addIngredient(item: Ingredient) {
@@ -92,6 +97,12 @@ export default defineComponent({
 
             // Проверяем, есть ли уже такой предмет в слотах
             const existingIndex = this.craftSlots.findIndex(slot => slot.id === item.id);
+            const inventoryItem = this.inventory.find(i => i.id === item.id);
+
+            if (!inventoryItem || inventoryItem.count <= 0) {
+                alert('Недостаточно предметов в инвентаре!');
+                return;
+            }
 
             if (existingIndex >= 0) {
                 // Увеличиваем количество существующего предмета
@@ -102,7 +113,6 @@ export default defineComponent({
             }
 
             // Уменьшаем количество в инвентаре
-            const inventoryItem = this.inventory.find(i => i.id === item.id);
             if (inventoryItem) inventoryItem.count--;
         },
 
@@ -112,10 +122,15 @@ export default defineComponent({
 
             // Возвращаем предмет в инвентарь
             const inventoryItem = this.inventory.find(i => i.id === item.id);
-            if (inventoryItem) inventoryItem.count += item.count;
+            if (inventoryItem) inventoryItem.count += 1;
 
             // Удаляем из слотов
-            this.craftSlots.splice(slotIndex, 1);
+            // Уменьшаем количество в слоте или удаляю, если 1
+            if (item.count > 1) {
+                this.craftSlots[slotIndex].count--;
+            } else {
+                this.craftSlots.splice(slotIndex, 1);
+            }
         },
 
         craftItem() {
@@ -155,19 +170,6 @@ export default defineComponent({
                 return slotIng && slotIng.count >= recipeIng.count;
             });
         },
-
-        // Для отображения слотов с нумерацией
-        displayedSlots(): (Ingredient | null)[] {
-            const maxSlots = this.selectedRecipe?.ingredients.length || 3;
-            const result: (Ingredient | null)[] = [...this.craftSlots];
-
-            // Заполняем оставшиеся слоты null
-            while (result.length < maxSlots) {
-                result.push(null);
-            }
-
-            return result.slice(0, maxSlots);
-        }
     },
 });
 </script>
