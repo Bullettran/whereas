@@ -121,7 +121,7 @@ export default defineComponent({
 </script>
 
 <template>
-    <div class="inventory">
+    <div :class="[location ? `inventory--${location}`: '','inventory']">
         <div class="inventory__wrap">
             <h3 class="inventory__title">Инвентарь</h3>
             <div class="inventory__filters">
@@ -136,7 +136,7 @@ export default defineComponent({
                 <span class="inventory__count">{{ item.count }}</span>
             </div>
         </div>
-        <div class="inventory__context" v-if="location !== 'craft' && activeContextItemId">
+        <div class="inventory__context" v-if="activeContextItemId">
             <div class="inventory__descriptions" v-for="(item, index) in inventory" :key="index">
                 <div v-if="activeContextItemId === item.id">
                     <div class="inventory__name">{{ item.name }}</div>
@@ -178,14 +178,16 @@ export default defineComponent({
                         </div>
 
                     </div>
-                    <button class="inventory__event button button--metal-sm" type="button"
-                            v-if="item.type !== 'material' && item.type !== 'equip' && item.type !== 'weapon'"
-                            @click="onUse(item)">Использовать
-                    </button>
-                    <button class="inventory__event button button--metal-sm" type="button"
-                            v-if="item.type === 'weapon' || item.type === 'equip'" @click="onEquip(item)">Надеть
-                    </button>
-                    <button class="inventory__event button button--metal-sm" type="button" @click="removeItem(item)">Выбросить</button>
+                    <div class="inventory__buttons" v-if="location !== 'craft'">
+                        <button class="inventory__event button button--metal-sm" type="button"
+                                v-if="item.type !== 'material' && item.type !== 'equip' && item.type !== 'weapon'"
+                                @click="onUse(item)">Использовать
+                        </button>
+                        <button class="inventory__event button button--metal-sm" type="button"
+                                v-if="item.type === 'weapon' || item.type === 'equip'" @click="onEquip(item)">Надеть
+                        </button>
+                        <button class="inventory__event button button--metal-sm" type="button" @click="removeItem(item)">Выбросить</button>
+                    </div>
                 </div>
             </div>
         </div>

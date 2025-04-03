@@ -56,8 +56,22 @@ export default defineComponent({
     setup() {
         // @ts-ignore
         const inventory = reactive<InventoryItem[]>([
-            { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 20, type: "material", description: "Простая трава" },
-            { id: "beast-milk", name: "Молоко зверя", icon: "⚗️", count: 40, type: "material", description: "Простое молоко" },
+            {
+                id: "herb-green",
+                name: "Зеленая трава",
+                icon: "🌿",
+                count: 20,
+                type: "material",
+                description: "Простая трава",
+            },
+            {
+                id: "beast-milk",
+                name: "Молоко зверя",
+                icon: "⚗️",
+                count: 40,
+                type: "material",
+                description: "Простое молоко",
+            },
             {
                 id: "shield1", name: "Щит", icon: "🛡️", count: 1, type: "equip", description: "Щит со статами", stats: {
                     str: 1,
@@ -251,9 +265,9 @@ export default defineComponent({
                     name: this.selectedRecipe.name,
                     icon: this.selectedRecipe.image,
                     count: 1,
-                    type: this.selectedRecipe.type as 'potion' | 'material' | 'equip' | 'weapon',
+                    type: this.selectedRecipe.type as "potion" | "material" | "equip" | "weapon",
                     description: this.selectedRecipe.description,
-                    buffs: this.selectedRecipe.buffs || { value: 0, type: '' }
+                    buffs: this.selectedRecipe.buffs || { value: 0, type: "" },
                 };
                 // проверяем наличие в инвентаре
                 const exitingItem = this.inventory.find(item => item.id === craftedItem.id);
@@ -282,10 +296,6 @@ export default defineComponent({
 
 <template>
     <div class="craft">
-        <Inventory :inventory="inventory" location="craft"
-                   @item-click="addIngredient"
-                   class="craft__inventory" />
-        <CraftRecipes :recipes="recipes" @select-recipe="selectRecipe" class="craft__recipes" />
         <div class="craft__bug">
             <div class="craft__wrap">
                 <h4 class="craft__title">{{ selectedRecipe?.name || "Выберите рецепт" }}</h4>
@@ -314,6 +324,10 @@ export default defineComponent({
                 </button>
             </div>
         </div>
+        <CraftRecipes :recipes="recipes" @select-recipe="selectRecipe" class="craft__recipes" />
+        <Inventory :inventory="inventory" location="craft"
+                   @item-click="addIngredient"
+                   class="craft__inventory" />
     </div>
 </template>
 
