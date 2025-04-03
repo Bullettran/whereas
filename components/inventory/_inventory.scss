@@ -1,6 +1,7 @@
 .inventory {
     padding: 12px;
     color: var(--white);
+    position: relative;
 }
 
 .inventory__wrap {
@@ -33,13 +34,22 @@
 
 .inventory__count {
     position: absolute;
-    bottom: -5px;
-    left: 0;
     display: block;
     color: var(--white);
     font-size: 14px;
     line-height: 18px;
     padding: 2px 2px 2px 0;
+    transform: translateY(-2px);
+    z-index: 5;
+}
+
+.inventory__description {
+    display: block;
+    color: var(--black1);
+    font-size: 14px;
+    line-height: 16px;
+    margin-bottom: 8px;
+    font-style: italic;
 }
 
 .inventory__filters {
@@ -50,4 +60,50 @@
 
 .inventory__button {
     color: #fff;
+}
+
+.inventory__context {
+    display: block;
+    color: var(--white);
+    flex-direction: column;
+    align-items: flex-start;
+    grid-row-gap: 12px;
+    background: url("/images/global/bg-parchment.jpg") 0 0/cover no-repeat;
+    border-radius: 4px;
+    padding: 10px;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    min-height: 230px;
+    min-width: 150px;
+    z-index: 18;
+}
+
+.inventory__slot--context {
+    background-color: var(--grey);
+}
+
+.inventory__slot--context .inventory__context {
+    display: flex;
+}
+
+.inventory__block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    line-height: 14px;
+    color: var(--black1);
+}
+
+.inventory__stats {
+    margin-bottom: 8px;
+}
+
+.inventory__event {
+    width: 100%;
+}
+
+.inventory__event:not(:last-child) {
+    margin-bottom: 8px;
 }

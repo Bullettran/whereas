@@ -1,7 +1,39 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
-interface Ingredient {
+interface Stats {
+    str?: number;
+    def?: number;
+    luc?: number;
+    spd?: number;
+    int?: number;
+    acc?: number;
+    vit?: number;
+    agi?: number;
+}
+
+interface Set {
+    type: string;
+}
+
+interface Buffs {
+    value: number;
+    type: "hp" | "mp" | "str" | string;
+}
+
+interface InventoryItem {
+    id: string;
+    name: string;
+    icon: string;
+    count: number;
+    type: "material" | "equip" | "weapon" | "potion";
+    description: string;
+    stats?: Stats;
+    set?: Set;
+    buffs?: Buffs;
+}
+
+interface RecipeIngredient {
     id: string;
     name: string;
     icon: string;
@@ -13,7 +45,9 @@ interface Recipe {
     name: string;
     description: string;
     image: string;
-    ingredients: Ingredient[];
+    type: "potion" | string; // Уточните возможные типы рецептов
+    buffs?: Buffs;
+    ingredients: RecipeIngredient[];
     requirements: string;
 }
 
@@ -21,10 +55,57 @@ export default defineComponent({
     name: "Craft",
     setup() {
         // @ts-ignore
-        const inventory = reactive([
-            { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 20 },
-            { id: "beast-milk", name: "Молоко зверя", icon: "⚗️", count: 40 },
-            { id: "test", name: "test", icon: "🛡️", count: 5 },
+        const inventory = reactive<InventoryItem[]>([
+            { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 20, type: "material", description: "Простая трава" },
+            { id: "beast-milk", name: "Молоко зверя", icon: "⚗️", count: 40, type: "material", description: "Простое молоко" },
+            {
+                id: "shield1", name: "Щит", icon: "🛡️", count: 1, type: "equip", description: "Щит со статами", stats: {
+                    str: 1,
+                    def: 0,
+                    luc: 0,
+                    spd: 0,
+                    int: 0,
+                    acc: 0,
+                    vit: 1,
+                    agi: 0,
+                },
+                set: {
+                    type: "",
+                },
+            },
+            {
+                id: "weapon1", name: "Мечи", icon: "⚔️", count: 1, type: "weapon",
+                description: "Оружие со статами",
+                stats: {
+                    str: 1,
+                    def: 0,
+                    luc: 0,
+                    spd: 2,
+                    int: 0,
+                    acc: 0,
+                    vit: 0,
+                    agi: 0,
+                },
+                set: {
+                    type: "",
+                },
+                buffs: {
+                    value: 0,
+                    type: "",
+                },
+            },
+            {
+                id: "potion1",
+                name: "Зелье маны",
+                icon: "️🧪",
+                count: 2,
+                type: "potion",
+                description: "Восполняет ману на 1 ед.",
+                buffs: {
+                    value: 1,
+                    type: "mp",
+                },
+            },
         ]);
         const recipes = [
             {
@@ -32,6 +113,11 @@ export default defineComponent({
                 name: "Зелье здоровья",
                 description: "Восстанавливает 50 HP",
                 image: "🧪",
+                type: "potion",
+                buffs: {
+                    value: 1,
+                    type: "hp",
+                },
                 ingredients: [
                     { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 3 },
                     { id: "beast-milk", name: "Молоко зверя", icon: "⚗️", count: 4 },
@@ -43,6 +129,7 @@ export default defineComponent({
                 name: "Зелье маны",
                 description: "Восстанавливает 50 Маны",
                 image: "🧪",
+                type: "potion",
                 ingredients: [
                     { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 2 },
                     { id: "beast-milk", name: "Молоко зверя", icon: "⚗️", count: 4 },
@@ -50,10 +137,15 @@ export default defineComponent({
                 requirements: "Уровень алхимии 2",
             },
             {
-                id: "health_potion1",
-                name: "Зелье здоровья",
-                description: "Восстанавливает 50 HP",
+                id: "str_potion1",
+                name: "Зелье силы",
+                description: "Добавляет 1 силы в бою",
                 image: "🧪",
+                type: "potion",
+                buffs: {
+                    value: 1,
+                    type: "str",
+                },
                 ingredients: [
                     { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 4 },
                     { id: "beast-milk", name: "Молоко зверя", icon: "⚗️", count: 5 },
@@ -68,7 +160,7 @@ export default defineComponent({
     },
     data: () => ({
         selectedRecipe: null as Recipe | null,
-        craftSlots: [] as Ingredient[],
+        craftSlots: [] as InventoryItem[],
     }),
     methods: {
         selectRecipe(recipe: Recipe) {
@@ -82,16 +174,16 @@ export default defineComponent({
             });
             this.craftSlots = [];
         },
-        addIngredient(item: Ingredient) {
+        addIngredient(item: InventoryItem) {
             if (!this.selectedRecipe) return;
 
             // Проверяем, нужен ли этот предмет в рецепте
             const isNeeded = this.selectedRecipe.ingredients.some(
-                ing => ing.id === item.id
+                ing => ing.id === item.id,
             );
 
             if (!isNeeded) {
-                alert('Этот предмет не нужен для выбранного рецепта!');
+                alert("Этот предмет не нужен для выбранного рецепта!");
                 return;
             }
 
@@ -100,7 +192,7 @@ export default defineComponent({
             const inventoryItem = this.inventory.find(i => i.id === item.id);
 
             if (!inventoryItem || inventoryItem.count <= 0) {
-                alert('Недостаточно предметов в инвентаре!');
+                alert("Недостаточно предметов в инвентаре!");
                 return;
             }
 
@@ -154,12 +246,15 @@ export default defineComponent({
                     }
                 });
                 // Создаем готовый предмет
-                const craftedItem = {
+                const craftedItem: InventoryItem = {
                     id: this.selectedRecipe.id,
                     name: this.selectedRecipe.name,
                     icon: this.selectedRecipe.image,
                     count: 1,
-                }
+                    type: this.selectedRecipe.type as 'potion' | 'material' | 'equip' | 'weapon',
+                    description: this.selectedRecipe.description,
+                    buffs: this.selectedRecipe.buffs || { value: 0, type: '' }
+                };
                 // проверяем наличие в инвентаре
                 const exitingItem = this.inventory.find(item => item.id === craftedItem.id);
                 if (exitingItem) {
@@ -168,9 +263,9 @@ export default defineComponent({
                     this.inventory.push(craftedItem);
                 }
             } else {
-                alert('Не хватает ингредиентов!');
+                alert("Не хватает ингредиентов!");
             }
-        }
+        },
     },
     computed: {
         canCraft(): boolean {
@@ -187,7 +282,8 @@ export default defineComponent({
 
 <template>
     <div class="craft">
-        <Inventory :inventory="inventory" @item-click="addIngredient"
+        <Inventory :inventory="inventory" location="craft"
+                   @item-click="addIngredient"
                    class="craft__inventory" />
         <CraftRecipes :recipes="recipes" @select-recipe="selectRecipe" class="craft__recipes" />
         <div class="craft__bug">

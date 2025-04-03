@@ -9,8 +9,56 @@ export default defineComponent({
         // const supabase = createClient("https://qalibeksqgsabiiccnwf.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhbGliZWtzcWdzYWJpaWNjbndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1OTk1MDEsImV4cCI6MjA1OTE3NTUwMX0.U48U65ir4RoFwtICsqTbDIiyYfFNWlrqvc6F8F1aJ58")
         const char = usePersonState();
         const inventory = reactive([
-            { id: "herb_green", name: "Зеленая трава", icon: "🌿", count: 20 },
-            { id: "beast_milk", name: "Молоко зверя", icon: "⚗️", count: 40 },
+            { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 20, type: "material", description: "Простая трава" },
+            { id: "beast-milk", name: "Молоко зверя", icon: "⚗️", count: 40, type: "material", description: "Простое молоко" },
+            {
+                id: "shield1", name: "Щит", icon: "🛡️", count: 1, type: "equip", description: "Щит со статами", stats: {
+                    str: 1,
+                    def: 0,
+                    luc: 0,
+                    spd: 0,
+                    int: 0,
+                    acc: 0,
+                    vit: 1,
+                    agi: 0,
+                },
+                set: {
+                    type: "",
+                },
+            },
+            {
+                id: "weapon1", name: "Мечи", icon: "⚔️", count: 1, type: "weapon",
+                description: "Оружие со статами",
+                stats: {
+                    str: 1,
+                    def: 0,
+                    luc: 0,
+                    spd: 2,
+                    int: 0,
+                    acc: 0,
+                    vit: 0,
+                    agi: 0,
+                },
+                set: {
+                    type: "",
+                },
+                buffs: {
+                    value: 0,
+                    type: "",
+                },
+            },
+            {
+                id: "potion1",
+                name: "Зелье маны",
+                icon: "️🧪",
+                count: 2,
+                type: "potion",
+                description: "Восполняет ману на 1 ед.",
+                buffs: {
+                    value: 1,
+                    type: "mp",
+                },
+            },
         ]);
         //const { data } = await supabase.from("test").select();
 
