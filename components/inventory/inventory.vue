@@ -3,9 +3,21 @@ export default defineComponent({
     name: "Inventory",
     props: {
         inventory: {
-            type: Array,
+            type: Array as () => Array<{
+                id: string;
+                name: string;
+                icon: string;
+                count: number;
+            }>,
             required: true,
             default: [],
+        },
+    },
+    methods: {
+        handleClick(item: any) {
+            if (item.count > 0) {
+                this.$emit("item-click", item);
+            }
         },
     },
 });
@@ -21,83 +33,9 @@ export default defineComponent({
             </div>
         </div>
         <div class="inventory__slots">
-            <div class="inventory__slot">
-                <span class="inventory__count">100</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
-            </div>
-            <div class="inventory__slot">
-                <span class="inventory__count">0</span>
+            <div v-for="(item, index) in inventory" :key="index" @click="handleClick(item)" draggable="true" class="inventory__slot">
+                <span class="inventory__icon">{{item.icon}}</span>
+                <span class="inventory__count">{{ item.count }}</span>
             </div>
         </div>
     </div>

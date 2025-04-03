@@ -1,0 +1,77 @@
+.craft {
+    background: url("/images/components/modal/big-frame.png") 0 0/cover no-repeat;
+    width: 100%;
+    height: 450px;
+    border-radius: 12px;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 230px 1fr;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.craft__inventory {
+    margin-left: 8px;
+    border-right: 4px solid var(--grey);
+    border-bottom: 4px solid var(--grey);
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.craft__recipes {
+    grid-column: 2;
+    grid-row: 1/-1;
+}
+
+.craft__bug {
+    margin-left: 8px;
+    padding: 12px;
+    color: var(--white);
+    border-right: 4px solid var(--grey);
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.craft__wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.craft__system {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    grid-gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.craft__item {
+    position: relative;
+    display: block;
+    width: 40px;
+    height: 40px;
+    background-color: grey;
+    border: 1px solid var(--black1);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.craft__count {
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    display: block;
+    color: var(--white);
+    font-size: 14px;
+    line-height: 18px;
+    padding: 2px 2px 2px 0;
+}
+
+.craft__buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

@@ -1,17 +1,22 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { usePersonState } from "~/stores/person";
-import { createClient } from "@supabase/supabase-js";
+// import { createClient } from "@supabase/supabase-js";
 
 export default defineComponent({
     name: "Char",
     async setup() {
-        const supabase = createClient("https://qalibeksqgsabiiccnwf.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhbGliZWtzcWdzYWJpaWNjbndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1OTk1MDEsImV4cCI6MjA1OTE3NTUwMX0.U48U65ir4RoFwtICsqTbDIiyYfFNWlrqvc6F8F1aJ58")
+        // const supabase = createClient("https://qalibeksqgsabiiccnwf.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhbGliZWtzcWdzYWJpaWNjbndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1OTk1MDEsImV4cCI6MjA1OTE3NTUwMX0.U48U65ir4RoFwtICsqTbDIiyYfFNWlrqvc6F8F1aJ58")
         const char = usePersonState();
+        const inventory = [
+            { id: "herb_green", name: "Зеленая трава", icon: "🌿", count: 20 },
+            { id: "beast_milk", name: "Молоко зверя", icon: "⚗️", count: 40 },
+        ];
         //const { data } = await supabase.from("test").select();
 
         return {
             char,
+            inventory
         };
     },
     methods: {
@@ -23,11 +28,11 @@ export default defineComponent({
     computed: {
         // Процент HP
         hpPercentage() {
-            return (this.char.currentHp / this.char.characteristic.maxHp) * 100;
+            return (this.char.currentHp / this.maxMp) * 100;
         },
         // Процент MP
         mpPercentage() {
-            return (this.char.currentMp / this.char.characteristic.maxMp) * 100;
+            return (this.char.currentMp / this.maxMp) * 100;
         },
         // Процент EXP
         expPercentage(): any {
@@ -134,13 +139,15 @@ export default defineComponent({
         },
     },
     mounted() {
+        setTimeout(() => {
+            this.char.currentExp = 1800;
+        }, 3000)
     }
 });
 </script>
 
 <template>
     <div class="char">
-        <pre>{{ data }}</pre>
         <button class="char__button button" type="button" data-bs-toggle="modal"
                 data-bs-target="#chars-stats">
             <nuxt-img class="char__image" src="/images/sprites/persons/arcanist/icon-arcanist.png"
@@ -308,10 +315,9 @@ export default defineComponent({
             </div>
             <div class="block__wrap">
                 <Equip />
-                <Inventory />
+                <Inventory :inventory="inventory" />
             </div>
         </div>
-
     </Modal>
 </template>
 

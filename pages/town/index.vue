@@ -58,9 +58,7 @@ export default defineComponent({
             </div>
         </Modal>
         <Modal size="lg" id="craft">
-            <div>
-                Крафт
-            </div>
+            <Craft/>
         </Modal>
         <Modal size="lg" id="citadel">
             <div>
