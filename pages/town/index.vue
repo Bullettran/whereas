@@ -13,36 +13,44 @@ export default defineComponent({
             <div class="town__person town__person--arcanist town__person--idle"></div>
             <ul class="town__items list">
                 <li class="town__item">
-                    <nuxt-link class="town__link link link--white" to="/game/1">Путешествия</nuxt-link>
+                    <nuxt-link class="town__link link link--white" to="/game/1" title="Отправиться в путешествие">
+                        <nuxt-img class="town__image" src="/images/pages/town/battle.png" alt="Изображение Путешествий"/>
+                    </nuxt-link>
                 </li>
                 <li class="town__item">
                     <button class="town__link link link--white" type="button" data-bs-toggle="modal"
-                            data-bs-target="#achievements">Достижения
+                            data-bs-target="#achievements" title="Достижения">
+                        <nuxt-img class="town__image" src="/images/pages/town/achiev.png" alt="Изображение Достижения"/>
+                    </button>
+                </li>
+                <li class="town__item town__item--craft">
+                    <button class="town__link link link--white" type="button" data-bs-toggle="modal"
+                            data-bs-target="#professions" title="Ремесло">
+                        <nuxt-img class="town__image" src="/images/pages/town/proffesions.png" alt="Изображение Ремесла"/>
                     </button>
                 </li>
                 <li class="town__item">
                     <button class="town__link link link--white" type="button" data-bs-toggle="modal"
-                            data-bs-target="#professions">Ремесло
+                            data-bs-target="#craft" title="Крафт">
+                        <nuxt-img class="town__image" src="/images/pages/town/craft.png" alt="Изображение Крафта"/>
                     </button>
                 </li>
                 <li class="town__item">
                     <button class="town__link link link--white" type="button" data-bs-toggle="modal"
-                            data-bs-target="#craft">Крафт
+                            data-bs-target="#beasts" title="Бестиарий">
+                        <nuxt-img class="town__image" src="/images/pages/town/beasts.png" alt="Изображение Бестиария"/>
                     </button>
                 </li>
                 <li class="town__item">
                     <button class="town__link link link--white" type="button" data-bs-toggle="modal"
-                            data-bs-target="#citadel">Цитадель
+                            data-bs-target="#talants" title="Таланты">
+                        <nuxt-img class="town__image" src="/images/pages/town/talants.png" alt="Изображение Талантов"/>
                     </button>
                 </li>
                 <li class="town__item">
                     <button class="town__link link link--white" type="button" data-bs-toggle="modal"
-                            data-bs-target="#talants">Таланты
-                    </button>
-                </li>
-                <li class="town__item">
-                    <button class="town__link link link--white" type="button" data-bs-toggle="modal"
-                            data-bs-target="#shop">Магазин
+                            data-bs-target="#shop" title="Магазин">
+                        <nuxt-img class="town__image" src="/images/pages/town/shop.png" alt="Изображение Достижений"/>
                     </button>
                 </li>
             </ul>
@@ -58,7 +66,7 @@ export default defineComponent({
         <Modal size="lg" id="craft">
             <LazyCraft/>
         </Modal>
-        <Modal size="lg" id="citadel">
+        <Modal size="lg" id="beasts">
             <div>
                 Цитадель
             </div>
