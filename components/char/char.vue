@@ -60,11 +60,11 @@ export default defineComponent({
                 },
             },
         ]);
-        //const { data } = await supabase.from("test").select();
+        // const { data } = await supabase.from("test").select();
 
         return {
             char,
-            inventory
+            inventory,
         };
     },
     methods: {
@@ -76,7 +76,7 @@ export default defineComponent({
     computed: {
         // Процент HP
         hpPercentage() {
-            return (this.char.currentHp / this.maxMp) * 100;
+            return (this.char.currentHp / this.maxHp) * 100;
         },
         // Процент MP
         mpPercentage() {

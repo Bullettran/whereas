@@ -22,7 +22,7 @@ export default defineComponent({
                 </li>
                 <li class="town__item">
                     <button class="town__link link link--white" type="button" data-bs-toggle="modal"
-                            data-bs-target="#professions">Рабочий дом
+                            data-bs-target="#professions">Ремесло
                     </button>
                 </li>
                 <li class="town__item">
@@ -48,17 +48,15 @@ export default defineComponent({
             </ul>
         </div>
         <Modal size="lg" id="achievements">
-            <div>
-                Достижения
-            </div>
+            <LazyAchievements/>
         </Modal>
         <Modal size="lg" id="professions">
             <div>
-                Рабочий дом
+                Ремесло
             </div>
         </Modal>
         <Modal size="lg" id="craft">
-            <Craft/>
+            <LazyCraft/>
         </Modal>
         <Modal size="lg" id="citadel">
             <div>

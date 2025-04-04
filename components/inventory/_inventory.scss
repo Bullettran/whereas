@@ -55,7 +55,7 @@
 .inventory__filters {
     display: flex;
     align-items: center;
-    grid-column-gap: 8px;
+    grid-column-gap: 6px;
 }
 
 .inventory__button {
@@ -117,4 +117,10 @@
 
 .inventory__event:not(:last-child) {
     margin-bottom: 8px;
+}
+
+.inventory__filter-image {
+    display: block;
+    width: 24px;
+    height: 24px;
 }

@@ -55,7 +55,7 @@ export default defineComponent({
     name: "Craft",
     setup() {
         // @ts-ignore
-        const inventory = reactive<InventoryItem[]>([
+        const inventory = reactive<(InventoryItem | SimpleInventoryItem)[]>([
             {
                 id: "herb-green",
                 name: "Зеленая трава",
@@ -135,6 +135,7 @@ export default defineComponent({
                 ingredients: [
                     { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 3 },
                     { id: "beast-milk", name: "Молоко зверя", icon: "⚗️", count: 4 },
+                    { id: "potion1", name: "Зелье маны", icon: "🧪", count: 1 },
                 ],
                 requirements: "Уровень алхимии 2",
             },
@@ -183,7 +184,7 @@ export default defineComponent({
         },
         removeAllIngridient() {
             this.craftSlots.forEach(slot => {
-                const inventoryItem = this.inventory.find(i => i.id === slot.id);
+                const inventoryItem = this.inventory.find((i: any) => i.id === slot.id);
                 if (inventoryItem) inventoryItem.count += slot.count;
             });
             this.craftSlots = [];
@@ -203,7 +204,7 @@ export default defineComponent({
 
             // Проверяем, есть ли уже такой предмет в слотах
             const existingIndex = this.craftSlots.findIndex(slot => slot.id === item.id);
-            const inventoryItem = this.inventory.find(i => i.id === item.id);
+            const inventoryItem = this.inventory.find((i: any) => i.id === item.id);
 
             if (!inventoryItem || inventoryItem.count <= 0) {
                 alert("Недостаточно предметов в инвентаре!");
@@ -227,7 +228,7 @@ export default defineComponent({
             if (!item) return;
 
             // Возвращаем предмет в инвентарь
-            const inventoryItem = this.inventory.find(i => i.id === item.id);
+            const inventoryItem = this.inventory.find((i: any) => i.id === item.id);
             if (inventoryItem) inventoryItem.count += 1;
 
             // Удаляем из слотов
@@ -270,7 +271,7 @@ export default defineComponent({
                     buffs: this.selectedRecipe.buffs || { value: 0, type: "" },
                 };
                 // проверяем наличие в инвентаре
-                const exitingItem = this.inventory.find(item => item.id === craftedItem.id);
+                const exitingItem = this.inventory.find((item: any) => item.id === craftedItem.id);
                 if (exitingItem) {
                     exitingItem.count += craftedItem.count;
                 } else {
