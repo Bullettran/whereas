@@ -1,7 +1,5 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import { SymbolKind } from "vscode-languageserver-types";
-import Array = SymbolKind.Array;
 import Dice from "~/components/global/dice/dice.vue";
 
 export default defineComponent({
@@ -87,7 +85,7 @@ export default defineComponent({
         mobStats: {
             maxHp: 10,
             maxMp: 5,
-            currentHp: 1,
+            currentHp: 10,
             currentMp: 5,
             physicalDmg: 1,
             mageDmg: 0,
@@ -101,7 +99,7 @@ export default defineComponent({
         personStats: {
             maxHp: 20,
             maxMp: 5,
-            currentHp: 5,
+            currentHp: 10,
             currentMp: 5,
             physicalDmg: 2,
             mageDmg: 0,
