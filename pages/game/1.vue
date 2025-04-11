@@ -110,6 +110,17 @@ export default defineComponent({
             criticalDmg: 0,
             hitChance: 50,
         },
+        messages: {
+            mob: {
+                type: "",
+                message: "",
+            },
+            person: {
+                type: "",
+                message: "",
+            },
+            turnKey: 0,
+        },
     }),
     mounted() {
         this.initCards();
@@ -133,8 +144,13 @@ export default defineComponent({
             setTimeout(() => {
                 this.showDice = false;
                 this.initCards();
+                this.messages.person.message = "";
+                this.messages.person.type = "";
+                this.messages.mob.message = "";
+                this.messages.mob.type = "";
+                this.messages.turnKey++;
                 this.isAnimating = false;
-            }, 1000);
+            }, 1500);
         },
         // бой
         async playBattleSequence() {
@@ -160,16 +176,19 @@ export default defineComponent({
             const hitRoll = Math.random() * 100;
             if (hitRoll > this.personStats.hitChance - this.mobStats.dodge) {
                 this.addToLog("Персонаж промахнулся!");
+                this.showActionText("person", "Промах!", "miss");
                 return;
             }
             // Расчет урона
             const damage = Math.max(1, this.personStats.physicalDmg - this.mobStats.physicalDef);
             this.mobStats.currentHp = Math.max(0, this.mobStats.currentHp - damage);
             this.addToLog(`Персонаж атакует и наносит ${damage} урона!`);
+            this.showActionText("mob", `-${damage}`, "dmg");
             // Анимация атаки
-            await this.playAnimationSequence("game__person--attack2", "game__mob--hurt", damage,);
+            await this.playAnimationSequence("game__person--attack2", "game__mob--hurt", damage);
             if (this.mobStats.currentHp <= 0) {
                 this.addToLog("Моб побежден!");
+                this.showActionText("mob", "Побежден!", "death");
                 await this.playDeathAnimation("mob");
             }
         },
@@ -178,16 +197,19 @@ export default defineComponent({
             const hitRoll = Math.random() * 100;
             if (hitRoll > this.mobStats.hitChance - this.personStats.dodge) {
                 this.addToLog("Моб промахнулся!");
+                this.showActionText("mob", "Промах!", "miss");
                 return;
             }
             // Расчет урона
             const damage = Math.max(1, this.mobStats.physicalDmg - this.personStats.physicalDef);
             this.personStats.currentHp = Math.max(0, this.personStats.currentHp - damage);
             this.addToLog(`Моб атакует и наносит ${damage} урона!`);
+            this.showActionText("person", `-${damage}`, "dmg");
             // Анимация атаки
-            await this.playAnimationSequence("game__mob--attack", "game__person--hurt", damage,);
+            await this.playAnimationSequence("game__mob--attack", "game__person--hurt", damage);
             if (this.personStats.currentHp <= 0) {
                 this.addToLog("Персонаж побежден!");
+                this.showActionText("person", "Побежден!", "death");
                 await this.playDeathAnimation("person");
             }
         },
@@ -228,8 +250,8 @@ export default defineComponent({
                 const element = target === "person" ? document.querySelector(".game__person") : document.querySelector(".game__mob") as any;
 
                 if (element) {
-                    element.classList.remove(target === "person" ? "game__person--idle" : "game__mob--idle",);
-                    element.classList.add(target === "person" ? "game__person--death" : "game__mob--death",);
+                    element.classList.remove(target === "person" ? "game__person--idle" : "game__mob--idle");
+                    element.classList.add(target === "person" ? "game__person--death" : "game__mob--death");
 
                     element.addEventListener("animationend", () => {
                         resolve();
@@ -258,6 +280,16 @@ export default defineComponent({
                 }
             }
         },
+
+        showActionText(target: "person" | "mob", message: string, type: string = "") {
+            if (target === "person") {
+                this.messages.person.message = message;
+                this.messages.person.type = type;
+            } else {
+                this.messages.mob.message = message;
+                this.messages.mob.type = type;
+            }
+        },
     },
 });
 </script>
@@ -267,8 +299,8 @@ export default defineComponent({
         <div class="game__container container">
             <div class="game__logs">
                 <Char />
-                <div class="battle-log">
-                    <div v-for="(log, index) in battleLog" :key="index">{{ log }}</div>
+                <div class="game__battle-log">
+                    <div class="game__battle-item" v-for="(log, index) in battleLog" :key="index">{{ log }}</div>
                 </div>
             </div>
             <div class="health-bar">
@@ -276,6 +308,18 @@ export default defineComponent({
             </div>
             <div class="health-bar">
                 HP: {{ mobStats.currentHp }}/{{ mobStats.maxHp }}
+            </div>
+            <div class="game__actions game-actions">
+                <div
+                    :key="'person-' + messages.turnKey"
+                    :class="[messages.person.type === 'miss' ? 'game-actions__action--miss' : '', messages.person.type === 'dmg' ? 'game-actions__action--dmg' : '', messages.person.type === 'death' ? 'game-actions__action--death' : '', 'game-actions__action game-actions__person']">
+                    {{ messages.person.message }}
+                </div>
+                <div
+                    :key="'mob-' + messages.turnKey"
+                    :class="[messages.mob.type === 'miss' ? 'game-actions__action--miss-mob' : '', messages.mob.type === 'dmg' ? 'game-actions__action--dmg-mob' : '', messages.mob.type === 'death' ? 'game-actions__action--death-mob' : '', 'game-actions__action game-actions__person']">
+                    {{ messages.mob.message }}
+                </div>
             </div>
             <div class="game__window">
                 <div class="game__block game__block--person">
