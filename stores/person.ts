@@ -24,7 +24,7 @@ export const usePersonState = defineStore({
             acc: 0,
             vit: 0,
             agi: 0,
-        }
+        },
     }) as any,
     getters: {
         getLogin: (state: any) => {

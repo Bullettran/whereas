@@ -28,6 +28,11 @@
     animation-name: fadeOutUp;
 }
 
+.game-actions__action--heal {
+    color: var(--green2);
+    animation-name: fadeOutUp;
+}
+
 .game-actions__action--death {
     color: var(--black1);
     animation-name: fadeOutDeath;
@@ -40,6 +45,11 @@
 
 .game-actions__action--dmg-mob {
     color: var(--orange1);
+    animation-name: fadeOutUp;
+}
+
+.game-actions__action--heal-mob {
+    color: var(--green2);
     animation-name: fadeOutUp;
 }
 

@@ -14,6 +14,9 @@ export default defineComponent({
                 description: "Физическая ататка +1",
                 count: 1,
                 icon: "attack.png",
+                bonus: {
+                    str: 1,
+                },
             },
             {
                 name: "Редкая защита",
@@ -22,6 +25,9 @@ export default defineComponent({
                 description: "Физическая защита +2",
                 count: 2,
                 icon: "defence.png",
+                bonus: {
+                    def: 2,
+                },
             },
             {
                 name: "Ледянное копье",
@@ -30,6 +36,9 @@ export default defineComponent({
                 description: "Магическая атака +1",
                 count: 1,
                 icon: "frost-ball-1.png",
+                bonus: {
+                    int: 1,
+                },
             },
             {
                 name: "Легендарное лечение",
@@ -38,6 +47,9 @@ export default defineComponent({
                 description: "Жизни +3",
                 count: 3,
                 icon: "heal-1.png",
+                bonus: {
+                    hp: 3,
+                },
             },
             {
                 name: "Простое лечение",
@@ -46,6 +58,9 @@ export default defineComponent({
                 description: "Жизни +1",
                 count: 1,
                 icon: "heal-1.png",
+                bonus: {
+                    hp: 1,
+                },
             },
             {
                 name: "Мощный удар",
@@ -54,6 +69,9 @@ export default defineComponent({
                 description: "Физическая атака +2",
                 count: 2,
                 icon: "attack.png",
+                bonus: {
+                    str: 2,
+                },
             },
             {
                 name: "Ледяная буря",
@@ -62,14 +80,31 @@ export default defineComponent({
                 description: "Магическая атака +3",
                 count: 3,
                 icon: "frost-ball-1.png",
+                bonus: {
+                    int: 3,
+                },
             },
             {
                 name: "Щит молний",
                 type: "Защита",
                 rare: "rare",
-                description: "Защита от магии +2",
+                description: "Защита от магии +20",
                 count: 2,
                 icon: "defence.png",
+                bonus: {
+                    def: 40,
+                },
+            },
+            {
+                name: "Кровавая рана",
+                type: "Атака",
+                rare: "rare",
+                description: "Наносит кровотечение (2 урона за ход, 3 хода)",
+                count: 1,
+                icon: "bleed-1.png",
+                bonus: {
+                    bleed: 2,
+                },
             },
         ]);
         return {
@@ -82,33 +117,60 @@ export default defineComponent({
         showDice: false,
         isAnimating: false,
         battleLog: [] as string[],
-        mobStats: {
-            maxHp: 10,
-            maxMp: 5,
-            currentHp: 10,
-            currentMp: 5,
-            physicalDmg: 1,
-            mageDmg: 0,
-            physicalDef: 0,
-            mageDef: 0,
-            speed: 3,
-            dodge: 0,
-            criticalDmg: 0,
-            hitChance: 50,
+        selectedCards: 0,
+        maxSelectedCards: 3,
+        useCardIndices: [] as number[],
+        baseStats: {
+            person: {
+                currentHp: 8000,
+                currentMp: 5,
+                str: 5,
+                def: 10,
+                luc: 1,
+                spd: 10,
+                int: 1,
+                acc: 1,
+                vit: 80000,
+                agi: 20,
+            },
+            mob: {
+                currentHp: 20,
+                currentMp: 5,
+                str: 10,
+                def: 0,
+                luc: 200,
+                spd: 3,
+                int: 0,
+                acc: 1,
+                vit: 80,
+                agi: 200,
+            },
         },
-        personStats: {
-            maxHp: 20,
-            maxMp: 5,
-            currentHp: 10,
-            currentMp: 5,
-            physicalDmg: 2,
-            mageDmg: 0,
-            physicalDef: 0,
-            mageDef: 0,
-            speed: 1,
-            dodge: 0,
-            criticalDmg: 0,
-            hitChance: 50,
+        cardBonuses: {
+            person: {
+                str: 0,
+                def: 0,
+                luc: 0,
+                spd: 0,
+                int: 0,
+                acc: 0,
+                vit: 0,
+                agi: 0,
+            },
+        },
+        activeEffects: {
+            mob: [] as Array<{
+                type: string;
+                duration: number;
+                val: number;
+                sourceCard?: string;
+            }>,
+            person: [] as Array<{
+                type: string;
+                duration: number;
+                val: number;
+                sourceCard?: string;
+            }>,
         },
         messages: {
             mob: {
@@ -125,120 +187,386 @@ export default defineComponent({
     mounted() {
         this.initCards();
     },
+    computed: {
+        personStats() {
+            return {
+                ...this.baseStats.person,
+                physicalDmg: this.physicalDmg("person"),
+                mageDmg: this.mageDmg("person"),
+                physicalDef: this.physicalDef("person"),
+                mageDef: this.mageDef("person"),
+                speed: this.speed("person"),
+                dodge: this.dodge("person"),
+                criticalDmg: this.criticalDmg("person"),
+                hitChance: this.hitChance("person"),
+            };
+        },
+        mobStats() {
+            return {
+                ...this.baseStats.mob,
+                physicalDmg: this.physicalDmg("mob"),
+                mageDmg: this.mageDmg("mob"),
+                physicalDef: this.physicalDef("mob"),
+                mageDef: this.mageDef("mob"),
+                speed: this.speed("mob"),
+                dodge: this.dodge("mob"),
+                criticalDmg: this.criticalDmg("mob"),
+                hitChance: this.hitChance("mob"),
+            };
+        },
+        isAttackDisabled(): boolean {
+            return this.selectedCards < this.maxSelectedCards || this.isAnimating;
+        },
+    },
     methods: {
+        // Основные методы расчета характеристик
+        getStat(target: "person" | "mob", stat: string): number {
+            // @ts-ignore
+            const base = this.baseStats[target][stat];
+            // @ts-ignore
+            return target === "person" ? base + this.cardBonuses.person[stat] : base;
+        },
+
+        maxHp(target: "person" | "mob", bonus: number = 0) {
+            const hp = 5;
+            const vit = this.getStat(target, "vit");
+            return hp + Math.floor(vit / 2) + bonus;
+        },
+        maxMp(target: "person" | "mob", bonus: number = 0) {
+            const mp = 5;
+            const int = this.getStat(target, "int");
+            return mp + Math.floor(int / 2) + bonus;
+        },
+
+        physicalDmg(target: "person" | "mob", bonus: number = 0): number {
+            const str = this.getStat(target, "str");
+            const agi = this.getStat(target, "agi");
+            const baseDmg = 1;
+            return baseDmg + Math.floor(str / 2) + Math.floor(agi / 3) + bonus;
+        },
+
+        mageDmg(target: "person" | "mob", bonus: number = 0): number {
+            const int = this.getStat(target, "int");
+            const agi = this.getStat(target, "agi");
+            return 1 + Math.floor(int / 2) + Math.floor(agi / 3) + bonus;
+        },
+
+        physicalDef(target: "person" | "mob", bonus: number = 0): number {
+            const def = this.getStat(target, "def");
+            const str = this.getStat(target, "str");
+            const sum = 1 + Math.floor(def / 2) + Math.floor(str / 2) + bonus;
+            return Math.min(sum, 70);
+        },
+
+        mageDef(target: "person" | "mob", bonus: number = 0): number {
+            const def = this.getStat(target, "def");
+            const int = this.getStat(target, "int");
+            const sum = 1 + Math.floor(def / 2) + Math.floor(int / 2) + bonus;
+            return Math.min(sum, 70);
+        },
+
+        speed(target: "person" | "mob", bonus: number = 0): number {
+            const spd = this.getStat(target, "spd");
+            const agi = this.getStat(target, "agi");
+            return 1 + Math.floor(spd / 2) + Math.floor(agi / 3) + bonus;
+        },
+
+        dodge(target: "person" | "mob", bonus: number = 0): number {
+            const agi = this.getStat(target, "agi");
+            const luc = this.getStat(target, "luc");
+            const sum = Math.floor(agi / 2) + Math.floor(luc / 2) + bonus;
+            return Math.min(sum, 30);
+        },
+
+        criticalDmg(target: "person" | "mob", bonus: number = 0): number {
+            const agi = this.getStat(target, "agi");
+            const luc = this.getStat(target, "luc");
+            const acc = this.getStat(target, "acc");
+            const sum = Math.floor(agi / 3) + Math.floor(luc / 3) + Math.floor(acc / 2) + bonus;
+            return Math.min(sum, 50);
+        },
+
+        hitChance(target: "person" | "mob", bonus: number = 0): number {
+            const acc = this.getStat(target, "acc");
+            const luc = this.getStat(target, "luc");
+            const int = this.getStat(target, "int");
+            const sum = 50 + acc + Math.floor(luc / 3) + Math.floor(int / 3) + bonus;
+            return Math.min(sum, 100);
+        },
+
+
+        // Работа с картами
         getRandomCards(count: number) {
             const shuffled = [...this.allCards].sort(() => 0.5 - Math.random());
             return shuffled.slice(0, count);
         },
+
         initCards() {
             this.levelCards = this.getRandomCards(5);
-            this.choices = [null, null, null, null, null, null, null, null, null];
+            this.choices = Array(9).fill(null);
+            this.selectedCards = 0;
+            this.useCardIndices = [];
+            this.resetCardBonuses();
         },
-        async changeCards() {
-            if (this.isAnimating) return;
-            this.isAnimating = true;
 
-            await this.playBattleSequence();
-
-            this.showDice = true;
-            setTimeout(() => {
-                this.showDice = false;
-                this.initCards();
-                this.messages.person.message = "";
-                this.messages.person.type = "";
-                this.messages.mob.message = "";
-                this.messages.mob.type = "";
-                this.messages.turnKey++;
-                this.isAnimating = false;
-            }, 1500);
+        resetCardBonuses() {
+            this.cardBonuses.person = {
+                str: 0,
+                def: 0,
+                luc: 0,
+                spd: 0,
+                int: 0,
+                acc: 0,
+                vit: 0,
+                agi: 0,
+            };
         },
-        // бой
+
+        applyCardBonuses() {
+            this.resetCardBonuses();
+            // @ts-ignore
+            this.choices.forEach(choice => {
+                if (choice?.bonus) {
+                    // Обрабатываем лечение отдельно
+                    if (choice.bonus.hp) {
+                        this.baseStats.person.currentHp = Math.min(
+                            this.baseStats.person.currentHp + choice.bonus.hp,
+                            this.maxHp("person"),
+                        );
+                        this.addToLog(`Персонаж восстановил ${choice.bonus.hp} HP!`);
+                        this.showActionText("person", `+${choice.bonus.hp} HP`, "heal");
+                    }
+
+                    // Обрабатываем остальные бонусы
+                    for (const [stat, value] of Object.entries(choice.bonus)) {
+                        // @ts-ignore
+                        if (stat !== "hp" && this.cardBonuses.person[stat] !== undefined) {
+                            // @ts-ignore
+                            this.cardBonuses.person[stat] += value;
+                        }
+
+                        // Добавляем эффект кровотечения если есть соответствующий бонус
+                        if (stat === "bleed") {
+                            this.addEffect("mob", {
+                                type: "bleed",
+                                duration: 3, // Количество ходов
+                                // @ts-ignore
+                                val: value, // Урон за ход
+                                sourceCard: choice.name,
+                            });
+                            this.addToLog(`У моба началось кровотечение (${value} урона за ход)`);
+                        }
+                    }
+                }
+            });
+        },
+
+        addEffect(target: "person" | "mob", effect: {
+            type: string;
+            duration: number;
+            val: number;
+            sourceCard?: string;
+        }) {
+            this.activeEffects[target].push(effect);
+        },
+
+        processEffects() {
+            // Обрабатываем эффекты для моба
+            this.activeEffects.mob = this.activeEffects.mob.filter(effect => {
+                if (effect.type === "bleed") {
+                    this.baseStats.mob.currentHp = Math.max(0, this.baseStats.mob.currentHp - effect.val);
+                    this.addToLog(`Кровотечение наносит ${effect.val} урона мобу`);
+                    this.showActionText("mob", `-${effect.val} (кровотечение)`, "dmg");
+                }
+
+                effect.duration -= 1;
+                return effect.duration > 0;
+            });
+
+            // Обрабатываем эффекты для персонажа
+            this.activeEffects.person = this.activeEffects.person.filter(effect => {
+                // Можно добавить другие эффекты для персонажа
+                effect.duration -= 1;
+                return effect.duration > 0;
+            });
+        },
+
+        // Боевая система
         async playBattleSequence() {
-            // Определяем кто атакует первым по скорости
-            if (this.personStats.speed >= this.mobStats.speed) {
+            if (this.speed("person") >= this.speed("mob")) {
                 await this.characterAttack();
-                if (this.mobStats.currentHp > 0) {
+                if (this.baseStats.mob.currentHp > 0) {
                     await this.mobAttack();
-                } else {
-                    // todo(kharal): Придумать как сделать победу
                 }
             } else {
                 await this.mobAttack();
-                if (this.personStats.currentHp > 0) {
+                if (this.baseStats.person.currentHp > 0) {
                     await this.characterAttack();
-                } else {
-                    // todo(kharal): Придумать как сделать пройгрыш
                 }
             }
         },
+
         async characterAttack() {
-            // Проверка на попадание
             const hitRoll = Math.random() * 100;
-            if (hitRoll > this.personStats.hitChance - this.mobStats.dodge) {
+            if (hitRoll > this.hitChance("person") - this.dodge("mob")) {
                 this.addToLog("Персонаж промахнулся!");
                 this.showActionText("person", "Промах!", "miss");
                 return;
             }
-            // Расчет урона
-            const damage = Math.max(1, this.personStats.physicalDmg - this.mobStats.physicalDef);
-            this.mobStats.currentHp = Math.max(0, this.mobStats.currentHp - damage);
+
+            const damage = Math.max(1, this.physicalDmg("person") - this.physicalDef("mob"));
+            this.baseStats.mob.currentHp = Math.max(0, this.baseStats.mob.currentHp - damage);
             this.addToLog(`Персонаж атакует и наносит ${damage} урона!`);
             this.showActionText("mob", `-${damage}`, "dmg");
-            // Анимация атаки
+
             await this.playAnimationSequence("game__person--attack2", "game__mob--hurt", damage);
-            if (this.mobStats.currentHp <= 0) {
+
+            if (this.baseStats.mob.currentHp <= 0) {
                 this.addToLog("Моб побежден!");
                 this.showActionText("mob", "Побежден!", "death");
                 await this.playDeathAnimation("mob");
             }
         },
+
         async mobAttack() {
-            // Проверка на попадание
             const hitRoll = Math.random() * 100;
-            if (hitRoll > this.mobStats.hitChance - this.personStats.dodge) {
+            if (hitRoll > this.hitChance("mob") - this.dodge("person")) {
                 this.addToLog("Моб промахнулся!");
                 this.showActionText("mob", "Промах!", "miss");
                 return;
             }
-            // Расчет урона
-            const damage = Math.max(1, this.mobStats.physicalDmg - this.personStats.physicalDef);
-            this.personStats.currentHp = Math.max(0, this.personStats.currentHp - damage);
+
+            const damage = Math.max(1, this.physicalDmg("mob") - this.physicalDef("person"));
+            this.baseStats.person.currentHp = Math.max(0, this.baseStats.person.currentHp - damage);
             this.addToLog(`Моб атакует и наносит ${damage} урона!`);
             this.showActionText("person", `-${damage}`, "dmg");
-            // Анимация атаки
+
             await this.playAnimationSequence("game__mob--attack", "game__person--hurt", damage);
-            if (this.personStats.currentHp <= 0) {
+
+            if (this.baseStats.person.currentHp <= 0) {
                 this.addToLog("Персонаж побежден!");
                 this.showActionText("person", "Побежден!", "death");
                 await this.playDeathAnimation("person");
             }
         },
 
-        async playAnimationSequence(attackAnimation: string, hurtAnimation: string, damage: number): Promise<void> {
-            return new Promise((resolve) => {
-                const attacker = attackAnimation.includes("person") ? document.querySelector(".game__person") : document.querySelector(".game__mob");
+        // Drag and Drop
+        onDragStart(event: DragEvent, cardIndex: number) {
+            if (this.selectedCards >= this.maxSelectedCards) return;
+            if (this.useCardIndices.includes(cardIndex)) return;
+            if (event.dataTransfer) {
+                event.dataTransfer.setData("text/plain", cardIndex.toString());
+                event.dataTransfer.effectAllowed = "move";
+            }
+        },
 
-                const defender = hurtAnimation.includes("person") ? document.querySelector(".game__person") : document.querySelector(".game__mob");
+        onDrop(event: DragEvent, choiceIndex: number) {
+            event.preventDefault();
+            if (this.selectedCards >= this.maxSelectedCards && !this.choices[choiceIndex]) return;
+
+            const cardIndex = event.dataTransfer?.getData("text/plain");
+            if (cardIndex === undefined || cardIndex === "") return;
+
+            const parsedIndex = parseInt(cardIndex);
+            if (isNaN(parsedIndex)) return;
+
+            // Проверяем, не была ли карта уже выбрана
+            if (this.useCardIndices.includes(parsedIndex)) return;
+
+            const hadCardBefore = !!this.choices[choiceIndex];
+            this.choices[choiceIndex] = this.levelCards[parsedIndex];
+
+            if (!hadCardBefore && this.choices[choiceIndex]) {
+                this.selectedCards++;
+                this.useCardIndices.push(parsedIndex);
+            } else if (hadCardBefore && !this.choices[choiceIndex]) {
+                this.selectedCards--;
+            }
+        },
+
+        // Вспомогательные методы
+        async changeCards() {
+            if (this.isAnimating || this.selectedCards < this.maxSelectedCards) return;
+            this.isAnimating = true;
+            this.applyCardBonuses();
+
+            this.processEffects();
+
+            // Проверяем, не умер ли моб от эффектов
+            if (this.baseStats.mob.currentHp <= 0) {
+                this.addToLog("Моб побежден от эффектов!");
+                this.showActionText("mob", "Побежден!", "death");
+                await this.playDeathAnimation("mob");
+            } else {
+                await this.playBattleSequence();
+            }
+
+            this.showDice = true;
+            setTimeout(() => {
+                this.showDice = false;
+                this.initCards();
+                this.resetMessages();
+                this.isAnimating = false;
+            }, 1500);
+        },
+
+        resetMessages() {
+            this.messages.person = { type: "", message: "" };
+            this.messages.mob = { type: "", message: "" };
+            this.messages.turnKey++;
+        },
+
+        showActionText(target: "person" | "mob", message: string, type: string = "") {
+            this.messages[target] = { message, type };
+        },
+
+        addToLog(message: string) {
+            this.battleLog.push(message);
+        },
+
+        // Анимации
+        async playAnimationSequence(
+            attackAnimation: string,
+            hurtAnimation: string,
+            damage: number,
+        ): Promise<void> {
+            return new Promise((resolve) => {
+                const attacker = attackAnimation.includes("person")
+                    ? document.querySelector(".game__person")
+                    : document.querySelector(".game__mob");
+
+                const defender = hurtAnimation.includes("person")
+                    ? document.querySelector(".game__person")
+                    : document.querySelector(".game__mob");
 
                 if (attacker && defender) {
-                    // Анимация атаки
-                    attacker.classList.remove(attackAnimation.includes("person") ? "game__person--idle" : "game__mob--idle");
+                    attacker.classList.remove(
+                        attackAnimation.includes("person") ? "game__person--idle" : "game__mob--idle",
+                    );
                     attacker.classList.add(attackAnimation);
 
-                    // Анимация получения урона
-                    defender.classList.remove(hurtAnimation.includes("person") ? "game__person--idle" : "game__mob--idle");
+                    defender.classList.remove(
+                        hurtAnimation.includes("person") ? "game__person--idle" : "game__mob--idle",
+                    );
                     defender.classList.add(hurtAnimation);
 
-                    attacker.addEventListener("animationend", () => {
-                        // Возврат в исходное состояние
-                        attacker.classList.remove(attackAnimation);
-                        attacker.classList.add(attackAnimation.includes("person") ? "game__person--idle" : "game__mob--idle");
+                    attacker.addEventListener(
+                        "animationend",
+                        () => {
+                            attacker.classList.remove(attackAnimation);
+                            attacker.classList.add(
+                                attackAnimation.includes("person") ? "game__person--idle" : "game__mob--idle",
+                            );
 
-                        defender.classList.remove(hurtAnimation);
-                        defender.classList.add(hurtAnimation.includes("person") ? "game__person--idle" : "game__mob--idle");
+                            defender.classList.remove(hurtAnimation);
+                            defender.classList.add(
+                                hurtAnimation.includes("person") ? "game__person--idle" : "game__mob--idle",
+                            );
 
-                        resolve();
-                    }, { once: true });
+                            resolve();
+                        },
+                        { once: true },
+                    );
                 } else {
                     resolve();
                 }
@@ -247,48 +575,29 @@ export default defineComponent({
 
         async playDeathAnimation(target: "person" | "mob"): Promise<void> {
             return new Promise((resolve) => {
-                const element = target === "person" ? document.querySelector(".game__person") : document.querySelector(".game__mob") as any;
+                const element = document.querySelector(
+                    target === "person" ? ".game__person" : ".game__mob",
+                );
 
                 if (element) {
-                    element.classList.remove(target === "person" ? "game__person--idle" : "game__mob--idle");
-                    element.classList.add(target === "person" ? "game__person--death" : "game__mob--death");
+                    element.classList.remove(
+                        target === "person" ? "game__person--idle" : "game__mob--idle",
+                    );
+                    element.classList.add(
+                        target === "person" ? "game__person--death" : "game__mob--death",
+                    );
 
-                    element.addEventListener("animationend", () => {
-                        resolve();
-                    }, { once: true });
+                    element.addEventListener(
+                        "animationend",
+                        () => {
+                            resolve();
+                        },
+                        { once: true },
+                    );
                 } else {
                     resolve();
                 }
             });
-        },
-
-        addToLog(message: string) {
-            this.battleLog.push(message);
-        },
-        onDragStart(event: DragEvent, cardIndex: number) {
-            if (event.dataTransfer) {
-                event.dataTransfer.setData("text/plain", cardIndex.toString());
-                event.dataTransfer.effectAllowed = "move";
-            }
-        },
-        onDrop(event: DragEvent, choiceIndex: number) {
-            const cardIndex = event.dataTransfer?.getData("text/plain");
-            if (cardIndex !== undefined && cardIndex !== "") {
-                const parsedIndex = parseInt(cardIndex);
-                if (!isNaN(parsedIndex) && parsedIndex >= 0 && parsedIndex < this.levelCards.length) {
-                    this.choices[choiceIndex] = this.levelCards[parsedIndex];
-                }
-            }
-        },
-
-        showActionText(target: "person" | "mob", message: string, type: string = "") {
-            if (target === "person") {
-                this.messages.person.message = message;
-                this.messages.person.type = type;
-            } else {
-                this.messages.mob.message = message;
-                this.messages.mob.type = type;
-            }
         },
     },
 });
@@ -304,20 +613,31 @@ export default defineComponent({
                 </div>
             </div>
             <div class="health-bar">
-                HP: {{ personStats.currentHp }}/{{ personStats.maxHp }}
+                HP: {{ baseStats.person.currentHp }}/{{ maxHp("person") }}
             </div>
             <div class="health-bar">
-                HP: {{ mobStats.currentHp }}/{{ mobStats.maxHp }}
+                HP: {{ baseStats.mob.currentHp }}/{{ maxHp("mob") }}
             </div>
             <div class="game__actions game-actions">
                 <div
                     :key="'person-' + messages.turnKey"
-                    :class="[messages.person.type === 'miss' ? 'game-actions__action--miss' : '', messages.person.type === 'dmg' ? 'game-actions__action--dmg' : '', messages.person.type === 'death' ? 'game-actions__action--death' : '', 'game-actions__action game-actions__person']">
+                    :class="[
+                        messages.person.type === 'miss' ? 'game-actions__action--miss' : '',
+                         messages.person.type === 'dmg' ? 'game-actions__action--dmg' : '',
+                          messages.person.type === 'death' ? 'game-actions__action--death' : '',
+                          messages.person.type === 'heal' ? 'game-actions__action--heal' : '',
+                           'game-actions__action game-actions__person'
+                           ]">
                     {{ messages.person.message }}
                 </div>
                 <div
                     :key="'mob-' + messages.turnKey"
-                    :class="[messages.mob.type === 'miss' ? 'game-actions__action--miss-mob' : '', messages.mob.type === 'dmg' ? 'game-actions__action--dmg-mob' : '', messages.mob.type === 'death' ? 'game-actions__action--death-mob' : '', 'game-actions__action game-actions__person']">
+                    :class="[
+                        messages.mob.type === 'miss' ? 'game-actions__action--miss-mob' : '',
+                         messages.mob.type === 'dmg' ? 'game-actions__action--dmg-mob' : '',
+                          messages.mob.type === 'death' ? 'game-actions__action--death-mob' : '',
+                          messages.mob.type === 'heal' ? 'game-actions__action--heal-mob' : '',
+                           'game-actions__action game-actions__person']">
                     {{ messages.mob.message }}
                 </div>
             </div>
@@ -344,7 +664,9 @@ export default defineComponent({
                         </div>
                     </div>
                     <div class="game__attacks">
-                        <button class="game__attack button button--metal" @click="changeCards">Атака</button>
+                        <button class="game__attack button button--metal" @click="changeCards"
+                                :disabled="isAttackDisabled">Атака
+                        </button>
                     </div>
                 </div>
                 <div class="game__block game__block--mobs">
@@ -353,19 +675,25 @@ export default defineComponent({
             </div>
         </div>
         <div class="game__buttons container">
-            <div :class="[card.rare ? `card-game--${card.rare}` : 'card-game--standard', 'game__card card-game button']"
-                 v-for="(card, index) in levelCards"
-                 :key="index"
-                 draggable="true"
-                 @dragstart="onDragStart($event, index)"
-            >
-                <div class="card-game__picture">
-                    <nuxt-img class="card-game__image" :src="`/images/pages/game/${card.icon}`"
-                              alt="Декоративное изображение" />
+            <div class="game__buttons-block">
+                <div
+                    :class="[card.rare ? `card-game--${card.rare}` : 'card-game--standard', useCardIndices.includes(index) ? 'card-game--used' : '', 'game__card card-game button']"
+                    v-for="(card, index) in levelCards"
+                    :key="index"
+                    draggable="true"
+                    @dragstart="onDragStart($event, index)"
+                >
+                    <div class="card-game__picture">
+                        <nuxt-img class="card-game__image" :src="`/images/pages/game/${card.icon}`"
+                                  alt="Декоративное изображение" />
+                    </div>
+                    <div class="card-game__name">{{ card.name }}</div>
+                    <div class="card-game__type">{{ card.type }}</div>
+                    <div class="card-game__description">{{ card.description }}</div>
                 </div>
-                <div class="card-game__name">{{ card.name }}</div>
-                <div class="card-game__type">{{ card.type }}</div>
-                <div class="card-game__description">{{ card.description }}</div>
+            </div>
+            <div class="game__counts">
+                Выбранные карточки {{ selectedCards }} / {{ maxSelectedCards }}
             </div>
         </div>
         <Dice v-if="showDice" />
