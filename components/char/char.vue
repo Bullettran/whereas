@@ -104,29 +104,11 @@ export default defineComponent({
             let bonusAgi = Math.floor(this.char.characteristic.agi / 3);
             return dmg + bonusStr + bonusAgi;
         },
-        mageDmg() {
-            let dmg = 1;
-            let bonusInt = Math.floor(this.char.characteristic.int / 2);
-            let bonusAgi = Math.floor(this.char.characteristic.agi / 3);
-            return dmg + bonusInt + bonusAgi;
-        },
         physicalDef() {
             let def = 1;
             let bonusDef = Math.floor(this.char.characteristic.def / 2);
             let bonusStr = Math.floor(this.char.characteristic.str / 2);
             let sum = def + bonusDef + bonusStr;
-            if (sum > 70) {
-                return 70
-            } else {
-                return sum
-            }
-            return sum;
-        },
-        mageDef() {
-            let def = 1;
-            let bonusDef = Math.floor(this.char.characteristic.def / 2);
-            let bonusInt = Math.floor(this.char.characteristic.int / 2);
-            let sum = def + bonusDef + bonusInt;
             if (sum > 70) {
                 return 70
             } else {
@@ -332,16 +314,8 @@ export default defineComponent({
                         {{ physicalDmg }}
                     </div>
                     <div class="block__stat">
-                        <nuxt-icon class="block__icon block__icon--health" name="stats/staff" />
-                        {{ mageDmg }}
-                    </div>
-                    <div class="block__stat">
                         <nuxt-icon class="block__icon block__icon--" name="stats/shield" />
                         {{ physicalDef }}&nbsp;%
-                    </div>
-                    <div class="block__stat">
-                        <nuxt-icon class="block__icon block__icon--" name="stats/mage-def" />
-                        {{ mageDef }}&nbsp;%
                     </div>
                     <div class="block__stat">
                         <nuxt-icon class="block__icon block__icon--" name="stats/speed" />

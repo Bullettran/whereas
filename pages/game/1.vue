@@ -17,6 +17,7 @@ export default defineComponent({
                 bonus: {
                     str: 1,
                 },
+                manaCost: 2,
             },
             {
                 name: "Редкая защита",
@@ -28,6 +29,7 @@ export default defineComponent({
                 bonus: {
                     def: 2,
                 },
+                manaCost: 1,
             },
             {
                 name: "Ледянное копье",
@@ -39,6 +41,7 @@ export default defineComponent({
                 bonus: {
                     int: 1,
                 },
+                manaCost: 2,
             },
             {
                 name: "Легендарное лечение",
@@ -50,6 +53,7 @@ export default defineComponent({
                 bonus: {
                     hp: 3,
                 },
+                manaCost: 2,
             },
             {
                 name: "Простое лечение",
@@ -61,6 +65,7 @@ export default defineComponent({
                 bonus: {
                     hp: 1,
                 },
+                manaCost: 2,
             },
             {
                 name: "Мощный удар",
@@ -72,6 +77,7 @@ export default defineComponent({
                 bonus: {
                     str: 2,
                 },
+                manaCost: 2,
             },
             {
                 name: "Ледяная буря",
@@ -83,6 +89,7 @@ export default defineComponent({
                 bonus: {
                     int: 3,
                 },
+                manaCost: 2,
             },
             {
                 name: "Щит молний",
@@ -94,6 +101,7 @@ export default defineComponent({
                 bonus: {
                     def: 40,
                 },
+                manaCost: 2,
             },
             {
                 name: "Кровавая рана",
@@ -105,6 +113,17 @@ export default defineComponent({
                 bonus: {
                     bleed: 2,
                 },
+                manaCost: 3,
+            },
+            {
+                name: "Магический источник",
+                type: "Магия",
+                rare: "rare",
+                description: "Восстанавливает 3 маны",
+                count: 1,
+                icon: "mana-1.png", // Предполагаем, что у тебя есть такая иконка
+                bonus: { mp: 3 }, // Новый эффект: восстановление маны
+                manaCost: 0,
             },
         ]);
         return {
@@ -126,24 +145,24 @@ export default defineComponent({
                 currentMp: 5,
                 str: 5,
                 def: 10,
-                luc: 1,
+                luc: 10,
                 spd: 10,
                 int: 1,
-                acc: 1,
+                acc: 10,
                 vit: 80000,
-                agi: 20,
+                agi: 10,
             },
             mob: {
                 currentHp: 20,
                 currentMp: 5,
                 str: 10,
                 def: 0,
-                luc: 200,
+                luc: 10,
                 spd: 3,
-                int: 0,
-                acc: 1,
+                int: 10,
+                acc: 10,
                 vit: 80,
-                agi: 200,
+                agi: 10,
             },
         },
         cardBonuses: {
@@ -164,12 +183,14 @@ export default defineComponent({
                 duration: number;
                 val: number;
                 sourceCard?: string;
+                icon: string;
             }>,
             person: [] as Array<{
                 type: string;
                 duration: number;
                 val: number;
                 sourceCard?: string;
+                icon: string;
             }>,
         },
         messages: {
@@ -192,9 +213,7 @@ export default defineComponent({
             return {
                 ...this.baseStats.person,
                 physicalDmg: this.physicalDmg("person"),
-                mageDmg: this.mageDmg("person"),
                 physicalDef: this.physicalDef("person"),
-                mageDef: this.mageDef("person"),
                 speed: this.speed("person"),
                 dodge: this.dodge("person"),
                 criticalDmg: this.criticalDmg("person"),
@@ -205,9 +224,7 @@ export default defineComponent({
             return {
                 ...this.baseStats.mob,
                 physicalDmg: this.physicalDmg("mob"),
-                mageDmg: this.mageDmg("mob"),
                 physicalDef: this.physicalDef("mob"),
-                mageDef: this.mageDef("mob"),
                 speed: this.speed("mob"),
                 dodge: this.dodge("mob"),
                 criticalDmg: this.criticalDmg("mob"),
@@ -215,7 +232,7 @@ export default defineComponent({
             };
         },
         isAttackDisabled(): boolean {
-            return this.selectedCards < this.maxSelectedCards || this.isAnimating;
+            return this.isAnimating;
         },
     },
     methods: {
@@ -241,27 +258,15 @@ export default defineComponent({
         physicalDmg(target: "person" | "mob", bonus: number = 0): number {
             const str = this.getStat(target, "str");
             const agi = this.getStat(target, "agi");
-            const baseDmg = 1;
-            return baseDmg + Math.floor(str / 2) + Math.floor(agi / 3) + bonus;
-        },
-
-        mageDmg(target: "person" | "mob", bonus: number = 0): number {
             const int = this.getStat(target, "int");
-            const agi = this.getStat(target, "agi");
-            return 1 + Math.floor(int / 2) + Math.floor(agi / 3) + bonus;
+            const baseDmg = 1;
+            return baseDmg + Math.floor(str / 3) +  Math.floor(int / 3) + Math.floor(agi / 3) + bonus;
         },
 
         physicalDef(target: "person" | "mob", bonus: number = 0): number {
             const def = this.getStat(target, "def");
             const str = this.getStat(target, "str");
             const sum = 1 + Math.floor(def / 2) + Math.floor(str / 2) + bonus;
-            return Math.min(sum, 70);
-        },
-
-        mageDef(target: "person" | "mob", bonus: number = 0): number {
-            const def = this.getStat(target, "def");
-            const int = this.getStat(target, "int");
-            const sum = 1 + Math.floor(def / 2) + Math.floor(int / 2) + bonus;
             return Math.min(sum, 70);
         },
 
@@ -306,6 +311,8 @@ export default defineComponent({
             this.choices = Array(9).fill(null);
             this.selectedCards = 0;
             this.useCardIndices = [];
+            // todo(kharal): Придумать как пополнять ману от интелекта может быть реген сделать?
+            // this.baseStats.person.currentMp = this.maxMp("person");
             this.resetCardBonuses();
         },
 
@@ -327,7 +334,7 @@ export default defineComponent({
             // @ts-ignore
             this.choices.forEach(choice => {
                 if (choice?.bonus) {
-                    // Обрабатываем лечение отдельно
+                    // Обрабатываем лечение
                     if (choice.bonus.hp) {
                         this.baseStats.person.currentHp = Math.min(
                             this.baseStats.person.currentHp + choice.bonus.hp,
@@ -337,37 +344,31 @@ export default defineComponent({
                         this.showActionText("person", `+${choice.bonus.hp} HP`, "heal");
                     }
 
+                    // Обрабатываем восстановление маны
+                    if (choice.bonus.mp) {
+                        this.baseStats.person.currentMp = Math.min(
+                            this.baseStats.person.currentMp + choice.bonus.mp,
+                            this.maxMp("person"),
+                        );
+                        this.addToLog(`Персонаж восстановил ${choice.bonus.mp} MP!`);
+                        this.showActionText("person", `+${choice.bonus.mp} MP`, "mana-restore");
+                    }
+
                     // Обрабатываем остальные бонусы
                     for (const [stat, value] of Object.entries(choice.bonus)) {
-                        // @ts-ignore
-                        if (stat !== "hp" && this.cardBonuses.person[stat] !== undefined) {
-                            // @ts-ignore
-                            this.cardBonuses.person[stat] += value;
-                        }
-
-                        // Добавляем эффект кровотечения если есть соответствующий бонус
-                        if (stat === "bleed") {
-                            this.addEffect("mob", {
-                                type: "bleed",
-                                duration: 3, // Количество ходов
-                                // @ts-ignore
-                                val: value, // Урон за ход
-                                sourceCard: choice.name,
-                            });
-                            this.addToLog(`У моба началось кровотечение (${value} урона за ход)`);
+                        if (stat !== "hp" && stat !== "bleed" && stat !== "mp" && stat in this.cardBonuses.person) {
+                            this.cardBonuses.person[stat as keyof typeof this.cardBonuses.person] += value as number;
                         }
                     }
                 }
             });
         },
 
-        addEffect(target: "person" | "mob", effect: {
-            type: string;
-            duration: number;
-            val: number;
-            sourceCard?: string;
-        }) {
-            this.activeEffects[target].push(effect);
+        addEffect(target: "person" | "mob", effect: { type: string; duration: number; val: number; sourceCard?: string; icon: string; }) {
+            this.activeEffects[target].push({
+                ...effect,
+                icon: effect.icon,
+            });
         },
 
         processEffects() {
@@ -419,6 +420,21 @@ export default defineComponent({
             this.addToLog(`Персонаж атакует и наносит ${damage} урона!`);
             this.showActionText("mob", `-${damage}`, "dmg");
 
+            // @ts-ignore
+            this.choices.forEach(choice => {
+                if (choice?.bonus?.bleed) {
+                    const bleedValue = choice.bonus.bleed;
+                    this.addEffect("mob", {
+                        type: "bleed",
+                        duration: 3,
+                        val: bleedValue,
+                        sourceCard: choice.name,
+                        icon: choice.icon
+                    });
+                    this.addToLog(`У моба началось кровотечение (${bleedValue} урона за ход)`);
+                }
+            });
+
             await this.playAnimationSequence("game__person--attack2", "game__mob--hurt", damage);
 
             if (this.baseStats.mob.currentHp <= 0) {
@@ -454,6 +470,8 @@ export default defineComponent({
         onDragStart(event: DragEvent, cardIndex: number) {
             if (this.selectedCards >= this.maxSelectedCards) return;
             if (this.useCardIndices.includes(cardIndex)) return;
+            const card = this.levelCards[cardIndex];
+            if (card.manaCost > this.baseStats.person.currentMp) return;
             if (event.dataTransfer) {
                 event.dataTransfer.setData("text/plain", cardIndex.toString());
                 event.dataTransfer.effectAllowed = "move";
@@ -473,20 +491,35 @@ export default defineComponent({
             // Проверяем, не была ли карта уже выбрана
             if (this.useCardIndices.includes(parsedIndex)) return;
 
+            const card = this.levelCards[parsedIndex];
+            if (card.manaCost > this.baseStats.person.currentMp) return; // Проверяем ману
+            const previousCard = this.choices[choiceIndex];
+
             const hadCardBefore = !!this.choices[choiceIndex];
-            this.choices[choiceIndex] = this.levelCards[parsedIndex];
+            this.choices[choiceIndex] = card;
 
             if (!hadCardBefore && this.choices[choiceIndex]) {
                 this.selectedCards++;
                 this.useCardIndices.push(parsedIndex);
+                this.baseStats.person.currentMp -= card.manaCost;
             } else if (hadCardBefore && !this.choices[choiceIndex]) {
                 this.selectedCards--;
+                // Возвращаем ману за предыдущую карту
+                if (previousCard) {
+                    this.baseStats.person.currentMp += previousCard.manaCost;
+                } else if (hadCardBefore && this.choices[choiceIndex]) {
+                    // Если заменили карту, возвращаем ману за старую и вычитаем за новую
+                    if (previousCard) {
+                        this.baseStats.person.currentMp += previousCard.manaCost;
+                    }
+                    this.baseStats.person.currentMp -= card.manaCost;
+                }
             }
         },
 
         // Вспомогательные методы
         async changeCards() {
-            if (this.isAnimating || this.selectedCards < this.maxSelectedCards) return;
+            if (this.isAnimating) return;
             this.isAnimating = true;
             this.applyCardBonuses();
 
@@ -612,11 +645,24 @@ export default defineComponent({
                     <div class="game__battle-item" v-for="(log, index) in battleLog" :key="index">{{ log }}</div>
                 </div>
             </div>
-            <div class="health-bar">
-                HP: {{ baseStats.person.currentHp }}/{{ maxHp("person") }}
-            </div>
-            <div class="health-bar">
-                HP: {{ baseStats.mob.currentHp }}/{{ maxHp("mob") }}
+            <div class="game__buffs buffs">
+                <div class="buffs__person">
+                    <div class="buffs__buff" v-for="(effect, index) in activeEffects.person" :key="'person-effect-' + index">
+                        <nuxt-img class="buffs__image" :src="`/images/pages/game/${effect.icon}`"
+                                  alt="Декоративное изображение" />
+                        <span class="buffs__counter">{{effect.duration}}</span>
+                    </div>
+                    HP: {{ baseStats.person.currentHp }}/{{ maxHp("person") }}
+                    MP: {{ baseStats.person.currentMp }}/{{ maxMp("person") }}
+                </div>
+                <div class="buffs__mob">
+                    <div class="buffs__buff" v-for="(effect, index) in activeEffects.mob" :key="'mob-effect-' + index">
+                        <nuxt-img class="buffs__image" :src="`/images/pages/game/${effect.icon}`"
+                                  alt="Декоративное изображение" />
+                        <span class="buffs__counter">{{effect.duration}}</span>
+                    </div>
+                    HP: {{ baseStats.mob.currentHp }}/{{ maxHp("mob") }}
+                </div>
             </div>
             <div class="game__actions game-actions">
                 <div
@@ -626,6 +672,7 @@ export default defineComponent({
                          messages.person.type === 'dmg' ? 'game-actions__action--dmg' : '',
                           messages.person.type === 'death' ? 'game-actions__action--death' : '',
                           messages.person.type === 'heal' ? 'game-actions__action--heal' : '',
+                          messages.person.type === 'mana-restore' ? 'game-actions__action--mana' : '',
                            'game-actions__action game-actions__person'
                            ]">
                     {{ messages.person.message }}
@@ -690,6 +737,10 @@ export default defineComponent({
                     <div class="card-game__name">{{ card.name }}</div>
                     <div class="card-game__type">{{ card.type }}</div>
                     <div class="card-game__description">{{ card.description }}</div>
+                    <div class="card-game__mana">
+                        <nuxt-icon class="card-game__icon-mana" name="stats/mana"/>
+                        {{ card.manaCost }}
+                    </div>
                 </div>
             </div>
             <div class="game__counts">

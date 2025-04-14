@@ -23,6 +23,11 @@
     animation-name: fadeOut;
 }
 
+.game-actions__action--mana {
+    color: var(--blue1);
+    animation-name: fadeOutUp;
+}
+
 .game-actions__action--dmg {
     color: var(--orange1);
     animation-name: fadeOutUp;
