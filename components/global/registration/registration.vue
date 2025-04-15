@@ -48,7 +48,7 @@ export default defineComponent({
                 <input class="registration__input" v-model="form.password" type="password" autocomplete="false" placeholder="Пароль"/>
             </div>
             <div class="registration__buttons">
-                <button class="registration__button button button--md" type="submit">Создать пользователя</button>
+                <button class="registration__button button button--metal" type="submit">Создать пользователя</button>
             </div>
             <div v-if="formError">пользователь существует</div>
         </form>
@@ -56,5 +56,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "registration";
+@use "registration";
 </style>

@@ -26,6 +26,7 @@ export default defineComponent({
         characteristic: "first" as string,
         currentHp: 1 as number,
         currentMana: 1 as number,
+        isMageActive: false as boolean,
     }),
     computed: {
         physicalDmg() {
@@ -117,7 +118,24 @@ export default defineComponent({
             video && video.pause();
         },
         physicAttack() {
-            this.$emit("physicsAttack", this.physicalDmg);
+            this.$emit("physicsAttack", {
+                name: "attack",
+                rusName: "Физическая атака",
+                dmg: this.physicalDmg,
+                effect: ""
+            });
+        },
+        onToggleMage(): void {
+            this.isMageActive = !this.isMageActive;
+        },
+        mageAttack(value: any) {
+            this.$emit("magicAttack", value)
+        },
+        onToggleElixirs() {
+
+        },
+        onElixirs() {
+
         },
         receiveDamage(power: any) {
             this.currentHp -= power;
@@ -185,6 +203,12 @@ export default defineComponent({
                 </div>
                 <div class="characteristic__tabs">
                     <button
+                        :class="[characteristic === 'main' ? 'active' : '', 'characteristic__tab button button--tab']"
+                        type="button"
+                        @click="onChangeTab('main')">
+                        Основные&nbsp;показатели
+                    </button>
+                    <button
                         :class="[characteristic === 'first' ? 'active' : '', 'characteristic__tab button button--tab']"
                         type="button"
                         @click="onChangeTab('first')">
@@ -197,43 +221,7 @@ export default defineComponent({
                         Вторичные&nbsp;характеристики
                     </button>
                 </div>
-                <div class="characteristic__content" v-if="characteristic === 'first'">
-                    <h3 class="characteristic__subtitle characteristic__subtitle--centered h3">Характеристики</h3>
-                    <ul class="characteristic__main list">
-                        <li class="characteristic__item">
-                            <div class="characteristic__name">Сила</div>
-                            <div class="characteristic__value">{{userCharacteristics.str}}</div>
-                        </li>
-                        <li class="characteristic__item">
-                            <div class="characteristic__name">Ловкость</div>
-                            <div class="characteristic__value">{{userCharacteristics.agi}}</div>
-                        </li>
-                        <li class="characteristic__item">
-                            <div class="characteristic__name">Выносливость</div>
-                            <div class="characteristic__value">{{userCharacteristics.vit}}</div>
-                        </li>
-                        <li class="characteristic__item">
-                            <div class="characteristic__name">Меткость</div>
-                            <div class="characteristic__value">{{userCharacteristics.acc}}</div>
-                        </li>
-                        <li class="characteristic__item">
-                            <div class="characteristic__name">Интелект</div>
-                            <div class="characteristic__value">{{userCharacteristics.int}}</div>
-                        </li>
-                        <li class="characteristic__item">
-                            <div class="characteristic__name">Скорость</div>
-                            <div class="characteristic__value">{{userCharacteristics.spd}}</div>
-                        </li>
-                        <li class="characteristic__item">
-                            <div class="characteristic__name">Удача</div>
-                            <div class="characteristic__value">{{userCharacteristics.luc}}</div>
-                        </li>
-                        <li class="characteristic__item">
-                            <div class="characteristic__name">Защита</div>
-                            <div class="characteristic__value">{{userCharacteristics.def}}</div>
-                        </li>
-                    </ul>
-                    <h3 class="characteristic__subtitle characteristic__subtitle--centered h3">Основные показатели</h3>
+                <div class="characteristic__content" v-if="characteristic === 'main'">
                     <ul class="characteristic__stats list">
                         <li class="characteristic__stat">
                             <div class="characteristic__name">Макс. здоровье</div>
@@ -274,6 +262,43 @@ export default defineComponent({
                         <li class="characteristic__stat">
                             <div class="characteristic__name">Шанс попадания</div>
                             <div class="characteristic__value">{{hitChance}} %</div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="characteristic__content" v-if="characteristic === 'first'">
+
+                    <ul class="characteristic__main list">
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Сила</div>
+                            <div class="characteristic__value">{{userCharacteristics.str}}</div>
+                        </li>
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Ловкость</div>
+                            <div class="characteristic__value">{{userCharacteristics.agi}}</div>
+                        </li>
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Выносливость</div>
+                            <div class="characteristic__value">{{userCharacteristics.vit}}</div>
+                        </li>
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Меткость</div>
+                            <div class="characteristic__value">{{userCharacteristics.acc}}</div>
+                        </li>
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Интелект</div>
+                            <div class="characteristic__value">{{userCharacteristics.int}}</div>
+                        </li>
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Скорость</div>
+                            <div class="characteristic__value">{{userCharacteristics.spd}}</div>
+                        </li>
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Удача</div>
+                            <div class="characteristic__value">{{userCharacteristics.luc}}</div>
+                        </li>
+                        <li class="characteristic__item">
+                            <div class="characteristic__name">Защита</div>
+                            <div class="characteristic__value">{{userCharacteristics.def}}</div>
                         </li>
                     </ul>
                 </div>
@@ -332,13 +357,19 @@ export default defineComponent({
             </div>
         </div>
         <div class="person__attack" v-if="!isVisibleCharacteristics">
-            <button class="person__button button button--metal person__button--attack" type="button" @click="physicAttack">Атака</button>
+            <button class="person__button button button--metal" type="button" @click="onToggleElixirs">Использовать эликсиры</button>
+            <div class="person__magic person-elixirs"></div>
+            <button class="person__button button person__button--attack" type="button" @click="physicAttack">
+                <img class="person__icon" src="/images/components/physical/attack.jpg" alt="Декоративное изображение">
+            </button>
+            <button class="person__button button button--metal" type="button" @click="onToggleMage">Магическая атака</button>
+            <PersonMagicInventory v-if="isMageActive" @onChoiceMagic="mageAttack($event)"/>
         </div>
     </div>
 </template>
 
 <style scoped lang="scss">
-@import "person";
-@import "characteristic";
-@import "fight";
+@use "person";
+@use "characteristic";
+@use "fight";
 </style>

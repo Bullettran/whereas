@@ -14,7 +14,7 @@ export default defineComponent({
                 time: "1 час",
                 value: "mining",
             }
-        }
+        } as any
     },
     methods: {
         onChoice(val: any):void {
@@ -52,5 +52,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "card";
+@use "card";
 </style>

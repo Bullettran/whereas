@@ -20,7 +20,9 @@ export default defineNuxtConfig({
         //https://nuxt.com/modules/pinia-plugin-persistedstate
         "pinia-plugin-persistedstate/nuxt",
         //https://nuxt.com/modules/auth-utils
-        "nuxt-auth-utils"
+        "nuxt-auth-utils",
+        //https://primevue.org/nuxt
+        "@primevue/nuxt-module"
     ],
     css: [
         "./assets/scss/base/colors.css",
@@ -33,7 +35,7 @@ export default defineNuxtConfig({
         css: {
             preprocessorOptions: {
                 scss: {
-                    additionalData: "@import \"./assets/scss/helpers/_helpers.scss\";",
+                    additionalData: '@use "./assets/scss/helpers/_helpers.scss" as *;',
                 },
             },
         },

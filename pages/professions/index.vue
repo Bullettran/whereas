@@ -29,5 +29,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "assets/scss/pages/professions/styles";
+@use "assets/scss/pages/professions/styles";
 </style>

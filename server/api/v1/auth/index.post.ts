@@ -38,7 +38,5 @@ export default defineEventHandler(async (event: any) => {
         createdAt: Date.now(),
     });
 
-    console.log(session);
-
     return session;
 });

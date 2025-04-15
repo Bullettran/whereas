@@ -17,5 +17,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "dynamic-title";
+@use "dynamic-title";
 </style>

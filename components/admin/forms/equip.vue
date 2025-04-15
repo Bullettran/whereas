@@ -305,5 +305,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "styles";
+@use "styles";
 </style>

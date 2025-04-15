@@ -32,10 +32,12 @@ export default defineComponent({
     }),
     methods: {
         getDmgValue(target: any, value: any) {
+            console.log(target);
+            console.log(value);
             const targetChar = this.$refs[target];
             if (targetChar) {
                 //@ts-ignore
-                targetChar.receiveDamage(value);
+                targetChar.receiveDamage(value.dmg);
             }
         },
         mobAttack() {
@@ -80,6 +82,7 @@ export default defineComponent({
                         ref="person"
                         :isVisibleCharacteristics="false"
                         @physicsAttack="getDmgValue('mob', $event)"
+                        @magicAttack="getDmgValue('mob', $event)"
                     />
                 </div>
                 <div class="detail__mobs">
@@ -101,5 +104,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "assets/scss/pages/travel/id/styles";
+@use "assets/scss/pages/travel/id/styles";
 </style>

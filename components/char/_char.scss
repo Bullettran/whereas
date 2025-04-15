@@ -1,0 +1,74 @@
+.char {
+    background: url("/images/components/char/frame.svg") 0 0 no-repeat;
+    display: flex;
+    grid-column-gap: 8px;
+    position: relative;
+    width: 200px;
+    height: 150px;
+    margin-top: -54px;
+    margin-left: -24px;
+}
+
+.char__button {
+    position: absolute;
+    height: 64px;
+    width: 64px;
+    top: 43px;
+    right: 40px;
+}
+
+.char__image {
+    height: 64px;
+    width: 64px;
+    display: block;
+    max-width: 100%;
+}
+
+.char__health {
+    display: flex;
+    flex-direction: column;
+    grid-row-gap: 1px;
+    position: absolute;
+    bottom: 26px;
+    left: 102px;
+}
+
+.char__wrap {
+    position: relative;
+}
+
+.char__hp {
+    width: 52px;
+    height: 9px;
+    background: var(--black1);
+}
+
+:deep(.char__hp .p-progressbar-value) {
+    background: linear-gradient(90deg, rgba(85, 4, 4) 0%, rgba(128, 21, 21) 100%);
+}
+
+.char__mp {
+    width: 52px;
+    height: 9px;
+    background: var(--black1);
+}
+
+:deep(.char__mp .p-progressbar-value) {
+    background: linear-gradient(90deg, rgba(0, 17, 115) 0%, rgba(0, 26, 173) 100%);
+}
+
+.char__description {
+    display: none;
+}
+
+.char__wrap:hover .char__description {
+    display: block;
+    background: var(--white);
+    padding: 4px;
+    border-radius: 8px;
+    color: var(--black1);
+    position: absolute;
+    top: 0;
+    left: calc(100% + 10px);
+    z-index: 10;
+}

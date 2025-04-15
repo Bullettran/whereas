@@ -45,5 +45,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "assets/scss/pages/admin/styles";
+@use "assets/scss/pages/admin/styles";
 </style>

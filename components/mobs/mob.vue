@@ -113,5 +113,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "mob";
+@use "mob";
 </style>

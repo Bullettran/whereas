@@ -49,7 +49,6 @@ export default defineComponent({
 
 <template>
     <div class="start">
-<!--        <button @click="test" style="color: white;">test</button>-->
         <div class="start__container container">
             <DyncamicTitle/>
             <div class="start__buttons" v-if="loggedIn && isVisibleButtons">
@@ -88,14 +87,14 @@ export default defineComponent({
             </div>
         </div>
     </div>
-    <Modal id="auth">
+    <Modal size="sm" id="auth">
         <Auth/>
     </Modal>
-    <Modal id="registration">
+    <Modal size="sm" id="registration">
         <Registration/>
     </Modal>
 </template>
 
 <style lang="scss" scoped>
-@import "assets/scss/pages/index/styles";
+@use "assets/scss/pages/index/styles";
 </style>

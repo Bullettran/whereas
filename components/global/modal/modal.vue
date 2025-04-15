@@ -1,12 +1,19 @@
 <script lang="ts">
 export default defineComponent({
-    name: "Modal"
+    name: "Modal",
+    props: {
+        size: {
+            type: String,
+            required: false,
+            default: ""
+        }
+    }
 })
 </script>
 
 <template>
     <div class="modal fade">
-        <div class="modal-dialog">
+        <div :class="`modal-dialog modal-dialog--${size}`">
             <button class="modal-dialog__button modal-dialog__button--close button" type="button"
                     data-bs-dismiss="modal" aria-label="Закрыть">
                 <nuxt-icon class="modal-dialog__icon modal-dialog__icon--close" name="global/close" />
@@ -17,5 +24,5 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-@import "modal";
+@use "modal";
 </style>

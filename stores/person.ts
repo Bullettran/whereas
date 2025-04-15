@@ -11,18 +11,20 @@ export const usePersonState = defineStore({
         image: "" as string,
         isSelectedSpecies: false,
         isAdmin: true,
+        currentExp: 4,
+        freeCount: 0,
+        currentHp: 5,
+        currentMp: 5,
         characteristic: {
-            physicalDmg: 0,
-            mageDmg: 0,
-            physicalDef: 0,
-            mageDef: 0,
-            maxHp: 0,
-            maxMana: 0,
-            speed: 0,
-            dodge: 0,
-            criticalDmg: 0,
-            hitChance: 0
-        }
+            str: 10,
+            def: 0,
+            luc: 0,
+            spd: 0,
+            int: 0,
+            acc: 0,
+            vit: 0,
+            agi: 0,
+        },
     }) as any,
     getters: {
         getLogin: (state: any) => {
@@ -61,6 +63,13 @@ export const usePersonState = defineStore({
         },
         setCharacteristic(val: object): void {
             Object.assign(this.characteristic, val);
+        },
+        setValChars(val: number, type: string): void {
+            this.characteristic[type] = this.characteristic[type] + val;
+        },
+        setUpLevel() {
+            this.level += 1;
+            this.freeCount += 1;
         },
         clearStore() {
             // @ts-ignore
