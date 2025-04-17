@@ -266,85 +266,296 @@
 }
 
 @keyframes mob-idle {
-    0% { background-position: 0 0; } /* Кадр 1 */
-    25% { background-position: -81px 0; } /* Кадр 1 */
-    50% { background-position: -162px 0; } /* Кадр 1 */
-    75% { background-position: -243px 0; } /* Кадр 1 */
-    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+    0% {
+        background-position: 0 0;
+    }
+    /* Кадр 1 */
+    25% {
+        background-position: -81px 0;
+    }
+    /* Кадр 1 */
+    50% {
+        background-position: -162px 0;
+    }
+    /* Кадр 1 */
+    75% {
+        background-position: -243px 0;
+    }
+    /* Кадр 1 */
+    100% {
+        background-position: 0 0;
+    }
+    /* Возвращаемся к первому кадру */
 }
 
 @keyframes mob-hurt {
-    0% { background-position: 0 0; } /* Кадр 1 */
-    25% { background-position: -81px 0; }
-    50% { background-position: -162px 0; }
-    75% { background-position: -243px 0; }
-    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+    0% {
+        background-position: 0 0;
+    }
+    /* Кадр 1 */
+    25% {
+        background-position: -81px 0;
+    }
+    50% {
+        background-position: -162px 0;
+    }
+    75% {
+        background-position: -243px 0;
+    }
+    100% {
+        background-position: 0 0;
+    }
+    /* Возвращаемся к первому кадру */
 }
 
 @keyframes mob-attack {
-    0% { background-position: 0 0; }
-    14% { background-position: -81px 0; }
-    28% { background-position: -162px 0; }
-    42% { background-position: -243px 0; }
-    56% { background-position: -324px 0; }
-    70% { background-position: -405px 0; }
-    84% { background-position: -486px 0; }
-    100% { background-position: 0 0; }
+    0% {
+        background-position: 0 0;
+    }
+    14% {
+        background-position: -81px 0;
+    }
+    28% {
+        background-position: -162px 0;
+    }
+    42% {
+        background-position: -243px 0;
+    }
+    56% {
+        background-position: -324px 0;
+    }
+    70% {
+        background-position: -405px 0;
+    }
+    84% {
+        background-position: -486px 0;
+    }
+    100% {
+        background-position: 0 0;
+    }
 }
 
 @keyframes mob-death {
-    0% { background-position: 0 0; }
-    14% { background-position: -81px 0; }
-    28% { background-position: -162px 0; }
-    42% { background-position: -243px 0; }
-    56% { background-position: -324px 0; }
-    70% { background-position: -405px 0; }
-    84% { background-position: -486px 0; }
-    100% { background-position: -486px 0; }
+    0% {
+        background-position: 0 0;
+    }
+    14% {
+        background-position: -81px 0;
+    }
+    28% {
+        background-position: -162px 0;
+    }
+    42% {
+        background-position: -243px 0;
+    }
+    56% {
+        background-position: -324px 0;
+    }
+    70% {
+        background-position: -405px 0;
+    }
+    84% {
+        background-position: -486px 0;
+    }
+    100% {
+        background-position: -486px 0;
+    }
 }
 
 @keyframes idle {
-    0% { background-position: 0 0; } /* Кадр 1 */
-    16.5% { background-position: -288px 0; } /* Кадр 2 */
-    25% { background-position: -576px 0; } /* Кадр 3 */
-    37.5% { background-position: -864px 0; } /* Кадр 4 */
-    50% { background-position: -1152px 0; } /* Кадр 5 */
-    62.5% { background-position: -1440px 0; } /* Кадр 6 */
-    75% { background-position: -1728px 0; } /* Кадр 7 */
-    87.5% { background-position: -2016px 0; } /* Кадр 8 */
-    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+    0% {
+        background-position: 0 0;
+    }
+    /* Кадр 1 */
+    16.5% {
+        background-position: -288px 0;
+    }
+    /* Кадр 2 */
+    25% {
+        background-position: -576px 0;
+    }
+    /* Кадр 3 */
+    37.5% {
+        background-position: -864px 0;
+    }
+    /* Кадр 4 */
+    50% {
+        background-position: -1152px 0;
+    }
+    /* Кадр 5 */
+    62.5% {
+        background-position: -1440px 0;
+    }
+    /* Кадр 6 */
+    75% {
+        background-position: -1728px 0;
+    }
+    /* Кадр 7 */
+    87.5% {
+        background-position: -2016px 0;
+    }
+    /* Кадр 8 */
+    100% {
+        background-position: 0 0;
+    }
+    /* Возвращаемся к первому кадру */
 }
 
 @keyframes hurt {
-    0% { background-position: 0 0; } /* Кадр 1 */
-    14.28% { background-position: -288px 0; } /* Кадр 2 */
-    28.56% { background-position: -576px 0; } /* Кадр 3 */
-    42.84% { background-position: -864px 0; } /* Кадр 4 */
-    57.12% { background-position: -1152px 0; } /* Кадр 5 */
-    71.4% { background-position: -1440px 0; } /* Кадр 6 */
-    85.68% { background-position: -1728px 0; } /* Кадр 7 */
-    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+    0% {
+        background-position: 0 0;
+    }
+    /* Кадр 1 */
+    14.28% {
+        background-position: -288px 0;
+    }
+    /* Кадр 2 */
+    28.56% {
+        background-position: -576px 0;
+    }
+    /* Кадр 3 */
+    42.84% {
+        background-position: -864px 0;
+    }
+    /* Кадр 4 */
+    57.12% {
+        background-position: -1152px 0;
+    }
+    /* Кадр 5 */
+    71.4% {
+        background-position: -1440px 0;
+    }
+    /* Кадр 6 */
+    85.68% {
+        background-position: -1728px 0;
+    }
+    /* Кадр 7 */
+    100% {
+        background-position: 0 0;
+    }
+    /* Возвращаемся к первому кадру */
 }
 
 @keyframes death {
-    0% { background-position: 0 0; } /* Кадр 1 */
-    14.28% { background-position: -288px 0; } /* Кадр 2 */
-    28.56% { background-position: -576px 0; } /* Кадр 3 */
-    42.84% { background-position: -864px 0; } /* Кадр 4 */
-    57.12% { background-position: -1152px 0; } /* Кадр 5 */
-    71.4% { background-position: -1440px 0; } /* Кадр 6 */
-    85.68% { background-position: -1728px 0; } /* Кадр 7 */
-    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+    0% {
+        background-position: 0 0;
+    }
+    /* Кадр 1 */
+    14.28% {
+        background-position: -288px 0;
+    }
+    /* Кадр 2 */
+    28.56% {
+        background-position: -576px 0;
+    }
+    /* Кадр 3 */
+    42.84% {
+        background-position: -864px 0;
+    }
+    /* Кадр 4 */
+    57.12% {
+        background-position: -1152px 0;
+    }
+    /* Кадр 5 */
+    71.4% {
+        background-position: -1440px 0;
+    }
+    /* Кадр 6 */
+    85.68% {
+        background-position: -1728px 0;
+    }
+    /* Кадр 7 */
+    100% {
+        background-position: 0 0;
+    }
+    /* Возвращаемся к первому кадру */
 }
 
 @keyframes attack1 {
-    0% { background-position: 0 0; } /* Кадр 1 */
-    16.5% { background-position: -288px 0; } /* Кадр 2 */
-    25% { background-position: -576px 0; } /* Кадр 3 */
-    37.5% { background-position: -864px 0; } /* Кадр 4 */
-    50% { background-position: -1152px 0; } /* Кадр 5 */
-    62.5% { background-position: -1440px 0; } /* Кадр 6 */
-    75% { background-position: -1728px 0; } /* Кадр 7 */
-    87.5% { background-position: -2016px 0; } /* Кадр 8 */
-    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+    0% {
+        background-position: 0 0;
+    }
+    /* Кадр 1 */
+    16.5% {
+        background-position: -288px 0;
+    }
+    /* Кадр 2 */
+    25% {
+        background-position: -576px 0;
+    }
+    /* Кадр 3 */
+    37.5% {
+        background-position: -864px 0;
+    }
+    /* Кадр 4 */
+    50% {
+        background-position: -1152px 0;
+    }
+    /* Кадр 5 */
+    62.5% {
+        background-position: -1440px 0;
+    }
+    /* Кадр 6 */
+    75% {
+        background-position: -1728px 0;
+    }
+    /* Кадр 7 */
+    87.5% {
+        background-position: -2016px 0;
+    }
+    /* Кадр 8 */
+    100% {
+        background-position: 0 0;
+    }
+    /* Возвращаемся к первому кадру */
+}
+
+.game__choice--combo {
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 2px solid;
+        border-radius: 4px;
+        animation: pulse 1.5s infinite;
+    }
+}
+
+.game__choice--critical {
+    &::after {
+        border-color: #ff4757;
+        box-shadow: 0 0 10px #ff4757;
+    }
+}
+
+.game__choice--hit {
+    &::after {
+        border-color: #2ed573;
+        box-shadow: 0 0 10px #2ed573;
+    }
+}
+
+.game__choice--attack {
+    &::after {
+        border-color: #ffa502;
+        box-shadow: 0 0 10px #ffa502;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.7;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.7;
+    }
 }

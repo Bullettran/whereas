@@ -223,12 +223,12 @@ export default defineComponent({
         baseStats: {
             person: {
                 currentHp: 8000,
-                currentMp: 10,
+                currentMp: 20,
                 str: 5,
                 def: 10,
                 luc: 10,
                 spd: 10,
-                int: 10,
+                int: 40,
                 acc: 80,
                 vit: 80000,
                 agi: 10,
@@ -268,6 +268,11 @@ export default defineComponent({
             turnKey: 0,
         },
         turnCount: 1,
+        COMBO_TYPES: {
+            CRITICAL: "critical",
+            HIT_CHANCE: "hitChance",
+            ATTACK: "attack",
+        },
     }),
     mounted() {
         this.initCards();
@@ -312,6 +317,33 @@ export default defineComponent({
         isAttackDisabled(): boolean {
             return this.isAnimating;
         },
+        activeCombos() {
+            const lines = [
+                { indices: [0, 3, 6], type: this.COMBO_TYPES.CRITICAL },    // 1-4-7
+                { indices: [1, 4, 7], type: this.COMBO_TYPES.HIT_CHANCE },  // 2-5-8
+                { indices: [2, 5, 8], type: this.COMBO_TYPES.ATTACK }      // 3-6-9
+            ];
+
+            return lines.filter(line =>
+                line.indices.every(index => this.choices[index] !== null)
+            ).map(line => line.type);
+        },
+
+        comboIndices() {
+            const indices = new Set<number>();
+
+            if (this.activeCombos.includes(this.COMBO_TYPES.CRITICAL)) {
+                [0, 3, 6].forEach(index => indices.add(index));
+            }
+            if (this.activeCombos.includes(this.COMBO_TYPES.HIT_CHANCE)) {
+                [1, 4, 7].forEach(index => indices.add(index));
+            }
+            if (this.activeCombos.includes(this.COMBO_TYPES.ATTACK)) {
+                [2, 5, 8].forEach(index => indices.add(index));
+            }
+
+            return Array.from(indices);
+        }
     },
     methods: {
         // Получение значения статы с учетом бонусов
@@ -427,6 +459,23 @@ export default defineComponent({
         // Применение бонусов карт
         applyCardBonuses() {
             this.resetCardBonuses();
+
+            this.activeCombos.forEach(combo => {
+                switch (combo) {
+                    case this.COMBO_TYPES.CRITICAL:
+                        this.cardBonuses.person.luc += 1; // Увеличиваем критический урон
+                        this.addToLog("Активирована комбинация: Критический урон +5%!");
+                        break;
+                    case this.COMBO_TYPES.HIT_CHANCE:
+                        this.cardBonuses.person.acc += 1; // Увеличиваем шанс попадания
+                        this.addToLog("Активирована комбинация: Шанс попадания +5%!");
+                        break;
+                    case this.COMBO_TYPES.ATTACK:
+                        this.cardBonuses.person.str += 1; // Увеличиваем атаку
+                        this.addToLog("Активирована комбинация: Атака +5%!");
+                        break;
+                }
+            });
 
             this.choices.forEach((choice) => {
                 if (!choice) return;
@@ -694,6 +743,17 @@ export default defineComponent({
             }
         },
 
+        isInCombo(index: number) {
+            return this.comboIndices.includes(index);
+        },
+
+        getComboType(index: number) {
+            if ([0, 3, 6].includes(index)) return this.COMBO_TYPES.CRITICAL;
+            if ([1, 4, 7].includes(index)) return this.COMBO_TYPES.HIT_CHANCE;
+            if ([2, 5, 8].includes(index)) return this.COMBO_TYPES.ATTACK;
+            return null;
+        },
+
         // Сброс карты
         onDrop(event: DragEvent, choiceIndex: number) {
             event.preventDefault();
@@ -709,9 +769,15 @@ export default defineComponent({
 
             const card = this.levelCards[parsedIndex];
             if (card.manaCost > this.baseStats.person.currentMp) return;
-            const previousCard = this.choices[choiceIndex];
 
+            // Проверяем, не пытаемся ли мы переместить карту в тот же слот
+            if (this.choices[choiceIndex] && this.useCardIndices[choiceIndex] === parsedIndex) {
+                return;
+            }
+
+            const previousCard = this.choices[choiceIndex];
             const hadCardBefore = !!this.choices[choiceIndex];
+
             this.choices[choiceIndex] = card;
 
             if (!hadCardBefore && this.choices[choiceIndex]) {
@@ -728,6 +794,13 @@ export default defineComponent({
                     this.baseStats.person.currentMp += previousCard.manaCost;
                 }
                 this.baseStats.person.currentMp -= card.manaCost;
+            }
+
+            if (hadCardBefore) {
+                const prevIndex = this.useCardIndices.indexOf(parsedIndex);
+                if (prevIndex !== -1) {
+                    this.useCardIndices.splice(prevIndex, 1);
+                }
             }
         },
 
@@ -866,7 +939,8 @@ export default defineComponent({
             </div>
             <div class="game__buffs buffs">
                 <div class="buffs__person">
-                    <div class="buffs__buff" v-for="(effect, index) in activeEffects.person" :key="'person-effect-' + index">
+                    <div class="buffs__buff" v-for="(effect, index) in activeEffects.person"
+                         :key="'person-effect-' + index">
                         <nuxt-img class="buffs__image" :src="`/images/pages/game/${effect.icon}`" alt="Эффект" />
                         <span class="buffs__counter">{{ effect.duration }}</span>
                     </div>
@@ -921,17 +995,26 @@ export default defineComponent({
                             @drop="onDrop($event, choiceIndex)"
                             v-for="(choice, choiceIndex) in choices"
                             :key="choiceIndex"
+                            :class="{
+            'game__choice--combo': isInCombo(choiceIndex),
+            'game__choice--critical': isInCombo(choiceIndex) && getComboType(choiceIndex) === COMBO_TYPES.CRITICAL,
+            'game__choice--hit': isInCombo(choiceIndex) && getComboType(choiceIndex) === COMBO_TYPES.HIT_CHANCE,
+            'game__choice--attack': isInCombo(choiceIndex) && getComboType(choiceIndex) === COMBO_TYPES.ATTACK
+        }"
+
                         >
                             <div v-if="choice" class="game__picture">
                                 <div class="game__stats">+{{ choice.count }}</div>
                                 <div class="game__wrapper">
-                                    <nuxt-img :src="`/images/pages/game/${choice.icon}`" :alt="choice.name" class="game__icon" />
+                                    <nuxt-img :src="`/images/pages/game/${choice.icon}`" :alt="choice.name"
+                                              class="game__icon" />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="game__attacks">
-                        <button class="game__attack button button--metal" @click="changeCards" :disabled="isAttackDisabled">
+                        <button class="game__attack button button--metal" @click="changeCards"
+                                :disabled="isAttackDisabled">
                             Атака
                         </button>
                     </div>
