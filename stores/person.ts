@@ -6,7 +6,6 @@ export const usePersonState = defineStore("person", {
         isSelectedSpecies: false as boolean,
         isAdmin: false as boolean,
         character: null as any,
-
     }),
     actions: {
         setLogin(username: string) {

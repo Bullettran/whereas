@@ -57,6 +57,7 @@ export default defineComponent({
                 const userId = userData.user.id;
 
                 // Отправляем данные в таблицу characters
+                // todo(kharal): расширить базу для lvl exp energy
                 const { error } = await this.$supabase.from("characters").upsert({
                     id: userId,
                     species: this.selectedSpecies.value,
