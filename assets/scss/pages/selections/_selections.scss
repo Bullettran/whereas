@@ -89,6 +89,11 @@
     margin-top: -120px;
 }
 
+.selections__description {
+    font-size: 20px;
+    line-height: 24px;
+}
+
 .selections__stats, .selections__description, .selections__professions {
     margin-bottom: 24px;
 }
@@ -119,5 +124,22 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-column-gap: 24px;
+}
+
+.selections__items {
+    margin-bottom: 12px;
+}
+
+.selections__item-name {
+    font-size: 20px;
+    line-height: 24px;
+    display: inline-block;
+}
+
+.selections__item-val {
+    font-size: 20px;
+    line-height: 24px;
+    display: inline;
+    margin-left: 4px;
 }
 

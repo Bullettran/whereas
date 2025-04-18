@@ -24,13 +24,13 @@ export default defineComponent({
             spd: 1,
             luc: 1,
             def: 1,
-        }
+        },
     }) as any,
     methods: {
         onChoice(type: string): void {
             this.currentChoice = type;
         },
-        onSelect(val: string, name: string, characteristics: object): void {
+        onSelect(val: string, name: string, characteristics: object, updates: object): void {
             this.selectedSpecies.value = val;
             this.selectedSpecies.name = name;
             this.characteristics = characteristics;
@@ -38,7 +38,7 @@ export default defineComponent({
 
         async onAccept(): Promise<any> {
             // todo(kharal): Добавить запрос для отправки на бек
-        }
+        },
     },
 });
 </script>
@@ -149,19 +149,33 @@ export default defineComponent({
                             </li>
                         </ul>
                     </div>
+                    <h2 class="selections__subtitle">Описание</h2>
                     <div class="selections__description">
-                        <h2 class="selections__subtitle">Описание</h2>
-                        Ветви деревьев как будто согнулись, чтобы поклониться ему. Рейнджер с ловкостью, сравнимой лишь
-                        с легким дуновением ветра, движется среди лесных просторов. Его стрелы, вырезанные из древесины
-                        древних деревьев, находят свою цель с беспрецедентной точностью. Ушной лук, украшенный символами
-                        охоты, всегда готов к действию. Замаскированный под листву, он следит за врагами издалека,
-                        используя свои знания природы, чтобы обойти даже самые трудные преграды.
+                        Рейнджер — неуловимый следопыт, чьи стрелы находят цель даже в кромешной тьме. Его дом — леса и
+                        равнины, где он сливается с природой, подобно тени. Соколиный глаз и лёгкий шаг позволяют ему
+                        наносить точечные удары, оставаясь незамеченным. Каждый выстрел — это вызов судьбе, а каждый
+                        промах — лишь повод для новой охоты.
                     </div>
                     <div class="selections__professions">
                         <h2 class="selections__subtitle">Улучшения</h2>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt, ea impedit incidunt
-                        perspiciatis quam unde. Accusamus aliquam atque dolorum ipsam labore magni optio, recusandae
-                        repellendus sapiente unde. Id, laudantium, rerum!
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Прогресс:</strong></div>
+                            <div class="selections__item-val">+1 к меткости каждые 5 уровней.</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Особый слот:</strong></div>
+                            <div class="selections__item-val">+1 к меткости.</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Склонность:</strong></div>
+                            <div class="selections__item-val">Приготовление пищи (бонусы к созданию блюд).</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Главный навык:</strong></div>
+                            <div class="selections__item-val">Смертельный выстрел — карточка, дающая +100% к шансу
+                                попадания на 1 ход.
+                            </div>
+                        </div>
                     </div>
                     <div class="selections__buttons">
                         <button class="selections__button button--metal" type="button" @click="onSelect('ranger', 'Рейнджер', {
@@ -173,6 +187,26 @@ export default defineComponent({
                         spd: 2,
                         luc: 2,
                         def: 1,
+                        },
+                        {
+                            progress: {
+                                name: 'acc',
+                                val: 1
+                            },
+                            slot: {
+                                name: 'acc',
+                                val: 1
+                            },
+                            card: {
+                                name: 'Смертельный выстрел',
+                                type: 'Атака',
+                                rare: 'standard',
+                                description: '+100% к шансу попадания на 1 ход',
+                                count: 2,
+                                icon: 'todo(kharal)',
+                                bonus: { hitChance: true },
+                                manaCost: 3,
+                            },
                         })">Подтвердить
                         </button>
                     </div>
@@ -215,20 +249,31 @@ export default defineComponent({
                             </li>
                         </ul>
                     </div>
+                    <h2 class="selections__subtitle">Описание</h2>
                     <div class="selections__description">
-                        <h2 class="selections__subtitle">Описание</h2>
-                        Крушитель — могучий гном с коричневыми, как земля, волосами и бородой, которая словно обвивает
-                        его массивный туловище. Его молот, выковыливаемый из магического металла, ярко сверкает, когда
-                        он выступает против врагов. С каждым ударом молота в землю проникает энергия гор, живущих в его
-                        предках. На его доспехах выбиты знаки клана, а глаза сверкают, полные решимости и готовности
-                        выстоять защиту своего народа. Крушитель не знает страха и лишь смеется в лицо смерти, когда
-                        между ним и врагами встает бой.
+                        Крушитель — несокрушимая гора, чей молот дробит скалы и врагов с равной лёгкостью. Его броня,
+                        выкованная в недрах вулканов, отражает любой удар, а сердце пылает яростью клана. Он стоит на
+                        передовой, принимая на себя главный удар, чтобы защитить союзников. Каждый бой для него —
+                        проверка стойкости.
                     </div>
                     <div class="selections__professions">
                         <h2 class="selections__subtitle">Улучшения</h2>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt, ea impedit incidunt
-                        perspiciatis quam unde. Accusamus aliquam atque dolorum ipsam labore magni optio, recusandae
-                        repellendus sapiente unde. Id, laudantium, rerum!
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Прогресс:</strong></div>
+                            <div class="selections__item-val">+1 к выносливости каждые 5 уровней.</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Особый слот:</strong></div>
+                            <div class="selections__item-val">+2 к защите</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Склонность:</strong></div>
+                            <div class="selections__item-val">Кузнец (бонусы к созданию брони).</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Главный навык:</strong></div>
+                            <div class="selections__item-val">Нерушимая стена — карточка, дающая +100% защиты на 1 ход.</div>
+                        </div>
                     </div>
                     <div class="selections__buttons">
                         <button class="selections__button button--metal" type="button" @click="onSelect('wrecker', 'Крушитель', {
@@ -240,7 +285,28 @@ export default defineComponent({
                         spd: 1,
                         luc: 2,
                         def: 2,
-                        })">Подтвердить</button>
+                        },
+                        {
+                            progress: {
+                                name: 'vit',
+                                val: 1
+                            },
+                            slot: {
+                                name: 'def',
+                                val: 2
+                            },
+                            card: {
+                                name: 'Нерушимая стена',
+                                type: 'Защита',
+                                rare: 'standard',
+                                description: '+100% защиты на 1 ход',
+                                count: 2,
+                                icon: 'defence.png',
+                                bonus: { immune: true },
+                                manaCost: 3,
+                            },
+                        })">Подтвердить
+                        </button>
                     </div>
                 </div>
                 <div class="selections__info" v-if="currentChoice === 'arcanist'">
@@ -281,20 +347,31 @@ export default defineComponent({
                             </li>
                         </ul>
                     </div>
+                    <h2 class="selections__subtitle">Описание</h2>
                     <div class="selections__description">
-                        <h2 class="selections__subtitle">Описание</h2>
-                        Арканист — мастер магии, облаченный в длинный, искрящийся мантии, на плечах у него лежит книга
-                        заклинаний, написанная древними рунами. Словно ниточка света, он плетет заклинания, вызывая
-                        энергии стихий из глубин Вселенной. Его глаза, полные знаний и таинств, словно окутаны тайным
-                        светом. Он научился преобразовывать элементы природы и манипулировать ими по своему желанию, но
-                        знает, что любая магия требует жертвы. Арканист стремится сохранить баланс между силами света и
-                        тьмы, часто жертвуя собственным временем в поисках утраченных тайн.
+                        Арканист — повелитель тайн, чьи заклинания сотканы из нитей эфира. Его разум — лабиринт знаний,
+                        а посох — проводник магической силы. Он манипулирует стихиями, замораживая врагов или испепеляя
+                        их одним движением руки. Но за каждым заклинанием стоит цена, которую он готов заплатить ради
+                        истины.
                     </div>
                     <div class="selections__professions">
                         <h2 class="selections__subtitle">Улучшения</h2>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt, ea impedit incidunt
-                        perspiciatis quam unde. Accusamus aliquam atque dolorum ipsam labore magni optio, recusandae
-                        repellendus sapiente unde. Id, laudantium, rerum!
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Прогресс:</strong></div>
+                            <div class="selections__item-val">+1 к интеллекту каждые 5 уровней.</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Особый слот:</strong></div>
+                            <div class="selections__item-val">+1 к регенерации маны.</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Склонность:</strong></div>
+                            <div class="selections__item-val">Портняжное дело (бонусы к созданию ткани).</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Главный навык:</strong></div>
+                            <div class="selections__item-val">Ледяной плен — карточка, замораживающая противника на 1 ход.</div>
+                        </div>
                     </div>
                     <div class="selections__buttons">
                         <button class="selections__button button--metal" type="button" @click="onSelect('arcanist', 'Арканист', {
@@ -306,7 +383,28 @@ export default defineComponent({
                         spd: 2,
                         luc: 1,
                         def: 1,
-                        })">Подтвердить</button>
+                        },
+                        {
+                            progress: {
+                                name: 'int',
+                                val: 1
+                            },
+                            slot: {
+                                name: 'mana',
+                                val: 1
+                            },
+                            card: {
+                                name: 'Ледяной плен',
+                                type: 'Магия',
+                                rare: 'standard',
+                                description: 'заморозка противника на 1 ход',
+                                count: 2,
+                                icon: '',
+                                bonus: { freeze: true },
+                                manaCost: 3,
+                            },
+                        })">Подтвердить
+                        </button>
                     </div>
                 </div>
                 <div class="selections__info" v-if="currentChoice === 'monk'">
@@ -347,20 +445,30 @@ export default defineComponent({
                             </li>
                         </ul>
                     </div>
+                    <h2 class="selections__subtitle">Описание</h2>
                     <div class="selections__description">
-                        <h2 class="selections__subtitle">Описание</h2>
-                        Монах, подобно водной глади, спокоен и уравновешен. Его простая одежда позволяет ему свободно
-                        двигаться, а каждая поза говорит о его глубоких знаниях боевых искусств. Он использует свою
-                        физическую силу, элементы ци и духовное спокойствие, чтобы достигать недостижимого. С каждым
-                        ударом и каждым кувырком, он притягивает внимание как магниты, завершая свои движения с грацией
-                        и точно несет послание о мире и гармонии. Он стремится не к победе, а к просветлению, уничтожая
-                        зло, но лишь если это действительно необходимо.
+                        Монах — воплощение гармонии, чья душа чиста, как горный родник. Его кулаки — оружие, закалённое
+                        годами тренировок, а разум — щит от соблазнов. Он движется с грацией ветра, уклоняясь от ударов
+                        и очищая мир от скверны. Для монаха бой — это путь к просветлению, а не к разрушению.
                     </div>
                     <div class="selections__professions">
                         <h2 class="selections__subtitle">Улучшения</h2>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt, ea impedit incidunt
-                        perspiciatis quam unde. Accusamus aliquam atque dolorum ipsam labore magni optio, recusandae
-                        repellendus sapiente unde. Id, laudantium, rerum!
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Прогресс:</strong></div>
+                            <div class="selections__item-val">+1 к удаче каждые 5 уровней.</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Особый слот:</strong></div>
+                            <div class="selections__item-val">+2% к шансу уворота.</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Склонность:</strong></div>
+                            <div class="selections__item-val">Алхимия (бонусы к созданию зелий).</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Главный навык:</strong></div>
+                            <div class="selections__item-val">Чистота духа — карточка, снимающая все дебаффы с персонажа.</div>
+                        </div>
                     </div>
                     <div class="selections__buttons">
                         <button class="selections__button button--metal" type="button" @click="onSelect('monk', 'Монах', {
@@ -372,7 +480,28 @@ export default defineComponent({
                         spd: 2,
                         luc: 1,
                         def: 2,
-                        })">Подтвердить</button>
+                        },
+                        {
+                            progress: {
+                                name: 'luc',
+                                val: 1
+                            },
+                            slot: {
+                                name: 'dodge',
+                                val: 2
+                            },
+                            card: {
+                                name: 'Чистота духа',
+                                type: 'Защита',
+                                rare: 'standard',
+                                description: 'Снимает дебаффы с персонажа',
+                                count: 2,
+                                icon: '',
+                                bonus: { dispel: true },
+                                manaCost: 3,
+                            },
+                        })">Подтвердить
+                        </button>
                     </div>
                 </div>
                 <div class="selections__info" v-if="currentChoice === 'inferno'">
@@ -413,20 +542,30 @@ export default defineComponent({
                             </li>
                         </ul>
                     </div>
+                    <h2 class="selections__subtitle">Описание</h2>
                     <div class="selections__description">
-                        <h2 class="selections__subtitle">Описание</h2>
-                        Инферно — гордый воин, его меч, закаленный в пламени, словно дышит огнем. Тепла от его
-                        присутствия достаточно, чтобы разжечь пламя страха в сердцах врагов. Его доспехи словно плавлены
-                        самим солнцем, сверкают и излучают тепло. Каждый его шаг – это вызов состязающимся, каждой
-                        атакой он устраняет болезни этого мира. Инферно — не только воин; он носитель справедливости,
-                        защитник слабых и одержимый желанием искоренить зло из своего королевства. Его дух яркий как
-                        пламя, а сердце горит желанием защищать родину.
+                        Инферно — пламя войны, чей меч горит жарче солнца. Его атаки подобны огненному шторму,
+                        оставляющему за собой лишь пепел. Доспехи, пропитанные магией вулканов, делают его неуязвимым
+                        для слабых. Он сражается не ради славы, а ради искры, что пылает в его душе.
                     </div>
                     <div class="selections__professions">
                         <h2 class="selections__subtitle">Улучшения</h2>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt, ea impedit incidunt
-                        perspiciatis quam unde. Accusamus aliquam atque dolorum ipsam labore magni optio, recusandae
-                        repellendus sapiente unde. Id, laudantium, rerum!
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Прогресс:</strong></div>
+                            <div class="selections__item-val">+1 к силе каждые 5 уровней.</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Особый слот:</strong></div>
+                            <div class="selections__item-val">+2 к силе.</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Склонность:</strong></div>
+                            <div class="selections__item-val">Металлургия (бонусы к созданию оружия).</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Главный навык:</strong></div>
+                            <div class="selections__item-val">Лечение души — карточка восстанавливающая здоровье за 1 ход.</div>
+                        </div>
                     </div>
                     <div class="selections__buttons">
                         <button class="selections__button button--metal" type="button" @click="onSelect('inferno', 'Инферно', {
@@ -438,7 +577,28 @@ export default defineComponent({
                         spd: 1,
                         luc: 1,
                         def: 2,
-                        })">Подтвердить</button>
+                        },
+                        {
+                            progress: {
+                                name: 'str',
+                                val: 1
+                            },
+                            slot: {
+                                name: 'str',
+                                val: 2
+                            },
+                            card: {
+                                name: 'Лечение души',
+                                type: 'Бафф',
+                                rare: 'standard',
+                                description: 'Восстанавливает здоровье за 1 ход',
+                                count: 2,
+                                icon: '',
+                                bonus: { regen: 1 },
+                                manaCost: 3,
+                            },
+                        })">Подтвердить
+                        </button>
                     </div>
                 </div>
                 <div class="selections__info" v-if="currentChoice === 'assasin'">
@@ -479,20 +639,30 @@ export default defineComponent({
                             </li>
                         </ul>
                     </div>
+                    <h2 class="selections__subtitle">Описание</h2>
                     <div class="selections__description">
-                        <h2 class="selections__subtitle">Описание</h2>
-                        Ассасин, как тень, проникает в самые темные уголки мира. Его поставленные на учет клинки,
-                        сверкающие в лунном свете, готовы к мгновенной расправе. Легкий и хладнокровный, он движется
-                        незаметно, словно ветер. Его одежда черная как самая ночь, а за плечами скрыта целая жизнь
-                        тайных операций и опасных встреч. В каждом его действии скрыта изысканная техника: он понимает,
-                        что истинный мастер не оставляет следов. Однако за его безжалостной маской скрывается взгляд, в
-                        котором можно обнаружить мрак, гармонирующий с преданностью своему делу.
+                        Ассасин — призрак ночи, чьи клинки шепчут о смерти. Он скользит в тенях, нанося смертельные
+                        удары, прежде чем враг успеет моргнуть. Его движения точны, как механизм часов, а глаза холодны,
+                        как сталь. Ассасин не знает пощады, но его сердце хранит тайну, которую никто не раскроет.
                     </div>
                     <div class="selections__professions">
                         <h2 class="selections__subtitle">Улучшения</h2>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt, ea impedit incidunt
-                        perspiciatis quam unde. Accusamus aliquam atque dolorum ipsam labore magni optio, recusandae
-                        repellendus sapiente unde. Id, laudantium, rerum!
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Прогресс:</strong></div>
+                            <div class="selections__item-val">+1 к ловкости каждые 5 уровней.</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Особый слот:</strong></div>
+                            <div class="selections__item-val">+2% к шансу критического удара.</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Склонность:</strong></div>
+                            <div class="selections__item-val">Собирательство (бонусы к поиску редких ресурсов).</div>
+                        </div>
+                        <div class="selections__items">
+                            <div class="selections__item-name"><strong>Главный навык:</strong></div>
+                            <div class="selections__item-val">Кровавый танец — карточка, вызывающая кровотечение у противника на 1 ход.</div>
+                        </div>
                     </div>
                     <div class="selections__buttons">
                         <button class="selections__button button--metal" type="button" @click="onSelect('assasin', 'Ассасин', {
@@ -504,7 +674,28 @@ export default defineComponent({
                         spd: 2,
                         luc: 1,
                         def: 1,
-                        })">Подтвердить</button>
+                        },
+                        {
+                            progress: {
+                                name: 'agi',
+                                val: 1
+                            },
+                            slot: {
+                                name: 'crit',
+                                val: 2
+                            },
+                            card: {
+                                name: 'Кровавый танец',
+                                type: 'Атака',
+                                rare: 'standard',
+                                description: 'Вызывает кровотечение у противника на 1 ход',
+                                count: 2,
+                                icon: '',
+                                bonus: { bleed: 1 },
+                                manaCost: 3,
+                            },
+                        })">Подтвердить
+                        </button>
                     </div>
                 </div>
             </div>
