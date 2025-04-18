@@ -59,7 +59,6 @@ export default defineComponent({
                 },
             },
         ]);
-        // const { data } = await supabase.from("test").select();
 
         return {
             char,

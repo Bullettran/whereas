@@ -117,8 +117,7 @@ export default defineComponent({
                         luc: 3,
                         def: 1,
                      })"
-                     data-bs-toggle="modal"
-                     data-bs-target="#accept-species"
+                     data-bs-toggle="modal" data-bs-target="#accept-species"
                      @mouseover="onStartVideo('human-woman')"
                      @mouseout="onPauseVideo('human-woman')"
                 >
@@ -1126,7 +1125,6 @@ export default defineComponent({
                 <button class="accept__button button button--metal" type="button" data-bs-dismiss="modal">Отменить
                 </button>
             </div>
-
         </div>
     </Modal>
 </template>

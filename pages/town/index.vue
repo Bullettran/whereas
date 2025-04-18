@@ -3,13 +3,17 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
     name: "Index",
+    methods: {
+
+    },
 });
 </script>
 
 <template>
     <div class="town">
         <div class="town__container container">
-            <Char />
+<!--            todo(kharal):char-->
+<!--            <Char />-->
             <div class="town__person town__person--arcanist town__person--idle"></div>
             <ul class="town__items list">
                 <li class="town__item">

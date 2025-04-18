@@ -932,7 +932,8 @@ export default defineComponent({
     <div class="game">
         <div class="game__container container">
             <div class="game__logs">
-                <Char />
+                <!--            todo(kharal):char-->
+<!--                <Char />-->
                 <div class="game__battle-log">
                     <div class="game__battle-item" v-for="(log, index) in battleLog" :key="index">{{ log }}</div>
                 </div>

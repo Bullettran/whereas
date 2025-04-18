@@ -14,7 +14,7 @@ export default defineComponent({
         selectedSpecies: {
             value: "",
             name: "",
-        },
+        } as any,
         characteristics: {
             str: 1,
             agi: 1,
@@ -25,6 +25,8 @@ export default defineComponent({
             luc: 1,
             def: 1,
         },
+        upgrades: {},
+        errorMessage: "" as string,
     }) as any,
     methods: {
         onChoice(type: string): void {
@@ -34,10 +36,47 @@ export default defineComponent({
             this.selectedSpecies.value = val;
             this.selectedSpecies.name = name;
             this.characteristics = characteristics;
+            this.upgrades = updates;
         },
 
         async onAccept(): Promise<any> {
-            // todo(kharal): Добавить запрос для отправки на бек
+            this.errorMessage = "";
+
+            if (!this.selectedSpecies.value) {
+                this.errorMessage = "Выберите персонажа";
+                return;
+            }
+            try {
+                const { data: userData, error: authError } = await this.$supabase.auth.getUser();
+
+                if (authError || !userData.user) {
+                    this.errorMessage = "Ошибка: пользователь не авторизован";
+                    return;
+                }
+
+                const userId = userData.user.id;
+
+                // Отправляем данные в таблицу characters
+                const { error } = await this.$supabase.from("characters").upsert({
+                    id: userId,
+                    species: this.selectedSpecies.value,
+                    species_name: this.selectedSpecies.name,
+                    characteristics: this.characteristics,
+                    upgrades: this.upgrades,
+                });
+
+                if (error) {
+                    this.errorMessage = `Ошибка сохранения персонажа: ${error.message}`;
+                    console.error(error);
+                    return;
+                }
+
+                // Перенаправляем на другую страницу
+                this.$router.push('/town/'); // Замените на нужный маршрут
+            } catch (err) {
+                this.errorMessage = "Неизвестная ошибка. Попробуйте позже.";
+                console.error(err);
+            }
         },
     },
 });
@@ -178,7 +217,7 @@ export default defineComponent({
                         </div>
                     </div>
                     <div class="selections__buttons">
-                        <button class="selections__button button--metal" type="button" @click="onSelect('ranger', 'Рейнджер', {
+                        <button class="selections__button button--metal" data-bs-toggle="modal" data-bs-target="#accept-species"  type="button" @click="onSelect('ranger', 'Рейнджер', {
                         str: 1,
                         agi: 2,
                         vit: 1,
@@ -272,11 +311,13 @@ export default defineComponent({
                         </div>
                         <div class="selections__items">
                             <div class="selections__item-name"><strong>Главный навык:</strong></div>
-                            <div class="selections__item-val">Нерушимая стена — карточка, дающая +100% защиты на 1 ход.</div>
+                            <div class="selections__item-val">Нерушимая стена — карточка, дающая +100% защиты на 1
+                                ход.
+                            </div>
                         </div>
                     </div>
                     <div class="selections__buttons">
-                        <button class="selections__button button--metal" type="button" @click="onSelect('wrecker', 'Крушитель', {
+                        <button class="selections__button button--metal" data-bs-toggle="modal" data-bs-target="#accept-species"  type="button" @click="onSelect('wrecker', 'Крушитель', {
                         str: 3,
                         agi: 1,
                         vit: 2,
@@ -370,11 +411,13 @@ export default defineComponent({
                         </div>
                         <div class="selections__items">
                             <div class="selections__item-name"><strong>Главный навык:</strong></div>
-                            <div class="selections__item-val">Ледяной плен — карточка, замораживающая противника на 1 ход.</div>
+                            <div class="selections__item-val">Ледяной плен — карточка, замораживающая противника на 1
+                                ход.
+                            </div>
                         </div>
                     </div>
                     <div class="selections__buttons">
-                        <button class="selections__button button--metal" type="button" @click="onSelect('arcanist', 'Арканист', {
+                        <button class="selections__button button--metal" data-bs-toggle="modal" data-bs-target="#accept-species"  type="button" @click="onSelect('arcanist', 'Арканист', {
                         str: 1,
                         agi: 2,
                         vit: 1,
@@ -467,11 +510,13 @@ export default defineComponent({
                         </div>
                         <div class="selections__items">
                             <div class="selections__item-name"><strong>Главный навык:</strong></div>
-                            <div class="selections__item-val">Чистота духа — карточка, снимающая все дебаффы с персонажа.</div>
+                            <div class="selections__item-val">Чистота духа — карточка, снимающая все дебаффы с
+                                персонажа.
+                            </div>
                         </div>
                     </div>
                     <div class="selections__buttons">
-                        <button class="selections__button button--metal" type="button" @click="onSelect('monk', 'Монах', {
+                        <button class="selections__button button--metal" data-bs-toggle="modal" data-bs-target="#accept-species"  type="button" @click="onSelect('monk', 'Монах', {
                         str: 2,
                         agi: 2,
                         vit: 2,
@@ -564,11 +609,13 @@ export default defineComponent({
                         </div>
                         <div class="selections__items">
                             <div class="selections__item-name"><strong>Главный навык:</strong></div>
-                            <div class="selections__item-val">Лечение души — карточка восстанавливающая здоровье за 1 ход.</div>
+                            <div class="selections__item-val">Лечение души — карточка восстанавливающая здоровье за 1
+                                ход.
+                            </div>
                         </div>
                     </div>
                     <div class="selections__buttons">
-                        <button class="selections__button button--metal" type="button" @click="onSelect('inferno', 'Инферно', {
+                        <button class="selections__button button--metal" data-bs-toggle="modal" data-bs-target="#accept-species"  type="button" @click="onSelect('inferno', 'Инферно', {
                         str: 2,
                         agi: 2,
                         vit: 3,
@@ -661,11 +708,13 @@ export default defineComponent({
                         </div>
                         <div class="selections__items">
                             <div class="selections__item-name"><strong>Главный навык:</strong></div>
-                            <div class="selections__item-val">Кровавый танец — карточка, вызывающая кровотечение у противника на 1 ход.</div>
+                            <div class="selections__item-val">Кровавый танец — карточка, вызывающая кровотечение у
+                                противника на 1 ход.
+                            </div>
                         </div>
                     </div>
                     <div class="selections__buttons">
-                        <button class="selections__button button--metal" type="button" @click="onSelect('assasin', 'Ассасин', {
+                        <button class="selections__button button--metal" data-bs-toggle="modal" data-bs-target="#accept-species"  type="button" @click="onSelect('assasin', 'Ассасин', {
                         str: 1,
                         agi: 3,
                         vit: 1,
@@ -701,6 +750,16 @@ export default defineComponent({
             </div>
         </div>
     </div>
+    <Modal size="sm" id="accept-species">
+        <div class="accept">
+            <h2 class="accept__title h3">Вы выбрали расу: {{ selectedSpecies.name }}</h2>
+            <div class="accept__buttons">
+                <button class="accept__button button button--metal" type="button" @click="onAccept">Подвердить</button>
+                <button class="accept__button button button--metal" type="button" data-bs-dismiss="modal">Отменить
+                </button>
+            </div>
+        </div>
+    </Modal>
 </template>
 
 <style scoped lang="scss">
