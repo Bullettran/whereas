@@ -6,7 +6,6 @@ import { usePersonState } from "~/stores/person";
 export default defineComponent({
     name: "Char",
     async setup() {
-        // const supabase = createClient("https://qalibeksqgsabiiccnwf.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhbGliZWtzcWdzYWJpaWNjbndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1OTk1MDEsImV4cCI6MjA1OTE3NTUwMX0.U48U65ir4RoFwtICsqTbDIiyYfFNWlrqvc6F8F1aJ58")
         const char = usePersonState();
         const inventory = reactive([
             { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 20, type: "material", description: "Простая трава" },

@@ -43,6 +43,8 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             baseURL: "http://localhost:3000/",
+            supabaseUrl: "https://qalibeksqgsabiiccnwf.supabase.co",
+            supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhbGliZWtzcWdzYWJpaWNjbndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1OTk1MDEsImV4cCI6MjA1OTE3NTUwMX0.U48U65ir4RoFwtICsqTbDIiyYfFNWlrqvc6F8F1aJ58",
         },
     },
 })
