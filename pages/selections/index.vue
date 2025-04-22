@@ -8,6 +8,7 @@ export default defineComponent({
         definePageMeta({
             layout: "selection",
         });
+
     },
     data: () => ({
         currentChoice: null,
@@ -64,6 +65,13 @@ export default defineComponent({
                     species_name: this.selectedSpecies.name,
                     characteristics: this.characteristics,
                     upgrades: this.upgrades,
+                    game_stats: {
+                        freeCount: 0,
+                        currentExp: 0,
+                        level: 1,
+                        currentEnergy: 5,
+                        maxEnergy: 10,
+                    },
                 });
 
                 if (error) {
@@ -72,8 +80,12 @@ export default defineComponent({
                     return;
                 }
 
-                // Перенаправляем на другую страницу
-                this.$router.push('/town/'); // Замените на нужный маршрут
+                let button = document.querySelector(".accept__button--close");
+                if (button) {
+                    // @ts-ignore
+                    button.click();
+                }
+                this.$router.push("/town/");
             } catch (err) {
                 this.errorMessage = "Неизвестная ошибка. Попробуйте позже.";
                 console.error(err);
@@ -84,6 +96,7 @@ export default defineComponent({
 </script>
 
 <template>
+<!--    <BgSound />-->
     <div class="selections">
         <div class="selections__container container">
             <h1 class="selections__title">Выбор персонажа</h1>
@@ -218,7 +231,8 @@ export default defineComponent({
                         </div>
                     </div>
                     <div class="selections__buttons">
-                        <button class="selections__button button--metal" data-bs-toggle="modal" data-bs-target="#accept-species"  type="button" @click="onSelect('ranger', 'Рейнджер', {
+                        <button class="selections__button button--metal" data-bs-toggle="modal"
+                                data-bs-target="#accept-species" type="button" @click="onSelect('ranger', 'Рейнджер', {
                         str: 1,
                         agi: 2,
                         vit: 1,
@@ -318,7 +332,8 @@ export default defineComponent({
                         </div>
                     </div>
                     <div class="selections__buttons">
-                        <button class="selections__button button--metal" data-bs-toggle="modal" data-bs-target="#accept-species"  type="button" @click="onSelect('wrecker', 'Крушитель', {
+                        <button class="selections__button button--metal" data-bs-toggle="modal"
+                                data-bs-target="#accept-species" type="button" @click="onSelect('wrecker', 'Крушитель', {
                         str: 3,
                         agi: 1,
                         vit: 2,
@@ -418,7 +433,8 @@ export default defineComponent({
                         </div>
                     </div>
                     <div class="selections__buttons">
-                        <button class="selections__button button--metal" data-bs-toggle="modal" data-bs-target="#accept-species"  type="button" @click="onSelect('arcanist', 'Арканист', {
+                        <button class="selections__button button--metal" data-bs-toggle="modal"
+                                data-bs-target="#accept-species" type="button" @click="onSelect('arcanist', 'Арканист', {
                         str: 1,
                         agi: 2,
                         vit: 1,
@@ -517,7 +533,8 @@ export default defineComponent({
                         </div>
                     </div>
                     <div class="selections__buttons">
-                        <button class="selections__button button--metal" data-bs-toggle="modal" data-bs-target="#accept-species"  type="button" @click="onSelect('monk', 'Монах', {
+                        <button class="selections__button button--metal" data-bs-toggle="modal"
+                                data-bs-target="#accept-species" type="button" @click="onSelect('monk', 'Монах', {
                         str: 2,
                         agi: 2,
                         vit: 2,
@@ -616,7 +633,8 @@ export default defineComponent({
                         </div>
                     </div>
                     <div class="selections__buttons">
-                        <button class="selections__button button--metal" data-bs-toggle="modal" data-bs-target="#accept-species"  type="button" @click="onSelect('inferno', 'Инферно', {
+                        <button class="selections__button button--metal" data-bs-toggle="modal"
+                                data-bs-target="#accept-species" type="button" @click="onSelect('inferno', 'Инферно', {
                         str: 2,
                         agi: 2,
                         vit: 3,
@@ -715,7 +733,8 @@ export default defineComponent({
                         </div>
                     </div>
                     <div class="selections__buttons">
-                        <button class="selections__button button--metal" data-bs-toggle="modal" data-bs-target="#accept-species"  type="button" @click="onSelect('assasin', 'Ассасин', {
+                        <button class="selections__button button--metal" data-bs-toggle="modal"
+                                data-bs-target="#accept-species" type="button" @click="onSelect('assasin', 'Ассасин', {
                         str: 1,
                         agi: 3,
                         vit: 1,
@@ -756,7 +775,8 @@ export default defineComponent({
             <h2 class="accept__title h3">Вы выбрали расу: {{ selectedSpecies.name }}</h2>
             <div class="accept__buttons">
                 <button class="accept__button button button--metal" type="button" @click="onAccept">Подвердить</button>
-                <button class="accept__button button button--metal" type="button" data-bs-dismiss="modal">Отменить
+                <button class="accept__button accept__button--close button button--metal" type="button"
+                        data-bs-dismiss="modal">Отменить
                 </button>
             </div>
         </div>

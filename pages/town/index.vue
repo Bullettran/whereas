@@ -3,18 +3,65 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
     name: "Index",
+    // setup() {
+    //     const char = usePersonState();
+    //     return {
+    //         char
+    //     }
+    // },
+    data: () => ({
+        errorMessage: "",
+        species: "",
+        char: usePersonState()
+    }),
     methods: {
+        async fetchCharacter() {
+            try {
+                // Получаем текущего пользователя
+                const { data: userData, error: authError } = await this.$supabase.auth.getUser();
 
+                if (authError || !userData.user) {
+                    this.$router.push("/");
+                    return;
+                }
+
+                const userId = userData.user.id;
+
+                // Запрашиваем данные персонажа из таблицы characters
+                const { data, error } = await this.$supabase
+                    .from("characters")
+                    .select("*")
+                    .eq("id", userId)
+                    .single();
+
+                if (error) {
+                    this.errorMessage = `Ошибка загрузки персонажа: ${error.message}`;
+                    console.error(error);
+                    return;
+                }
+
+                if (data) {
+
+                    this.char.setCharacter(data);
+                    this.species = data.species;
+                }
+            } catch (err) {
+                this.errorMessage = "Неизвестная ошибка. Попробуйте позже.";
+                console.error(err);
+            }
+        },
     },
+    async created() {
+        await this.fetchCharacter();
+    }
 });
 </script>
 
 <template>
-    <div class="town">
+    <div class="town" v-cloak>
         <div class="town__container container">
-<!--            todo(kharal):char-->
-<!--            <Char />-->
-            <div class="town__person town__person--arcanist town__person--idle"></div>
+            <Char />
+            <div :class="`town__person town__person--${species ? species : char.character.species} town__person--idle`"></div>
             <ul class="town__items list">
                 <li class="town__item">
                     <nuxt-link class="town__link link link--white" to="/game/1" title="Отправиться в путешествие">

@@ -72,6 +72,7 @@ export default defineComponent({
     name: "Index",
     components: { Dice },
     setup() {
+        const char = usePersonState();
         // Карты игры
         // @ts-ignore
         const allCards: Card[] = reactive([
@@ -209,7 +210,7 @@ export default defineComponent({
             },
         ]);
 
-        return { allCards };
+        return { allCards, char };
     },
     data: () => ({
         levelCards: [] as Card[],
@@ -222,19 +223,19 @@ export default defineComponent({
         useCardIndices: [] as number[],
         baseStats: {
             person: {
-                currentHp: 8000,
-                currentMp: 20,
+                currentHp: 0,
+                currentMp: 0,
                 str: 5,
                 def: 10,
                 luc: 10,
                 spd: 10,
                 int: 40,
                 acc: 80,
-                vit: 80000,
+                vit: 2,
                 agi: 10,
             },
             mob: {
-                currentHp: 20,
+                currentHp: 10,
                 currentMp: 5,
                 str: 10,
                 def: 0,
@@ -242,7 +243,7 @@ export default defineComponent({
                 spd: 3,
                 int: 10,
                 acc: 10,
-                vit: 80,
+                vit: 20,
                 agi: 10,
             },
         } as { person: Stats; mob: Stats },
@@ -276,6 +277,16 @@ export default defineComponent({
     }),
     mounted() {
         this.initCards();
+        this.baseStats.person.str = this.char.character.characteristics.str;
+        this.baseStats.person.def = this.char.character.characteristics.def;
+        this.baseStats.person.luc = this.char.character.characteristics.luc;
+        this.baseStats.person.spd = this.char.character.characteristics.spd;
+        this.baseStats.person.int = this.char.character.characteristics.int;
+        this.baseStats.person.acc = this.char.character.characteristics.acc;
+        this.baseStats.person.vit = this.char.character.characteristics.vit;
+        this.baseStats.person.agi = this.char.character.characteristics.agi;
+        this.baseStats.person.currentHp = this.maxHp("person", 0);
+        this.baseStats.person.currentMp = this.maxMp("person", 0);
     },
     computed: {
         personStats(): Stats & {
@@ -365,7 +376,8 @@ export default defineComponent({
         // Максимальная мана
         maxMp(target: "person" | "mob", bonus: number = 0): number {
             const mp = 5;
-            const int = this.getStat(target, "int");
+            const int = Number(this.getStat(target, "int"));
+            console.log(mp + Math.floor(int / 2) + bonus);
             return mp + Math.floor(int / 2) + bonus;
         },
 
@@ -985,7 +997,7 @@ export default defineComponent({
             </div>
             <div class="game__window">
                 <div class="game__block game__block--person">
-                    <div class="game__person game__person--idle"></div>
+                    <div :class="`game__person game__person--${char.character.species} game__person--idle`"></div>
                 </div>
                 <div class="game__choices">
                     <div class="game__wrap">

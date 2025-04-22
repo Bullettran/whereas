@@ -121,98 +121,6 @@
     line-height: 22px;
 }
 
-.game__person {
-    background-image: url("/images/sprites/persons/arcanist/water_priestess_idle.svg");
-    background-repeat: no-repeat;
-    display: block;
-    height: 180px;
-    width: 288px;
-    transform: scale(4);
-}
-
-.game__person--idle {
-    animation: idle;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
-    background-repeat: no-repeat;
-    animation-timing-function: steps(1, end);
-    display: block;
-    height: 180px;
-    width: 288px;
-}
-
-.game__person--death {
-    background-image: url("/images/sprites/persons/arcanist/water_priestess_death.svg");
-    background-repeat: no-repeat;
-    animation: death;
-    animation-duration: 1s;
-    animation-iteration-count: 1;
-    animation-timing-function: steps(1, end);
-    display: block;
-    height: 180px;
-    width: 288px;
-}
-
-.game__person--hurt {
-    background-image: url("/images/sprites/persons/arcanist/water_priestess_hurt.svg");
-    background-repeat: no-repeat;
-    animation: hurt;
-    animation-duration: 1s;
-    animation-iteration-count: 1;
-    animation-timing-function: steps(1, end);
-    display: block;
-    height: 180px;
-    width: 288px;
-}
-
-.game__person--attack1 {
-    background-image: url("/images/sprites/persons/arcanist/water_priestess_atack1.svg");
-    background-repeat: no-repeat;
-    animation: attack1;
-    animation-duration: 1s;
-    animation-iteration-count: 1;
-    animation-timing-function: steps(1, end);
-    display: block;
-    height: 180px;
-    width: 288px;
-}
-
-.game__person--attack2 {
-    background-image: url("/images/sprites/persons/arcanist/water_priestess_atack2.svg");
-    background-repeat: no-repeat;
-    animation: attack1;
-    animation-duration: 1s;
-    animation-iteration-count: 1;
-    animation-timing-function: steps(1, end);
-    display: block;
-    height: 180px;
-    width: 288px;
-}
-
-.game__person--attack3 {
-    background-image: url("/images/sprites/persons/arcanist/water_priestess_atack3.svg");
-    background-repeat: no-repeat;
-    animation: attack1;
-    animation-duration: 1s;
-    animation-iteration-count: 1;
-    animation-timing-function: steps(1, end);
-    display: block;
-    height: 180px;
-    width: 288px;
-}
-
-.game__person--special {
-    background-image: url("/images/sprites/persons/arcanist/water_priestess_special.svg");
-    background-repeat: no-repeat;
-    animation: attack1;
-    animation-duration: 1s;
-    animation-iteration-count: 1;
-    animation-timing-function: steps(1, end);
-    display: block;
-    height: 180px;
-    width: 288px;
-}
-
 .game__mob {
     background-image: url("/images/sprites/mobs/red-flying-demon/idle.png");
     background-repeat: no-repeat;
@@ -558,4 +466,564 @@
     100% {
         opacity: 0.7;
     }
+}
+
+.game__person--arcanist {
+    background-image: url("/images/sprites/persons/arcanist/water_priestess_idle.svg");
+    background-repeat: no-repeat;
+    display: block;
+    height: 180px;
+    width: 288px;
+    transform: scale(4);
+}
+
+.game__person--arcanist.game__person--idle {
+    animation: idle;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--arcanist.game__person--death {
+    background-image: url("/images/sprites/persons/arcanist/water_priestess_death.svg");
+    background-repeat: no-repeat;
+    animation: death;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--arcanist.game__person--hurt {
+    background-image: url("/images/sprites/persons/arcanist/water_priestess_hurt.svg");
+    background-repeat: no-repeat;
+    animation: hurt;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--arcanist.game__person--attack1 {
+    background-image: url("/images/sprites/persons/arcanist/water_priestess_atack1.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--arcanist.game__person--attack2 {
+    background-image: url("/images/sprites/persons/arcanist/water_priestess_atack2.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--arcanist.game__person--attack3 {
+    background-image: url("/images/sprites/persons/arcanist/water_priestess_atack3.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--arcanist.game__person--special {
+    background-image: url("/images/sprites/persons/arcanist/water_priestess_special.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--inferno {
+    background-image: url("/images/sprites/persons/inferno/fire_idle.svg");
+    background-repeat: no-repeat;
+    display: block;
+    height: 180px;
+    width: 288px;
+    transform: scale(4);
+}
+
+.game__person--inferno.game__person--idle {
+    animation: idle;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--inferno.game__person--death {
+    background-image: url("/images/sprites/persons/inferno/fire_death.svg");
+    background-repeat: no-repeat;
+    animation: death;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--inferno.game__person--hurt {
+    background-image: url("/images/sprites/persons/inferno/fire_hit.svg");
+    background-repeat: no-repeat;
+    animation: hurt;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--inferno.game__person--attack1 {
+    background-image: url("/images/sprites/persons/inferno/fire_atack1.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--inferno.game__person--attack2 {
+    background-image: url("/images/sprites/persons/inferno/fire_atack2.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--inferno.game__person--attack3 {
+    background-image: url("/images/sprites/persons/inferno/fire_atack3.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--inferno.game__person--special {
+    background-image: url("/images/sprites/persons/inferno/fire_speacial.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+// monk
+
+.game__person--monk {
+    background-image: url("/images/sprites/persons/monk/ground_monk_idle.svg");
+    background-repeat: no-repeat;
+    display: block;
+    height: 180px;
+    width: 288px;
+    transform: scale(4);
+}
+
+.game__person--monk.game__person--idle {
+    animation: idle;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--monk.game__person--death {
+    background-image: url("/images/sprites/persons/monk/ground_monk_death.svg");
+    background-repeat: no-repeat;
+    animation: death;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--monk.game__person--hurt {
+    background-image: url("/images/sprites/persons/monk/ground_monk_hit.svg");
+    background-repeat: no-repeat;
+    animation: hurt;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--monk.game__person--attack1 {
+    background-image: url("/images/sprites/persons/monk/ground_monk_atack1.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--monk.game__person--attack2 {
+    background-image: url("/images/sprites/persons/monk/ground_monk_atack2.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--monk.game__person--attack3 {
+    background-image: url("/images/sprites/persons/monk/ground_monk_atack3.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--monk.game__person--special {
+    background-image: url("/images/sprites/persons/monk/ground_monk_special.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+// assasin
+
+.game__person--assasin {
+    background-image: url("/images/sprites/persons/assasin/metal_bladekeeper_idle.svg");
+    background-repeat: no-repeat;
+    display: block;
+    height: 180px;
+    width: 288px;
+    transform: scale(4);
+}
+
+.game__person--assasin.game__person--idle {
+    animation: idle;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--assasin.game__person--death {
+    background-image: url("/images/sprites/persons/assasin/metal_bladekeeper_death.svg");
+    background-repeat: no-repeat;
+    animation: death;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--assasin.game__person--hurt {
+    background-image: url("/images/sprites/persons/assasin/metal_bladekeeper_hit.svg");
+    background-repeat: no-repeat;
+    animation: hurt;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--assasin.game__person--attack1 {
+    background-image: url("/images/sprites/persons/assasin/metal_bladekeeper_atack.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--assasin.game__person--attack2 {
+    background-image: url("/images/sprites/persons/assasin/metal_bladekeeper_atack2.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--assasin.game__person--attack3 {
+    background-image: url("/images/sprites/persons/assasin/metal_bladekeeper_atack3.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--assasin.game__person--special {
+    background-image: url("/images/sprites/persons/assasin/metal_bladekeeper_special.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+//ranger
+
+.game__person--ranger {
+    background-image: url("/images/sprites/persons/ranger/ranger_idle.svg");
+    background-repeat: no-repeat;
+    display: block;
+    height: 180px;
+    width: 288px;
+    transform: scale(4);
+}
+
+.game__person--ranger.game__person--idle {
+    animation: idle;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--ranger.game__person--death {
+    background-image: url("/images/sprites/persons/ranger/ranger_death.svg");
+    background-repeat: no-repeat;
+    animation: death;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--ranger.game__person--hurt {
+    background-image: url("/images/sprites/persons/ranger/ranger_hit.svg");
+    background-repeat: no-repeat;
+    animation: hurt;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--ranger.game__person--attack1 {
+    background-image: url("/images/sprites/persons/ranger/ranger_atack1.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--ranger.game__person--attack2 {
+    background-image: url("/images/sprites/persons/ranger/ranger_atack2.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--ranger.game__person--attack3 {
+    background-image: url("/images/sprites/persons/ranger/ranger_atack3.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--ranger.game__person--special {
+    background-image: url("/images/sprites/persons/ranger/ranger_special.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+// wrecker
+
+.game__person--wrecker {
+    background-image: url("/images/sprites/persons/wrecker/crystal_mauler_idle.svg");
+    background-repeat: no-repeat;
+    display: block;
+    height: 180px;
+    width: 288px;
+    transform: scale(4);
+}
+
+.game__person--wrecker.game__person--idle {
+    animation: idle;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--wrecker.game__person--death {
+    background-image: url("/images/sprites/persons/wrecker/crystal_mauler_death.svg");
+    background-repeat: no-repeat;
+    animation: death;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--wrecker.game__person--hurt {
+    background-image: url("/images/sprites/persons/wrecker/crystal_mauler_hit.svg");
+    background-repeat: no-repeat;
+    animation: hurt;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--wrecker.game__person--attack1 {
+    background-image: url("/images/sprites/persons/wrecker/crystal_mauler_atack1.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--wrecker.game__person--attack2 {
+    background-image: url("/images/sprites/persons/wrecker/crystal_mauler_atack2.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--wrecker.game__person--attack3 {
+    background-image: url("/images/sprites/persons/wrecker/crystal_mauler_atack3.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
+}
+
+.game__person--wrecker.game__person--special {
+    background-image: url("/images/sprites/persons/wrecker/crystal_mauler_special.svg");
+    background-repeat: no-repeat;
+    animation: attack1;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 180px;
+    width: 288px;
 }

@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     },
     app: {
         head: {
+            title: "Whereas"
         },
     },
     modules: [
