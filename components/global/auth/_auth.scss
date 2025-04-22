@@ -39,7 +39,7 @@
 }
 
 .auth__buttons {
-    margin-top: 80px;
+    margin-top: 20px;
 }
 
 .auth__button {
@@ -48,4 +48,8 @@
 
 .auth__button:not(:last-child) {
     margin-bottom: 12px;
+}
+
+.auth__error {
+    color: var(--white);
 }

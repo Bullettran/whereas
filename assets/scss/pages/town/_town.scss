@@ -41,6 +41,26 @@
     background-repeat: no-repeat;
 }
 
+.town__person--assasin {
+    background-image: url("/images/sprites/persons/assasin/metal_bladekeeper_idle.svg");
+    background-repeat: no-repeat;
+}
+
+.town__person--inferno {
+    background-image: url("/images/sprites/persons/inferno/fire_idle.svg");
+    background-repeat: no-repeat;
+}
+
+.town__person--monk {
+    background-image: url("/images/sprites/persons/monk/ground_monk_idle.svg");
+    background-repeat: no-repeat;
+}
+
+.town__person--ranger {
+    background-image: url("/images/sprites/persons/ranger/ranger_idle.svg");
+    background-repeat: no-repeat;
+}
+
 .town__person--idle {
     animation: idle;
     animation-duration: 1s;

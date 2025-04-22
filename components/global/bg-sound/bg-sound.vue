@@ -20,7 +20,7 @@ export default defineComponent({
             }
         },
     },
-    created() {
+    mounted() {
         this.backgroundMusic = new Howl({
             src: ["/sounds/pages/town/main-theme.mp3"],
             loop: true,

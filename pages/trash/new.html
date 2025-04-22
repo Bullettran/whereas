@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dungeon Adventure</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="320" height="240"></canvas>
+<script>
+    // Основной игровой модуль
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Константы
+    const TILE_SIZE = 16; // Размер тайла 16x16
+    const VIEWPORT_WIDTH = 20; // Ширина камеры в тайлах (320 / 16 = 20)
+    const VIEWPORT_HEIGHT = 15; // Высота камеры в тайлах (240 / 16 = 15)
+    const MAP_WIDTH = 50; // Ширина карты в тайлах
+    const MAP_HEIGHT = 50; // Высота карты в тайлах
+
+    // Карта (0 - пол, 1 - стена)
+    const map = Array(MAP_HEIGHT).fill().map(() => Array(MAP_WIDTH).fill(0));
+    // Пример стен
+    for (let y = 0; y < MAP_HEIGHT; y++) {
+        for (let x = 0; x < MAP_WIDTH; x++) {
+            if (Math.random() < 0.2) map[y][x] = 1; // Случайные стены
+        }
+    }
+    map[1][1] = 0; // Начальная позиция игрока
+
+    // Игрок
+    const player = {
+        x: 1,
+        y: 1,
+        health: 100,
+        maxHealth: 100,
+        mana: 50,
+        maxMana: 50,
+        inventory: [],
+        equipment: { weapon: { name: 'Sword', damage: 10, range: 1 } },
+        speed: 0.1,
+    };
+
+    // Монстры
+    const monsters = [
+        { x: 5, y: 5, health: 50, damage: 5, type: 'goblin' },
+        { x: 10, y: 10, health: 50, damage: 5, type: 'goblin' },
+    ];
+
+    // Камера
+    const camera = {
+        x: 0,
+        y: 0,
+        update() {
+            this.x = Math.max(0, Math.min(player.x * TILE_SIZE - canvas.width / 2, MAP_WIDTH * TILE_SIZE - canvas.width));
+            this.y = Math.max(0, Math.min(player.y * TILE_SIZE - canvas.height / 2, MAP_HEIGHT * TILE_SIZE - canvas.height));
+        },
+    };
+
+    // Управление
+    const keys = {};
+    document.addEventListener('keydown', (e) => (keys[e.code] = true));
+    document.addEventListener('keyup', (e) => (keys[e.code] = false));
+
+    // Атака
+    document.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left + camera.x;
+        const mouseY = e.clientY - rect.top + camera.y;
+        const targetX = mouseX / TILE_SIZE;
+        const targetY = mouseY / TILE_SIZE;
+
+        // Ближний или дальний бой
+        const distance = Math.hypot(player.x - targetX, player.y - targetY);
+        if (distance <= player.equipment.weapon.range) {
+            attack(targetX, targetY);
+        } else if (player.mana >= 10) {
+            castSpell(targetX, targetY);
+        }
+    });
+
+    // Функция атаки
+    function attack(targetX, targetY) {
+        monsters.forEach((monster, index) => {
+            if (Math.floor(monster.x) === Math.floor(targetX) && Math.floor(monster.y) === Math.floor(targetY)) {
+                monster.health -= player.equipment.weapon.damage;
+                if (monster.health <= 0) {
+                    monsters.splice(index, 1); // Удаляем мертвого монстра
+                }
+            }
+        });
+    }
+
+    // Функция магии
+    function castSpell(targetX, targetY) {
+        player.mana -= 10;
+        monsters.forEach((monster, index) => {
+            const distance = Math.hypot(monster.x - targetX, monster.y - targetY);
+            if (distance < 2) {
+                monster.health -= 20; // Урон от заклинания
+                if (monster.health <= 0) {
+                    monsters.splice(index, 1);
+                }
+            }
+        });
+    }
+
+    // Обновление игры
+    function update() {
+        // Движение игрока
+        let dx = 0,
+            dy = 0;
+        if (keys['KeyW']) dy -= player.speed;
+        if (keys['KeyS']) dy += player.speed;
+        if (keys['KeyA']) dx -= player.speed;
+        if (keys['KeyD']) dx += player.speed;
+
+        // Проверка столкновений
+        const newX = player.x + dx;
+        const newY = player.y + dy;
+        if (
+            newX >= 0 &&
+            newX < MAP_WIDTH &&
+            newY >= 0 &&
+            newY < MAP_HEIGHT &&
+            map[Math.floor(newY)][Math.floor(newX)] === 0
+        ) {
+            player.x = newX;
+            player.y = newY;
+        }
+
+        // Обновление монстров
+        monsters.forEach((monster) => {
+            const dx = player.x - monster.x;
+            const dy = player.y - monster.y;
+            const distance = Math.hypot(dx, dy);
+            if (distance < 1) {
+                player.health -= monster.damage; // Монстр атакует игрока
+            } else if (distance < 5) {
+                monster.x += (dx / distance) * 0.05; // Монстр движется к игроку
+                monster.y += (dy / distance) * 0.05;
+            }
+        });
+
+        // Регенерация маны
+        player.mana = Math.min(player.mana + 0.1, player.maxMana);
+
+        // Обновление камеры
+        camera.update();
+    }
+
+    // Отрисовка
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Отрисовка карты
+        for (let y = 0; y < MAP_HEIGHT; y++) {
+            for (let x = 0; x < MAP_WIDTH; x++) {
+                const screenX = x * TILE_SIZE - camera.x;
+                const screenY = y * TILE_SIZE - camera.y;
+                if (
+                    screenX < -TILE_SIZE ||
+                    screenX > canvas.width ||
+                    screenY < -TILE_SIZE ||
+                    screenY > canvas.height
+                )
+                    continue;
+
+                ctx.fillStyle = map[y][x] === 1 ? '#555' : '#ddd';
+                ctx.fillRect(screenX, screenY, TILE_SIZE, TILE_SIZE);
+            }
+        }
+
+        // Отрисовка игрока
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(
+            player.x * TILE_SIZE - camera.x,
+            player.y * TILE_SIZE - camera.y,
+            TILE_SIZE,
+            TILE_SIZE
+        );
+
+        // Отрисовка монстров
+        ctx.fillStyle = 'red';
+        monsters.forEach((monster) => {
+            ctx.fillRect(
+                monster.x * TILE_SIZE - camera.x,
+                monster.y * TILE_SIZE - camera.y,
+                TILE_SIZE,
+                TILE_SIZE
+            );
+        });
+
+        // Отрисовка интерфейса
+        ctx.fillStyle = 'black';
+        ctx.font = '12px Arial';
+        ctx.fillText(`Health: ${player.health}/${player.maxHealth}`, 10, 20);
+        ctx.fillText(`Mana: ${Math.floor(player.mana)}/${player.maxMana}`, 10, 40);
+        ctx.fillText(`Weapon: ${player.equipment.weapon.name}`, 10, 60);
+    }
+
+    // Игровой цикл
+    function gameLoop() {
+        update();
+        draw();
+        requestAnimationFrame(gameLoop);
+    }
+
+    // Запуск игры
+    gameLoop();
+</script>
+</body>
+</html>

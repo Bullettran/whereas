@@ -6,7 +6,6 @@ import { usePersonState } from "~/stores/person";
 export default defineComponent({
     name: "Char",
     async setup() {
-        // const supabase = createClient("https://qalibeksqgsabiiccnwf.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhbGliZWtzcWdzYWJpaWNjbndmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1OTk1MDEsImV4cCI6MjA1OTE3NTUwMX0.U48U65ir4RoFwtICsqTbDIiyYfFNWlrqvc6F8F1aJ58")
         const char = usePersonState();
         const inventory = reactive([
             { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 20, type: "material", description: "Простая трава" },
@@ -60,7 +59,6 @@ export default defineComponent({
                 },
             },
         ]);
-        // const { data } = await supabase.from("test").select();
 
         return {
             char,
@@ -69,45 +67,45 @@ export default defineComponent({
     },
     methods: {
         onUpChars(val: number, type: string): void {
-            this.char.freeCount = this.char.freeCount - 1;
+            this.char.character.game_stats.freeCount = this.char.character.game_stats.freeCount - 1;
             this.char.setValChars(val, type);
         },
     },
     computed: {
         // Процент HP
         hpPercentage() {
-            return (this.char.currentHp / this.maxHp) * 100;
+            return (this.maxHp / this.maxHp) * 100;
         },
         // Процент MP
         mpPercentage() {
-            return (this.char.currentMp / this.maxMp) * 100;
+            return (this.maxMp / this.maxMp) * 100;
         },
         // Процент EXP
         expPercentage(): any {
-            const expNeeded = this.char.level * 10;
+            const expNeeded = this.char.character.game_stats.level * 10;
             // Если опыт превышает необходимый для уровня
-            if (this.char.currentExp >= expNeeded) {
-                const excessExp = this.char.currentExp - expNeeded;
+            if (this.char.character.game_stats.currentExp >= expNeeded) {
+                const excessExp = this.char.character.game_stats.currentExp - expNeeded;
                 this.char.setUpLevel();
-                this.char.currentExp = excessExp; // Переносим избыточный опыт
+                this.char.character.game_stats.currentExp = excessExp; // Переносим избыточный опыт
 
                 // Рекурсивно проверяем, не хватает ли избыточного опыта для следующего уровня
-                if (this.char.currentExp >= this.char.level * 10) {
+                if (this.char.character.game_stats.currentExp >= this.char.character.game_stats.level * 10) {
                     return this.expPercentage;
                 }
             }
-            return (this.char.currentExp / expNeeded) * 100;
+            return (this.char.character.game_stats.currentExp / expNeeded) * 100;
         },
         physicalDmg() {
             let dmg = 1;
-            let bonusStr = Math.floor(this.char.characteristic.str / 2);
-            let bonusAgi = Math.floor(this.char.characteristic.agi / 3);
+            let bonusStr = Math.floor(this.char.character.characteristics.str / 2);
+            let bonusAgi = Math.floor(this.char.character.characteristics.agi / 3);
             return dmg + bonusStr + bonusAgi;
         },
         physicalDef() {
             let def = 1;
-            let bonusDef = Math.floor(this.char.characteristic.def / 2);
-            let bonusStr = Math.floor(this.char.characteristic.str / 2);
+            let bonusDef = Math.floor(this.char.character.characteristics.def / 2);
+            let bonusStr = Math.floor(this.char.character.characteristics.str / 2);
             let sum = def + bonusDef + bonusStr;
             if (sum > 70) {
                 return 70
@@ -118,24 +116,24 @@ export default defineComponent({
         },
         maxHp() {
             let hp = 5;
-            let bonus = Math.floor(this.char.characteristic.vit / 2);
+            let bonus = Math.floor(this.char.character.characteristics.vit / 2);
             return hp + bonus;
         },
         maxMp() {
             let mp = 5;
-            let bonus = Math.floor(this.char.characteristic.int / 2);
+            let bonus = Math.floor(this.char.character.characteristics.int / 2);
             return mp + bonus;
         },
         speed() {
             let spd = 1;
-            let bonusSpb = Math.floor(this.char.characteristic.spd / 2);
-            let bonusAgi = Math.floor(this.char.characteristic.agi / 3);
+            let bonusSpb = Math.floor(this.char.character.characteristics.spd / 2);
+            let bonusAgi = Math.floor(this.char.character.characteristics.agi / 3);
             return spd + bonusSpb + bonusAgi;
         },
         dodge() {
             let dodge = 0;
-            let bonusAgi = Math.floor(this.char.characteristic.agi / 2);
-            let bonusLuc = Math.floor(this.char.characteristic.luc / 2);
+            let bonusAgi = Math.floor(this.char.character.characteristics.agi / 2);
+            let bonusLuc = Math.floor(this.char.character.characteristics.luc / 2);
             let sum = dodge + bonusAgi + bonusLuc;
             if (sum > 30) {
                 return 30;
@@ -145,9 +143,9 @@ export default defineComponent({
         },
         criticalDmg() {
             let critical = 0;
-            let bonusAgi = Math.floor(this.char.characteristic.agi / 3);
-            let bonusLuc = Math.floor(this.char.characteristic.luc / 3);
-            let bonusAcc = Math.floor(this.char.characteristic.acc / 2);
+            let bonusAgi = Math.floor(this.char.character.characteristics.agi / 3);
+            let bonusLuc = Math.floor(this.char.character.characteristics.luc / 3);
+            let bonusAcc = Math.floor(this.char.character.characteristics.acc / 2);
             let sum = critical + bonusAgi + bonusLuc + bonusAcc;
             if (sum > 50) {
                 return 50;
@@ -157,9 +155,9 @@ export default defineComponent({
         },
         hitChance() {
             let hit = 50;
-            let bonusAcc = this.char.characteristic.acc;
-            let bonusLuc = Math.floor(this.char.characteristic.luc / 3);
-            let bonusInt = Math.floor(this.char.characteristic.int / 3);
+            let bonusAcc = this.char.character.characteristics.acc;
+            let bonusLuc = Math.floor(this.char.character.characteristics.luc / 3);
+            let bonusInt = Math.floor(this.char.character.characteristics.int / 3);
             let sum = hit + bonusLuc + bonusAcc + bonusInt;
             if (sum > 100) {
                 return 100
@@ -169,9 +167,6 @@ export default defineComponent({
         },
     },
     mounted() {
-        setTimeout(() => {
-            this.char.currentExp = 1800;
-        }, 3000)
     }
 });
 </script>
@@ -180,7 +175,7 @@ export default defineComponent({
     <div class="char">
         <button class="char__button button" type="button" data-bs-toggle="modal"
                 data-bs-target="#chars-stats">
-            <nuxt-img class="char__image" src="/images/sprites/persons/arcanist/icon-arcanist.png"
+            <nuxt-img class="char__image" :src="`/images/sprites/persons/${char.character.species}/icon-${char.character.species}.png`"
                       alt="Иконка персонажа" />
         </button>
         <div class="char__health">
@@ -189,7 +184,7 @@ export default defineComponent({
                 <div class="char__description">
                     Здоровье
                     <div class="char__value">
-                        {{ char.currentHp }}/{{ maxHp }}
+                        {{ maxHp }}/{{ maxHp }}
                     </div>
                 </div>
             </div>
@@ -198,7 +193,7 @@ export default defineComponent({
                 <div class="char__description">
                     Мана
                     <div class="char__value">
-                        {{ char.currentMp }}/{{ maxMp }}
+                        {{ maxMp }}/{{ maxMp }}
                     </div>
                 </div>
             </div>
@@ -209,15 +204,15 @@ export default defineComponent({
             <div class="block__block">
                 <div class="block__wrapper">
                     <h3 class="block__title">Характеристики</h3>
-                    <div class="block__counts">Доступно очков {{ char.freeCount }}</div>
+                    <div class="block__counts">Доступно очков {{ char.character.game_stats.freeCount }}</div>
                 </div>
                 <div class="block__characteristic characteristic">
                     <ul class="characteristic__main list">
                         <li class="characteristic__item">
                             <div class="characteristic__name">Сила</div>
                             <div class="characteristic__value">
-                                {{ char.characteristic.str }}
-                                <button v-if="char.freeCount" class="characteristic__plus button" type="button"
+                                {{ char.character.characteristics.str }}
+                                <button v-if="char.character.game_stats.freeCount" class="characteristic__plus button" type="button"
                                         @click="onUpChars(1, 'str')">+
                                 </button>
                             </div>
@@ -225,8 +220,8 @@ export default defineComponent({
                         <li class="characteristic__item">
                             <div class="characteristic__name">Ловкость</div>
                             <div class="characteristic__value">
-                                {{ char.characteristic.agi }}
-                                <button v-if="char.freeCount" class="characteristic__plus button" type="button"
+                                {{ char.character.characteristics.agi }}
+                                <button v-if="char.character.game_stats.freeCount" class="characteristic__plus button" type="button"
                                         @click="onUpChars(1, 'agi')">+
                                 </button>
                             </div>
@@ -234,8 +229,8 @@ export default defineComponent({
                         <li class="characteristic__item">
                             <div class="characteristic__name">Выносливость</div>
                             <div class="characteristic__value">
-                                {{ char.characteristic.vit }}
-                                <button v-if="char.freeCount" class="characteristic__plus button" type="button"
+                                {{ char.character.characteristics.vit }}
+                                <button v-if="char.character.game_stats.freeCount" class="characteristic__plus button" type="button"
                                         @click="onUpChars(1, 'vit')">+
                                 </button>
                             </div>
@@ -243,8 +238,8 @@ export default defineComponent({
                         <li class="characteristic__item">
                             <div class="characteristic__name">Меткость</div>
                             <div class="characteristic__value">
-                                {{ char.characteristic.acc }}
-                                <button v-if="char.freeCount" class="characteristic__plus button" type="button"
+                                {{ char.character.characteristics.acc }}
+                                <button v-if="char.character.game_stats.freeCount" class="characteristic__plus button" type="button"
                                         @click="onUpChars(1, 'acc')">+
                                 </button>
                             </div>
@@ -252,8 +247,8 @@ export default defineComponent({
                         <li class="characteristic__item">
                             <div class="characteristic__name">Интелект</div>
                             <div class="characteristic__value">
-                                {{ char.characteristic.int }}
-                                <button v-if="char.freeCount" class="characteristic__plus button" type="button"
+                                {{ char.character.characteristics.int }}
+                                <button v-if="char.character.game_stats.freeCount" class="characteristic__plus button" type="button"
                                         @click="onUpChars(1, 'int')">+
                                 </button>
                             </div>
@@ -261,8 +256,8 @@ export default defineComponent({
                         <li class="characteristic__item">
                             <div class="characteristic__name">Скорость</div>
                             <div class="characteristic__value">
-                                {{ char.characteristic.spd }}
-                                <button v-if="char.freeCount" class="characteristic__plus button" type="button"
+                                {{ char.character.characteristics.spd }}
+                                <button v-if="char.character.game_stats.freeCount" class="characteristic__plus button" type="button"
                                         @click="onUpChars(1, 'spd')">+
                                 </button>
                             </div>
@@ -270,8 +265,8 @@ export default defineComponent({
                         <li class="characteristic__item">
                             <div class="characteristic__name">Удача</div>
                             <div class="characteristic__value">
-                                {{ char.characteristic.luc }}
-                                <button v-if="char.freeCount" class="characteristic__plus button" type="button"
+                                {{ char.character.characteristics.luc }}
+                                <button v-if="char.character.game_stats.freeCount" class="characteristic__plus button" type="button"
                                         @click="onUpChars(1, 'luc')">+
                                 </button>
                             </div>
@@ -279,8 +274,8 @@ export default defineComponent({
                         <li class="characteristic__item">
                             <div class="characteristic__name">Защита</div>
                             <div class="characteristic__value">
-                                {{ char.characteristic.def }}
-                                <button v-if="char.freeCount" class="characteristic__plus button" type="button"
+                                {{ char.character.characteristics.def }}
+                                <button v-if="char.character.game_stats.freeCount" class="characteristic__plus button" type="button"
                                         @click="onUpChars(1, 'def')">+
                                 </button>
                             </div>
@@ -289,11 +284,11 @@ export default defineComponent({
                 </div>
                 <div class="block__wrapper">
                     <h3 class="block__title">Статы</h3>
-                    <div class="block__level">Ур. {{ char.level }}</div>
+                    <div class="block__level">Ур. {{ char.character.game_stats.level }}</div>
                     <div class="block__exp">
                         <ProgressBar class="block__progress" :value="expPercentage" :showValue="false"></ProgressBar>
                         <div class="block__value">
-                            Опыт {{ char.currentExp }}/{{ char.level * 10 }}
+                            Опыт {{ char.character.game_stats.currentExp }}/{{ char.character.game_stats.level * 10 }}
                         </div>
                     </div>
                 </div>
@@ -302,12 +297,12 @@ export default defineComponent({
                     <div class="block__stat">
                         <nuxt-icon class="block__icon block__icon--" name="stats/heart" />
                         <div class="block__current">
-                            {{ char.currentHp }}/{{ maxHp }}
+                            {{ maxHp }}/{{ maxHp }}
                         </div>
                     </div>
                     <div class="block__stat">
                         <nuxt-icon class="block__icon block__icon--" name="stats/mana" />
-                        {{ char.currentMp }}/{{ maxMp }}
+                        {{ maxMp }}/{{ maxMp }}
                     </div>
                     <div class="block__stat">
                         <nuxt-icon class="block__icon block__icon--health" name="stats/dmg" />
