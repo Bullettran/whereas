@@ -1,48 +1,27 @@
 <script lang="ts">
-import {usePersonState} from "~/stores/person";
-import Auth from "~/components/global/auth/auth.vue";
-import {api} from "~/api/api";
-import DyncamicTitle from "~/components/global/dynamic-title/dynamic-title.vue";
 
 export default defineComponent({
     name: "Index",
-    components: {DyncamicTitle, Auth},
-    setup() {
+    async setup() {
         definePageMeta({
             layout: "start",
         });
-        const {clear, user, session, loggedIn} = useUserSession();
-        const person = usePersonState();
-        return {
-            person,
-            loggedIn
-        }
     },
     data: () => ({
         isVisibleButtons: false,
+        loggedIn: false,
+        isSpecies: false
     }),
     methods: {
-        async test() {
-            const { data, error } = await useFetch(api.user, {
-                method: "PUT",
-                //@ts-ignore
-                body: {
-                    username: "test",
-                    isSelectedSpecies: false,
-                }
-            })
-            if (error) {
-                console.log(error);
-            } else {
-                console.log(123);
-            }
-            this.person.setSpecies(false);
+        checkAuth() {
+            this.loggedIn = !!usePersonState().username;
         }
     },
     mounted() {
+        this.checkAuth();
         setTimeout(() => {
             this.isVisibleButtons = true;
-        }, 6500)
+        }, 3500)
     }
 });
 </script>
@@ -50,16 +29,16 @@ export default defineComponent({
 <template>
     <div class="start">
         <div class="start__container container">
-            <DyncamicTitle/>
+            <DynamicTitle/>
             <div class="start__buttons" v-if="loggedIn && isVisibleButtons">
-                <nuxt-link v-if="!person.isSelectedSpecies" to="/selection/" class="start__button animated-button6">
+                <nuxt-link v-if="!isSpecies" to="/selections/" class="start__button animated-button6">
                     <span></span>
                     <span></span>
                     <span></span>
                     <span></span>
                     Начать игру
                 </nuxt-link>
-                <nuxt-link v-else to="/my/" class="start__button animated-button6">
+                <nuxt-link v-else to="/town/" class="start__button animated-button6">
                     <span></span>
                     <span></span>
                     <span></span>

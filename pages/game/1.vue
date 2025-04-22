@@ -237,14 +237,14 @@ export default defineComponent({
             mob: {
                 currentHp: 10,
                 currentMp: 5,
-                str: 10,
+                str: 1,
                 def: 0,
-                luc: 10,
+                luc: 1,
                 spd: 3,
-                int: 10,
-                acc: 10,
-                vit: 20,
-                agi: 10,
+                int: 1,
+                acc: 100,
+                vit: 1,
+                agi: 1,
             },
         } as { person: Stats; mob: Stats },
         cardBonuses: {
@@ -282,7 +282,7 @@ export default defineComponent({
         this.baseStats.person.luc = this.char.character.characteristics.luc;
         this.baseStats.person.spd = this.char.character.characteristics.spd;
         this.baseStats.person.int = this.char.character.characteristics.int;
-        this.baseStats.person.acc = this.char.character.characteristics.acc;
+        this.baseStats.person.acc = 100;
         this.baseStats.person.vit = this.char.character.characteristics.vit;
         this.baseStats.person.agi = this.char.character.characteristics.agi;
         this.baseStats.person.currentHp = this.maxHp("person", 0);
@@ -944,8 +944,7 @@ export default defineComponent({
     <div class="game">
         <div class="game__container container">
             <div class="game__logs">
-                <!--            todo(kharal):char-->
-<!--                <Char />-->
+                <Char />
                 <div class="game__battle-log">
                     <div class="game__battle-item" v-for="(log, index) in battleLog" :key="index">{{ log }}</div>
                 </div>

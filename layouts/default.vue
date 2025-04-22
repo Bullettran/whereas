@@ -24,9 +24,6 @@ export default defineComponent({
     <div class="default">
         <slot></slot>
     </div>
-    <!--    <template v-else>-->
-    <!--        Ошибка-->
-    <!--    </template>-->
 </template>
 
 <style lang="scss">
