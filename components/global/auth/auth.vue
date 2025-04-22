@@ -61,8 +61,7 @@ export default defineComponent({
         },
         async logOut() {
             try {
-                const { supabase } = this.$nuxt;
-                const { error } = await supabase.auth.signOut();
+                const { error } = await this.$supabase.auth.signOut();
                 if (error) throw error;
 
                 // Очищаем состояние
