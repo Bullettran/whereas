@@ -237,12 +237,12 @@ export default defineComponent({
             mob: {
                 currentHp: 10,
                 currentMp: 5,
-                str: 1,
+                str: 5,
                 def: 0,
                 luc: 1,
                 spd: 3,
-                int: 1,
-                acc: 100,
+                int: 3,
+                acc: 5,
                 vit: 1,
                 agi: 1,
             },
@@ -282,7 +282,7 @@ export default defineComponent({
         this.baseStats.person.luc = this.char.character.characteristics.luc;
         this.baseStats.person.spd = this.char.character.characteristics.spd;
         this.baseStats.person.int = this.char.character.characteristics.int;
-        this.baseStats.person.acc = 100;
+        this.baseStats.person.acc = 80;
         this.baseStats.person.vit = this.char.character.characteristics.vit;
         this.baseStats.person.agi = this.char.character.characteristics.agi;
         this.baseStats.person.currentHp = this.maxHp("person", 0);
@@ -377,7 +377,6 @@ export default defineComponent({
         maxMp(target: "person" | "mob", bonus: number = 0): number {
             const mp = 5;
             const int = Number(this.getStat(target, "int"));
-            console.log(mp + Math.floor(int / 2) + bonus);
             return mp + Math.floor(int / 2) + bonus;
         },
 
@@ -674,6 +673,13 @@ export default defineComponent({
             }
         },
 
+        // Вспомогательная функцию для проверки критического удара
+        isCriticalHit(target: "person" | "mob"): boolean {
+            const criticalChance = this.criticalDmg(target); // Шанс критического удара (например, 0-50%)
+            const roll = Math.random() * 100;
+            return roll <= criticalChance; // Если roll попадает в шанс критического удара
+        },
+
         // Атака персонажа
         async characterAttack() {
             const hitRoll = Math.random() * 100;
@@ -683,10 +689,18 @@ export default defineComponent({
                 return;
             }
 
-            const damage = Math.max(1, this.physicalDmg("person") - this.physicalDef("mob"));
+            const isCritical = this.isCriticalHit("person");
+            let damage = Math.max(1, this.physicalDmg("person") - this.physicalDef("mob"));
+            const criticalMultiplier = 2; // Множитель критического урона
+            if (isCritical) {
+                damage *= criticalMultiplier;
+                this.addToLog(`Критический удар! Персонаж наносит ${damage} урона!`);
+                this.showActionText("mob", `-${damage} (КРИТ!)`, "dmg-critical");
+            } else {
+                this.addToLog(`Персонаж атакует и наносит ${damage} урона!`);
+                this.showActionText("mob", `-${damage}`, "dmg");
+            }
             this.baseStats.mob.currentHp = Math.max(0, this.baseStats.mob.currentHp - damage);
-            this.addToLog(`Персонаж атакует и наносит ${damage} урона!`);
-            this.showActionText("mob", `-${damage}`, "dmg");
 
             this.choices.forEach((choice) => {
                 if (choice?.bonus?.bleed) {
@@ -702,7 +716,7 @@ export default defineComponent({
                 }
             });
 
-            this.playAnimationSequence("game__person--attack2", "game__mob--hurt", damage);
+            this.playAnimationSequence(isCritical ? "game__person--special" : "game__person--attack2", "game__mob--hurt", damage);
             await new Promise(resolve => setTimeout(resolve, 2000));
 
             if (this.baseStats.mob.currentHp <= 0) {
@@ -730,12 +744,20 @@ export default defineComponent({
                 return;
             }
 
-            const damage = Math.max(1, this.physicalDmg("mob") - this.physicalDef("person"));
+            const isCritical = this.isCriticalHit("mob");
+            let damage = Math.max(1, this.physicalDmg("mob") - this.physicalDef("person"));
+            const criticalMultiplier = 2; // Множитель критического урона
+            if (isCritical) {
+                damage *= criticalMultiplier;
+                this.addToLog(`Критический удар! Моб наносит ${damage} урона!`);
+                this.showActionText("person", `-${damage} (КРИТ!)`, "dmg-critical");
+            } else {
+                this.addToLog(`Моб атакует и наносит ${damage} урона!`);
+                this.showActionText("person", `-${damage}`, "dmg");
+            }
             this.baseStats.person.currentHp = Math.max(0, this.baseStats.person.currentHp - damage);
-            this.addToLog(`Моб атакует и наносит ${damage} урона!`);
-            this.showActionText("person", `-${damage}`, "dmg");
 
-            this.playAnimationSequence("game__mob--attack", "game__person--hurt", damage);
+            this.playAnimationSequence(isCritical ? "game__mob--attack" : "game__mob--attack", "game__person--hurt", damage);
             await new Promise(resolve => setTimeout(resolve, 2000));
 
             if (this.baseStats.person.currentHp <= 0) {
