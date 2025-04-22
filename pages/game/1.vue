@@ -702,7 +702,8 @@ export default defineComponent({
                 }
             });
 
-            await this.playAnimationSequence("game__person--attack2", "game__mob--hurt", damage);
+            this.playAnimationSequence("game__person--attack2", "game__mob--hurt", damage);
+            await new Promise(resolve => setTimeout(resolve, 2000));
 
             if (this.baseStats.mob.currentHp <= 0) {
                 this.addToLog("Моб побежден!");
@@ -734,7 +735,8 @@ export default defineComponent({
             this.addToLog(`Моб атакует и наносит ${damage} урона!`);
             this.showActionText("person", `-${damage}`, "dmg");
 
-            await this.playAnimationSequence("game__mob--attack", "game__person--hurt", damage);
+            this.playAnimationSequence("game__mob--attack", "game__person--hurt", damage);
+            await new Promise(resolve => setTimeout(resolve, 2000));
 
             if (this.baseStats.person.currentHp <= 0) {
                 this.addToLog("Персонаж побежден!");
@@ -861,7 +863,7 @@ export default defineComponent({
         },
 
         // Анимация боя
-        async playAnimationSequence(
+        playAnimationSequence(
             attackAnimation: string,
             hurtAnimation: string,
             damage: number,
