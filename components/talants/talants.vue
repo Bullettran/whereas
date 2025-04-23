@@ -1758,7 +1758,7 @@ export default defineComponent({
             return talentsByClass[this.person.character.species as keyof typeof talentsByClass] || talentsByClass.ranger;
         },
         talentPoints(): number {
-            return this.person.character.talents?.points || 0;
+            return this.person.character.talents?.points || 2;
         },
         selectedTalents(): { [key: string]: number } {
             return this.person.character.talents?.selected || {};
