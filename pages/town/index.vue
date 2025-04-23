@@ -123,7 +123,7 @@ export default defineComponent({
             </div>
         </Modal>
         <Modal size="lg" id="talants">
-            <LazyTalants />
+            <LazyCards />
         </Modal>
         <Modal size="lg" id="shop">
             <div>
