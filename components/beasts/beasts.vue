@@ -47,11 +47,11 @@ export default defineComponent({
                     agi: 1,
                 },
                 abilities: [
-                    "Огненный коготь - вешает кровоток каждые 2 хода",
+                    "Огненный коготь - вешает кровотечение каждые 2 хода",
                 ],
             },
             {
-                id: "red-demon",
+                id: "red-demon1",
                 name: "Красный демон",
                 icon: "/images/sprites/mobs/red-flying-demon/icon.png",
                 idle: "/images/sprites/mobs/red-flying-demon/idle.png",
@@ -74,7 +74,7 @@ export default defineComponent({
                 ],
             },
             {
-                id: "red-demon",
+                id: "red-demon2",
                 name: "Красный демон",
                 icon: "/images/sprites/mobs/red-flying-demon/icon.png",
                 idle: "/images/sprites/mobs/red-flying-demon/idle.png",
@@ -97,7 +97,7 @@ export default defineComponent({
                 ],
             },
             {
-                id: "red-demon",
+                id: "red-demon3",
                 name: "Красный демон",
                 icon: "/images/sprites/mobs/red-flying-demon/icon.png",
                 idle: "/images/sprites/mobs/red-flying-demon/idle.png",
@@ -120,7 +120,7 @@ export default defineComponent({
                 ],
             },
             {
-                id: "red-demon",
+                id: "red-demon4",
                 name: "Красный демон",
                 icon: "/images/sprites/mobs/red-flying-demon/icon.png",
                 idle: "/images/sprites/mobs/red-flying-demon/idle.png",
@@ -236,7 +236,7 @@ export default defineComponent({
                         :key="beast.id"
                         class="beasts__item swiper-slide"
                         @click="selectBeast(beast)"
-                        :class="{ 'active': selectedBeast?.id === beast.id }"
+                        :class="{ 'beasts__item--active': selectedBeast?.id === beast.id }"
                     >
                         <nuxt-img
                             class="beasts__image"

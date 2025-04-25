@@ -24,6 +24,10 @@
     cursor: pointer;
 }
 
+.beasts__item--active {
+    filter: brightness(150%);
+}
+
 .beasts__image {
     display: block;
     max-width: 100%;
