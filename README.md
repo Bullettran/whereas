@@ -1,75 +1,53 @@
-# Nuxt Minimal Starter
+# Whereas
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+**Whereas** — это ролевая игра с карточной боевой системой, системой крафта и квестами. Выберите один из шести уникальных классов (Рейнджер, Крушитель, Арканист, Монах, Инферно, Ассасин), развивайте персонажа, сражайтесь с врагами и выполняйте задания в фэнтезийном мире.
 
-## Setup
+## Особенности
 
-Make sure to install dependencies:
+- **Выбор класса**: Каждый класс имеет уникальные характеристики, навыки и стиль игры.
+- **Карточная боевая система**: Используйте карты для атаки, защиты и магии, составляйте комбинации для бонусов.
+- **Крафт и инвентарь**: Собирайте ресурсы, создавайте зелья и экипировку.
+- **Квесты**: Исследуйте город, берите задания и получайте награды.
+- **Интеграция с Supabase**: Сохранение прогресса и аутентификация пользователей.
 
-```bash
-# npm
-npm install
+## Установка
 
-# pnpm
-pnpm install
+1. Клонируйте репозиторий:
 
-# yarn
-yarn install
+   ```bash
+   git clone https://github.com/Bullettran/whereas.git
+   cd whereas
+   ```
 
-# bun
-bun install
-```
+2. Установите зависимости:
 
-## Development Server
+   ```bash
+   npm install
+   ```
 
-Start the development server on `http://localhost:3000`:
+3. Настройте переменные окружения в `.env`:
 
-```bash
-# npm
-npm run dev
+   ```
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_KEY=your_supabase_key
+   ```
 
-# pnpm
-pnpm dev
+4. Запустите проект:
 
-# yarn
-yarn dev
+   ```bash
+   npm run dev
+   ```
 
-# bun
-bun run dev
-```
+## Демо
 
-## Production
+Попробуйте игру онлайн
 
-Build the application for production:
+## Скриншоты
 
-```bash
-# npm
-npm run build
+## Контрибьютинг
 
-# pnpm
-pnpm build
+Хотите помочь? Создайте issue или pull request с улучшениями! Мы приветствуем любые идеи, от новых квестов до багфиксов.
 
-# yarn
-yarn build
+## Лицензия
 
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+MIT License

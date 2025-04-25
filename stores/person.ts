@@ -35,6 +35,7 @@ export const usePersonState = defineStore("person", {
 
         //todo(kharal)
         setValChars(val: number, type: string): void {
+            // @ts-ignore
             this.character.characteristics[type] = this.character.characteristics[type] + val;
         },
         setUpLevel() {

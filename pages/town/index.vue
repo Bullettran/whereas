@@ -123,9 +123,7 @@ export default defineComponent({
             </div>
         </Modal>
         <Modal size="lg" id="talants">
-            <div>
-                Таланты
-            </div>
+            <LazyCards />
         </Modal>
         <Modal size="lg" id="shop">
             <div>

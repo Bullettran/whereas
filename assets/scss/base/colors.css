@@ -2,13 +2,18 @@
     --white: #fff;
     --black1: #001219;
     --blue1: #005f73;
+    --blue3: #00b7eb;
     --green1: #0a9396;
     --green2: #94d2bd;
+    --green3: #32cd32;
     --yellow1: #e9d8a6;
     --yellow2: #ee9b00;
+    --yellow3: #ffd700;
     --orange1: #bb3e03;
     --red1: #ae2012;
     --red2: #9b2226;
+    --red3: #ff4500;
+    --purple3: #9932cc;
     --brown1: #5a3e2d;
     --grey: #c2c2d1;
 }

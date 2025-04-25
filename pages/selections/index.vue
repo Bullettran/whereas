@@ -58,7 +58,6 @@ export default defineComponent({
                 const userId = userData.user.id;
 
                 // Отправляем данные в таблицу characters
-                // todo(kharal): расширить базу для lvl exp energy
                 const { error } = await this.$supabase.from("characters").upsert({
                     id: userId,
                     species: this.selectedSpecies.value,
@@ -80,6 +79,17 @@ export default defineComponent({
                     return;
                 }
 
+                // Обновляем юзера
+                const { error: updateError } = await this.$supabase.auth.updateUser({
+                    data: { isSelectedSpecies: true },
+                });
+
+                if (updateError) {
+                    this.errorMessage = `Ошибка обновления пользователя: ${updateError.message}`;
+                    console.error(updateError);
+                    return;
+                }
+
                 let button = document.querySelector(".accept__button--close");
                 if (button) {
                     // @ts-ignore
@@ -92,11 +102,22 @@ export default defineComponent({
             }
         },
     },
+    async mounted() {
+        const { data: userData, error: authError } = await this.$supabase.auth.getUser();
+        if (authError || !userData.user) {
+            this.errorMessage = "Ошибка: пользователь не авторизован";
+            this.$router.push("/");
+            return;
+        }
+        if (userData.user.user_metadata.isSelectedSpecies) {
+            this.$router.push("/town/");
+        }
+    },
 });
 </script>
 
 <template>
-<!--    <BgSound />-->
+    <!--    <BgSound />-->
     <div class="selections">
         <div class="selections__container container">
             <h1 class="selections__title">Выбор персонажа</h1>
