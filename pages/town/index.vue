@@ -118,9 +118,7 @@ export default defineComponent({
             <LazyCraft/>
         </Modal>
         <Modal size="lg" id="beasts">
-            <div>
-                Цитадель
-            </div>
+            <LazyBeasts/>
         </Modal>
         <Modal size="lg" id="talants">
             <LazyCards />
