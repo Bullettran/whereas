@@ -45,27 +45,27 @@ interface Effect {
 }
 
 interface Stats {
+    attack: number;
+    critical: number;
+    hp: number;
+    mp: number;
+    hitChance: number;
+    dodge: number;
+    speed: number;
+    defence: number;
     currentHp: number;
     currentMp: number;
-    str: number;
-    def: number;
-    luc: number;
-    spd: number;
-    int: number;
-    acc: number;
-    vit: number;
-    agi: number;
 }
 
 interface CardBonuses {
-    str: number;
-    def: number;
-    luc: number;
-    spd: number;
-    int: number;
-    acc: number;
-    vit: number;
-    agi: number;
+    attack: number;
+    critical: number;
+    hp: number;
+    mp: number;
+    hitChance: number;
+    dodge: number;
+    speed: number;
+    defence: number;
 }
 
 export default defineComponent({
@@ -223,30 +223,31 @@ export default defineComponent({
         useCardIndices: [] as number[],
         baseStats: {
             person: {
-                currentHp: 0,
-                currentMp: 0,
-                str: 5,
-                def: 10,
-                luc: 10,
-                spd: 10,
-                int: 40,
-                acc: 80,
-                vit: 2,
-                agi: 10,
+                attack: 2,
+                critical: 2,
+                hp: 10,
+                mp: 10,
+                hitChance: 50,
+                dodge: 20,
+                speed: 2,
+                defence: 3,
+                currentHp: 10,
+                currentMp: 10,
             },
             mob: {
-                currentHp: 10,
-                currentMp: 5,
-                str: 5,
-                def: 0,
-                luc: 1,
-                spd: 3,
-                int: 3,
-                acc: 5,
-                vit: 1,
-                agi: 1,
+                attack: 1,
+                critical: 5,
+                hp: 15,
+                mp: 1,
+                hitChance: 50,
+                dodge: 20,
+                speed: 1,
+                defence: 5,
+                currentHp: 15,
+                currentMp: 1,
             },
         } as { person: Stats; mob: Stats },
+        // @ts-ignore
         cardBonuses: {
             person: {
                 str: 0,
@@ -277,52 +278,36 @@ export default defineComponent({
     }),
     mounted() {
         this.initCards();
-        this.baseStats.person.str = this.char.character.characteristics.str;
-        this.baseStats.person.def = this.char.character.characteristics.def;
-        this.baseStats.person.luc = this.char.character.characteristics.luc;
-        this.baseStats.person.spd = this.char.character.characteristics.spd;
-        this.baseStats.person.int = this.char.character.characteristics.int;
-        this.baseStats.person.acc = 80;
-        this.baseStats.person.vit = this.char.character.characteristics.vit;
-        this.baseStats.person.agi = this.char.character.characteristics.agi;
-        this.baseStats.person.currentHp = this.maxHp("person", 0);
-        this.baseStats.person.currentMp = this.maxMp("person", 0);
+        this.baseStats.person.attack = this.char.character.stats.attack;
+        this.baseStats.person.defence = this.char.character.stats.defence;
+        this.baseStats.person.critical = this.char.character.stats.critical;
+        this.baseStats.person.hp = this.char.character.stats.hp;
+        this.baseStats.person.mp = this.char.character.stats.mp;
+        this.baseStats.person.hitChance = this.char.character.stats.hitChance;
+        this.baseStats.person.dodge = this.char.character.stats.dodge;
+        this.baseStats.person.speed = this.char.character.stats.speed;
+        this.baseStats.person.currentHp = this.maxHp("person");
+        this.baseStats.person.currentMp = this.maxMp("person");
     },
     computed: {
         personStats(): Stats & {
             physicalDmg: number;
             physicalDef: number;
-            speed: number;
-            dodge: number;
-            criticalDmg: number;
-            hitChance: number;
         } {
             return {
                 ...this.baseStats.person,
                 physicalDmg: this.physicalDmg("person"),
                 physicalDef: this.physicalDef("person"),
-                speed: this.speed("person"),
-                dodge: this.dodge("person"),
-                criticalDmg: this.criticalDmg("person"),
-                hitChance: this.hitChance("person"),
             };
         },
         mobStats(): Stats & {
             physicalDmg: number;
             physicalDef: number;
-            speed: number;
-            dodge: number;
-            criticalDmg: number;
-            hitChance: number;
         } {
             return {
                 ...this.baseStats.mob,
                 physicalDmg: this.physicalDmg("mob"),
                 physicalDef: this.physicalDef("mob"),
-                speed: this.speed("mob"),
-                dodge: this.dodge("mob"),
-                criticalDmg: this.criticalDmg("mob"),
-                hitChance: this.hitChance("mob"),
             };
         },
         isAttackDisabled(): boolean {
@@ -332,11 +317,11 @@ export default defineComponent({
             const lines = [
                 { indices: [0, 3, 6], type: this.COMBO_TYPES.CRITICAL },    // 1-4-7
                 { indices: [1, 4, 7], type: this.COMBO_TYPES.HIT_CHANCE },  // 2-5-8
-                { indices: [2, 5, 8], type: this.COMBO_TYPES.ATTACK }      // 3-6-9
+                { indices: [2, 5, 8], type: this.COMBO_TYPES.ATTACK },      // 3-6-9
             ];
 
             return lines.filter(line =>
-                line.indices.every(index => this.choices[index] !== null)
+                line.indices.every(index => this.choices[index] !== null),
             ).map(line => line.type);
         },
 
@@ -354,80 +339,54 @@ export default defineComponent({
             }
 
             return Array.from(indices);
-        }
+        },
     },
     methods: {
         // Получение значения статы с учетом бонусов
         getStat(target: "person" | "mob", stat: keyof Stats): number {
             const base = this.baseStats[target][stat];
-            return target === "person"
-                // @ts-ignore
-                ? base + (this.cardBonuses.person[stat] || 0)
-                : base;
+            // @ts-ignore
+            return target === "person" ? base + (this.cardBonuses.person[stat] || 0) : base;
         },
 
         // Максимальное здоровье
         maxHp(target: "person" | "mob", bonus: number = 0): number {
-            const hp = 5;
-            const vit = this.getStat(target, "vit");
-            return hp + Math.floor(vit / 2) + bonus;
+            return this.getStat(target, "hp") + bonus;
         },
 
         // Максимальная мана
         maxMp(target: "person" | "mob", bonus: number = 0): number {
-            const mp = 5;
-            const int = Number(this.getStat(target, "int"));
-            return mp + Math.floor(int / 2) + bonus;
+            return this.getStat(target, "mp") + bonus;
         },
 
         // Физический урон
         physicalDmg(target: "person" | "mob", bonus: number = 0): number {
-            const str = this.getStat(target, "str");
-            const agi = this.getStat(target, "agi");
-            const int = this.getStat(target, "int");
-            const baseDmg = 1;
-            return baseDmg + Math.floor(str / 3) + Math.floor(int / 3) + Math.floor(agi / 3) + bonus;
+            return this.getStat(target, "attack") + bonus;
         },
 
         // Физическая защита
         physicalDef(target: "person" | "mob", bonus: number = 0): number {
-            const def = this.getStat(target, "def");
-            const str = this.getStat(target, "str");
-            const sum = 1 + Math.floor(def / 2) + Math.floor(str / 2) + bonus;
-            return Math.min(sum, 70);
+            return this.getStat(target, "defence") + bonus;
         },
 
         // Скорость
         speed(target: "person" | "mob", bonus: number = 0): number {
-            const spd = this.getStat(target, "spd");
-            const agi = this.getStat(target, "agi");
-            return 1 + Math.floor(spd / 2) + Math.floor(agi / 3) + bonus;
+            return this.getStat(target, "speed") + bonus;
         },
 
         // Уклонение
         dodge(target: "person" | "mob", bonus: number = 0): number {
-            const agi = this.getStat(target, "agi");
-            const luc = this.getStat(target, "luc");
-            const sum = Math.floor(agi / 2) + Math.floor(luc / 2) + bonus;
-            return Math.min(sum, 30);
+            return this.getStat(target, "dodge") + bonus;
         },
 
         // Критический урон
         criticalDmg(target: "person" | "mob", bonus: number = 0): number {
-            const agi = this.getStat(target, "agi");
-            const luc = this.getStat(target, "luc");
-            const acc = this.getStat(target, "acc");
-            const sum = Math.floor(agi / 3) + Math.floor(luc / 3) + Math.floor(acc / 2) + bonus;
-            return Math.min(sum, 50);
+            return this.getStat(target, "critical") + bonus;
         },
 
         // Шанс попадания
         hitChance(target: "person" | "mob", bonus: number = 0): number {
-            const acc = this.getStat(target, "acc");
-            const luc = this.getStat(target, "luc");
-            const int = this.getStat(target, "int");
-            const sum = 50 + acc + Math.floor(luc / 3) + Math.floor(int / 3) + bonus;
-            return Math.min(sum, 100);
+            return this.getStat(target, "hitChance") + bonus;
         },
 
         // Получение случайных карт
@@ -448,14 +407,14 @@ export default defineComponent({
         // Сброс бонусов карт
         resetCardBonuses() {
             this.cardBonuses.person = {
-                str: 0,
-                def: 0,
-                luc: 0,
-                spd: 0,
-                int: 0,
-                acc: 0,
-                vit: 0,
-                agi: 0,
+                attack: 0,
+                critical: 0,
+                hp: 0,
+                mp: 0,
+                hitChance: 0,
+                dodge: 0,
+                speed: 0,
+                defence: 0,
             };
         },
 
@@ -474,16 +433,16 @@ export default defineComponent({
             this.activeCombos.forEach(combo => {
                 switch (combo) {
                     case this.COMBO_TYPES.CRITICAL:
-                        this.cardBonuses.person.luc += 1; // Увеличиваем критический урон
+                        this.cardBonuses.person.critical += 5; // Увеличиваем критический урон
                         this.addToLog("Активирована комбинация: Критический урон +5%!");
                         break;
                     case this.COMBO_TYPES.HIT_CHANCE:
-                        this.cardBonuses.person.acc += 1; // Увеличиваем шанс попадания
+                        this.cardBonuses.person.hitChance += 5; // Увеличиваем шанс попадания
                         this.addToLog("Активирована комбинация: Шанс попадания +5%!");
                         break;
                     case this.COMBO_TYPES.ATTACK:
-                        this.cardBonuses.person.str += 1; // Увеличиваем атаку
-                        this.addToLog("Активирована комбинация: Атака +5%!");
+                        this.cardBonuses.person.attack += 1; // Увеличиваем атаку
+                        this.addToLog("Активирована комбинация: Атака +1!");
                         break;
                 }
             });

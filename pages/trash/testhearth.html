@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Battle Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-800 text-white flex justify-center items-center h-screen">
+<div id="game" class="w-full max-w-4xl p-4">
+    <!-- Player 1 (Bottom) -->
+    <div id="player1" class="border-2 border-blue-500 p-4 rounded-lg mb-4">
+        <h2 class="text-xl font-bold">Игрок 1</h2>
+        <div class="flex justify-between mb-2">
+            <span>Мана: <span id="p1-mana">10</span>/10</span>
+            <span>Здоровье: <span id="p1-health">30</span></span>
+        </div>
+        <div id="p1-hand" class="flex flex-wrap gap-2 mb-2"></div>
+        <div id="p1-board" class="flex flex-wrap gap-2"></div>
+    </div>
+
+    <!-- Player 2 (Top, AI) -->
+    <div id="player2" class="border-2 border-red-500 p-4 rounded-lg mb-4">
+        <h2 class="text-xl font-bold">Игрок 2 (AI)</h2>
+        <div class="flex justify-between mb-2">
+            <span>Мана: <span id="p2-mana">10</span>/10</span>
+            <span>Здоровье: <span id="p2-health">30</span></span>
+        </div>
+        <div id="p2-hand" class="flex flex-wrap gap-2 mb-2"></div>
+        <div id="p2-board" class="flex flex-wrap gap-2"></div>
+    </div>
+
+    <!-- Game Controls -->
+    <div class="text-center">
+        <button id="end-turn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            Завершить ход
+        </button>
+        <p id="game-message" class="mt-2"></p>
+    </div>
+</div>
+
+<script>
+    // Карты (простая база данных карт)
+    const cardDatabase = [
+        { id: 1, name: "Воин", cost: 2, attack: 3, health: 2 },
+        { id: 2, name: "Лучник", cost: 3, attack: 2, health: 4 },
+        { id: 3, name: "Танк", cost: 5, attack: 5, health: 5 },
+        { id: 4, name: "Разведчик", cost: 1, attack: 1, health: 1 }
+    ];
+
+    // Состояние игры
+    const gameState = {
+        currentPlayer: 1,
+        players: {
+            1: {
+                mana: 10,
+                maxMana: 10,
+                health: 30,
+                hand: [],
+                board: [],
+                deck: [...Array(20).keys()].map(() => cardDatabase[Math.floor(Math.random() * cardDatabase.length)])
+            },
+            2: {
+                mana: 10,
+                maxMana: 10,
+                health: 30,
+                hand: [],
+                board: [],
+                deck: [...Array(20).keys()].map(() => cardDatabase[Math.floor(Math.random() * cardDatabase.length)])
+            }
+        }
+    };
+
+    // Инициализация игры
+    function initGame() {
+        // Выдача начальных карт
+        for (let i = 0; i < 3; i++) {
+            drawCard(1);
+            drawCard(2);
+        }
+        updateUI();
+        document.getElementById('end-turn').addEventListener('click', endTurn);
+    }
+
+    // Отрисовка карты
+    function renderCard(card, playerId, location, index) {
+        return `
+                <div class="bg-gray-700 border border-gray-500 p-2 rounded w-32 text-center cursor-pointer"
+                     data-player="${playerId}" data-location="${location}" data-index="${index}">
+                    <p class="font-bold">${card.name}</p>
+                    <p>Мана: ${card.cost}</p>
+                    <p>Атака: ${card.attack}</p>
+                    <p>Здоровье: ${card.health}</p>
+                </div>
+            `;
+    }
+
+    // Обновление интерфейса
+    function updateUI() {
+        // Игрок 1
+        document.getElementById('p1-mana').textContent = `${gameState.players[1].mana}/${gameState.players[1].maxMana}`;
+        document.getElementById('p1-health').textContent = gameState.players[1].health;
+        document.getElementById('p1-hand').innerHTML = gameState.players[1].hand
+            .map((card, i) => renderCard(card, 1, 'hand', i)).join('');
+        document.getElementById('p1-board').innerHTML = gameState.players[1].board
+            .map((card, i) => renderCard(card, 1, 'board', i)).join('');
+
+        // Игрок 2
+        document.getElementById('p2-mana').textContent = `${gameState.players[2].mana}/${gameState.players[2].maxMana}`;
+        document.getElementById('p2-health').textContent = gameState.players[2].health;
+        document.getElementById('p2-hand').innerHTML = gameState.players[2].hand
+            .map((card, i) => renderCard(card, 2, 'hand', i)).join('');
+        document.getElementById('p2-board').innerHTML = gameState.players[2].board
+            .map((card, i) => renderCard(card, 2, 'board', i)).join('');
+
+        // Сообщение
+        document.getElementById('game-message').textContent = `Ход игрока ${gameState.currentPlayer}`;
+
+        // Добавление обработчиков для карт
+        addCardEventListeners();
+    }
+
+    // Взятие карты из колоды
+    function drawCard(playerId) {
+        const player = gameState.players[playerId];
+        if (player.deck.length > 0 && player.hand.length < 5) {
+            const card = player.deck.pop();
+            player.hand.push(card);
+        }
+    }
+
+    // Разыгрывание карты
+    function playCard(playerId, cardIndex) {
+        const player = gameState.players[playerId];
+        const card = player.hand[cardIndex];
+        if (player.mana >= card.cost && playerId === gameState.currentPlayer) {
+            player.mana -= card.cost;
+            player.board.push(card);
+            player.hand.splice(cardIndex, 1);
+            updateUI();
+        } else {
+            document.getElementById('game-message').textContent = 'Недостаточно маны или не ваш ход!';
+        }
+    }
+
+    // Атака
+    function attack(attackerPlayerId, attackerIndex, targetPlayerId, targetIndex) {
+        if (attackerPlayerId !== gameState.currentPlayer) return;
+        const attacker = gameState.players[attackerPlayerId].board[attackerIndex];
+        const target = targetIndex === -1
+            ? gameState.players[targetPlayerId]
+            : gameState.players[targetPlayerId].board[targetIndex];
+
+        if (targetIndex === -1) {
+            target.health -= attacker.attack;
+        } else {
+            target.health -= attacker.attack;
+            attacker.health -= target.attack;
+            if (target.health <= 0) {
+                gameState.players[targetPlayerId].board.splice(targetIndex, 1);
+            }
+            if (attacker.health <= 0) {
+                gameState.players[attackerPlayerId].board.splice(attackerIndex, 1);
+            }
+        }
+
+        checkGameOver();
+        updateUI();
+    }
+
+    // Проверка окончания игры
+    function checkGameOver() {
+        if (gameState.players[1].health <= 0) {
+            document.getElementById('game-message').textContent = 'Игрок 2 победил!';
+            document.getElementById('end-turn').disabled = true;
+        } else if (gameState.players[2].health <= 0) {
+            document.getElementById('game-message').textContent = 'Игрок 1 победил!';
+            document.getElementById('end-turn').disabled = true;
+        }
+    }
+
+    // Завершение хода
+    function endTurn() {
+        gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
+        const player = gameState.players[gameState.currentPlayer];
+        player.mana = player.maxMana;
+        drawCard(gameState.currentPlayer);
+        if (gameState.currentPlayer === 2) {
+            aiTurn();
+        }
+        updateUI();
+    }
+
+    // Простая логика ИИ
+    function aiTurn() {
+        const ai = gameState.players[2];
+        // Разыгрывание карт
+        for (let i = ai.hand.length - 1; i >= 0; i--) {
+            if (ai.mana >= ai.hand[i].cost) {
+                playCard(2, i);
+            }
+        }
+        // Атака
+        ai.board.forEach((card, i) => {
+            if (gameState.players[1].board.length > 0) {
+                attack(2, i, 1, 0);
+            } else {
+                attack(2, i, 1, -1);
+            }
+        });
+        endTurn();
+    }
+
+    // Обработчики событий для карт
+    function addCardEventListeners() {
+        // Разыгрывание карт из руки
+        document.querySelectorAll('[data-location="hand"]').forEach(card => {
+            card.addEventListener('click', () => {
+                const playerId = parseInt(card.dataset.player);
+                const index = parseInt(card.dataset.index);
+                playCard(playerId, index);
+            });
+        });
+
+        // Атака картами на поле
+        document.querySelectorAll('[data-location="board"]').forEach(card => {
+            card.addEventListener('click', () => {
+                const attackerPlayerId = parseInt(card.dataset.player);
+                const attackerIndex = parseInt(card.dataset.index);
+                if (attackerPlayerId === gameState.currentPlayer) {
+                    // Выбор цели для атаки
+                    document.getElementById('game-message').textContent = 'Выберите цель для атаки';
+                    const targets = document.querySelectorAll(`[data-player="${attackerPlayerId === 1 ? 2 : 1}"]`);
+                    targets.forEach(target => {
+                        target.addEventListener('click', function handler() {
+                            const targetPlayerId = parseInt(target.dataset.player);
+                            const targetIndex = target.dataset.location === 'board' ? parseInt(target.dataset.index) : -1;
+                            attack(attackerPlayerId, attackerIndex, targetPlayerId, targetIndex);
+                            targets.forEach(t => t.removeEventListener('click', handler));
+                        });
+                    });
+                }
+            });
+        });
+    }
+
+    // Запуск игры
+    initGame();
+</script>
+</body>
+</html>
