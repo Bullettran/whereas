@@ -872,1002 +872,775 @@ const cardsByClass = {
 
 export default {
     name: "Index",
-    setup() {
-        let char = usePersonState();
-        return {
-            char
-        }
-    },
-    data() {
-        return {
-            playerHand: [],
-            battleLog: [],
-            isAnimating: false,
-            turnCount: 1,
-            baseStats: {
-                person: {
-                    attack: 2,
-                    critical: 2,
-                    hp: 10,
-                    mp: 10,
-                    hitChance: 50,
-                    dodge: 20,
-                    speed: 2,
-                    defence: 3,
-                    currentHp: 10,
-                    currentMp: 10,
-                },
-                mob: {
-                    attack: 1,
-                    critical: 5,
-                    hp: 15,
-                    mp: 1,
-                    hitChance: 50,
-                    dodge: 20,
-                    speed: 1,
-                    defence: 5,
-                    currentHp: 15,
-                    currentMp: 1,
-                },
-            },
-            cardBonuses: {
-                person: {
-                    attack: 0,
-                    critical: 0,
-                    hp: 0,
-                    mp: 0,
-                    hitChance: 0,
-                    dodge: 0,
-                    speed: 0,
-                    defence: 0,
-                },
-            },
-            playerStatuses: [],
-            mobStatuses: [],
-            messages: {
-                person: { type: "", message: "" },
-                mob: { type: "", message: "" },
-                turnKey: 0,
-            },
-            showDice: false,
-            playedCardsThisTurn: [],
-            gameFlags: {
-                nextCritical: false,
-                allHits: false,
-                lethalityStacks: 0,
-                burnStacks: 0,
-                doubleShotChance: 0,
-                spiritualStrikeBonus: 0,
-                nextAttackBonus: 0,
-                invulnerable: false,
-                noAttack: false,
-                redirectAttack: false,
-                blockAttacks: 0,
-                healOnDamage: 0,
-                transformActive: false,
-                transformAttack: 0,
-                spellDamageBonus: 0,
-                spellCostReduction: 0,
-                debuffImmunity: false,
-                missChance: 0,
-                damageReduction: 0,
-                blockHealing: false,
-                autoAttackBurnChance: 0,
-                autoAttackBurnStacks: 0,
-            },
-        };
-    },
-    computed: {
-        allCards() {
-            return cardsByClass["arcanist"] || [];
-        },
-        personStats() {
-            let stats = { ...this.baseStats.person };
-            this.playerStatuses.forEach(status => {
-                if (status.type === "statModifier") {
-                    stats[status.stat] += status.value;
-                }
-            });
-            return {
-                ...stats,
-                physicalDmg: this.physicalDmg("person"),
-                physicalDef: this.physicalDef("person"),
-            };
-        },
-        mobStats() {
-            let stats = { ...this.baseStats.mob };
-            this.mobStatuses.forEach(status => {
-                if (status.type === "statModifier") {
-                    stats[status.stat] += status.value;
-                }
-            });
-            return {
-                ...stats,
-                physicalDmg: this.physicalDmg("mob"),
-                physicalDef: this.physicalDef("mob"),
-            };
-        },
-        isAttackDisabled() {
-            return this.isAnimating;
-        },
-    },
-    mounted() {
-        this.initGame();
-    },
-    methods: {
-        initGame() {
-            this.initCards();
-            this.baseStats.person.attack = this.char.character.stats.attack;
-            this.baseStats.person.defence = this.char.character.stats.defence;
-            this.baseStats.person.critical = this.char.character.stats.critical;
-            this.baseStats.person.hp = this.char.character.stats.hp;
-            this.baseStats.person.mp = this.char.character.stats.mp;
-            this.baseStats.person.hitChance = this.char.character.stats.hitChance;
-            this.baseStats.person.dodge = this.char.character.stats.dodge;
-            this.baseStats.person.speed = this.char.character.stats.speed;
-            this.baseStats.person.currentHp = this.maxHp("person");
-            this.baseStats.person.currentMp = this.maxMp("person");
-        },
-        initCards() {
-            this.playerHand = this.getRandomCards(5);
-            this.playedCardsThisTurn = [];
-            this.baseStats.person.currentMp = this.maxMp("person");
-        },
-        getRandomCards(count) {
-            const shuffled = [...this.allCards].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, count);
-        },
-        getStat(target, stat) {
-            let base = this.baseStats[target][stat];
-            const statuses = target === "person" ? this.playerStatuses : this.mobStatuses;
-            statuses.forEach(status => {
-                if (status.type === "statModifier" && status.stat === stat) {
-                    base += status.value;
-                }
-            });
-            return base;
-        },
-        maxHp(target, bonus = 0) {
-            return this.getStat(target, "hp") + bonus;
-        },
-        maxMp(target, bonus = 0) {
-            return this.getStat(target, "mp") + bonus;
-        },
-        physicalDmg(target, bonus = 0) {
-            return this.getStat(target, "attack") + bonus;
-        },
-        physicalDef(target, bonus = 0) {
-            return this.getStat(target, "defence") + bonus;
-        },
-        speed(target, bonus = 0) {
-            return this.getStat(target, "speed") + bonus;
-        },
-        dodge(target, bonus = 0) {
-            return this.getStat(target, "dodge") + bonus;
-        },
-        criticalDmg(target, bonus = 0) {
-            return this.getStat(target, "critical") + bonus;
-        },
-        hitChance(target, bonus = 0) {
-            return this.getStat(target, "hitChance") + bonus;
-        },
-        playCard(cardIndex) {
-            const card = this.playerHand[cardIndex];
-            let manaCost = card.manaCost;
-            if (card.type === "attack" && this.gameFlags.spellCostReduction > 0) {
-                manaCost = Math.max(0, manaCost - this.gameFlags.spellCostReduction);
-            }
-            if (this.baseStats.person.currentMp >= manaCost) {
-                if (card.type === "attack" && this.gameFlags.noAttack) {
-                    this.addToLog("Нельзя атаковать из-за эффекта!");
-                    return;
-                }
-                if (card.type === "heal" && this.gameFlags.blockHealing) {
-                    this.addToLog("Исцеление заблокировано!");
-                    return;
-                }
-                this.baseStats.person.currentMp -= manaCost;
-                this.applyCardEffects(card);
-                this.playerHand.splice(cardIndex, 1);
-                if (this.gameFlags.doubleShotChance > 0 && Math.random() * 100 < this.gameFlags.doubleShotChance) {
-                    this.addToLog("Сработал дополнительный выстрел!");
-                    this.applyCardEffects(card);
-                }
-            } else {
-                this.addToLog("Недостаточно маны!");
-            }
-        },
-        applyCardEffects(card) {
-            this.playedCardsThisTurn.push(card.id);
-            let multiplier = 1;
-            if ("combo" in card.bonus) {
-                const combo = card.bonus.combo;
-                if (this.checkCondition(combo.condition)) {
-                    multiplier = combo.multiplier;
-                }
-            }
-            if ("lethalityBonus" in card.bonus && this.gameFlags.lethalityStacks > 0) {
-                multiplier *= card.bonus.lethalityBonus.multiplier;
-            }
-            let totalDamage = 0;
-            let attackCount = 1;
-            let ignoreDefense = 0;
-            for (const [key, value] of Object.entries(card.bonus)) {
-                if (key === "attack") {
-                    totalDamage += (value * multiplier) + (card.id === "monk-spiritual-strike" ? this.gameFlags.spiritualStrikeBonus : 0);
-                } else if (key === "count") {
-                    attackCount = value;
-                } else if (key === "ignoreDefense") {
-                    ignoreDefense = value;
-                } else if (key === "heal") {
-                    this.healPlayer(value * multiplier);
-                } else if (["attack", "critical", "hp", "mp", "hitChance", "dodge", "speed", "defence"].includes(key)) {
-                    const statModifier = value;
-                    const modifiedValue = statModifier.value * multiplier;
-                    const target = modifiedValue > 0 ? "self" : "enemy";
-                    this.applyStatModifier(key, modifiedValue, statModifier.duration || 1, target, card.id);
-                } else if (key === "burn") {
-                    const burn = value;
-                    this.applyStatus("enemy", {
-                        type: "burn",
-                        value: burn.value * multiplier,
-                        duration: burn.duration || 3,
-                        stacks: burn.stacks || 1,
-                    });
-                } else if (key === "freeze") {
-                    const freeze = value;
-                    this.applyStatus("enemy", { type: "freeze", duration: freeze.duration || 1 });
-                } else if (key === "stun") {
-                    const stun = value;
-                    if (!stun.condition || this.checkCondition(stun.condition)) {
-                        this.applyStatus("enemy", {
-                            type: "stun",
-                            duration: stun.duration * (card.bonus.lethalityBonus && this.gameFlags.lethalityStacks > 0 ? card.bonus.lethalityBonus.multiplier : 1),
-                        });
-                    }
-                } else if (key === "lethality") {
-                    this.gameFlags.lethalityStacks += value.stacks;
-                } else if (key === "poison") {
-                    const poison = value;
-                    this.applyStatus("enemy", {
-                        type: "poison",
-                        value: poison.value * multiplier,
-                        duration: poison.duration || 2,
-                    });
-                } else if (key === "mana") {
-                    this.baseStats.person.currentMp = Math.min(this.baseStats.person.currentMp + (value * multiplier), this.maxMp("person"));
-                    this.addToLog(`Восстановлено ${value * multiplier} маны`);
-                } else if (key === "doubleShot") {
-                    this.gameFlags.doubleShotChance = value.chance;
-                } else if (key === "criticalChance") {
-                    this.applyStatModifier("critical", value.value * multiplier, value.condition === "untilMiss" ? Infinity : 1, "self", card.id);
-                } else if (key === "nextSpiritualStrike") {
-                    this.gameFlags.spiritualStrikeBonus += value.bonus;
-                } else if (key === "nextAttack") {
-                    this.gameFlags.nextAttackBonus += value.bonus;
-                } else if (key === "counterAttack") {
-                    this.applyStatus("self", {
-                        type: "counterAttack",
-                        value: value * multiplier,
-                        duration: card.bonus.duration || 1,
-                    });
-                } else if (key === "debuff") {
-                    const debuff = value;
-                    debuff.stats.forEach(stat => {
-                        if (stat === "all") {
-                            ["attack", "critical", "hitChance", "dodge", "speed", "defence"].forEach(s => {
-                                this.applyStatModifier(s, debuff.value * multiplier, debuff.duration, "enemy", card.id);
-                            });
-                        } else {
-                            this.applyStatModifier(stat, debuff.value * multiplier, debuff.duration, "enemy", card.id);
-                        }
-                    });
-                } else if (key === "invulnerability") {
-                    this.gameFlags.invulnerable = true;
-                    this.applyStatus("self", { type: "invulnerable", duration: value.duration });
-                } else if (key === "noAttack") {
-                    this.gameFlags.noAttack = true;
-                    this.applyStatus("self", { type: "noAttack", duration: value.duration });
-                } else if (key === "redirectAttack") {
-                    this.gameFlags.redirectAttack = true;
-                    this.applyStatus("self", { type: "redirectAttack", duration: value.duration });
-                } else if (key === "block") {
-                    this.gameFlags.blockAttacks = value.attacks;
-                    this.applyStatus("self", { type: "block", value: value.attacks, duration: 1 });
-                } else if (key === "healOnDamage") {
-                    this.gameFlags.healOnDamage = value.value * multiplier;
-                    this.applyStatus("self", {
-                        type: "healOnDamage",
-                        value: value.value * multiplier,
-                        duration: value.duration,
-                    });
-                } else if (key === "transform") {
-                    const transform = value;
-                    if (this.checkCondition(transform.condition)) {
-                        this.gameFlags.transformActive = true;
-                        this.gameFlags.transformAttack = transform.attack * multiplier;
-                        this.applyStatus("self", {
-                            type: "transform",
-                            value: transform.attack * multiplier,
-                            duration: transform.duration === "permanent" ? Infinity : transform.duration,
-                        });
-                    }
-                } else if (key === "multiStrike") {
-                    const multiStrike = value;
-                    if (Math.random() * 100 < multiStrike.chance * multiplier) {
-                        for (let i = 0; i < multiStrike.strikes; i++) {
-                            this.doAttack(card.bonus.attack || 1, ignoreDefense);
-                        }
-                    }
-                } else if (key === "spellDamage") {
-                    this.gameFlags.spellDamageBonus = value * multiplier;
-                    this.applyStatus("self", {
-                        type: "spellDamage",
-                        value: value * multiplier,
-                        duration: card.bonus.duration || 1,
-                    });
-                } else if (key === "spellCostReduction") {
-                    this.gameFlags.spellCostReduction = value * multiplier;
-                    this.applyStatus("self", {
-                        type: "spellCostReduction",
-                        value: value * multiplier,
-                        duration: card.bonus.duration || 1,
-                    });
-                } else if (key === "debuffImmunity") {
-                    this.gameFlags.debuffImmunity = true;
-                    this.applyStatus("self", { type: "debuffImmunity", duration: value.duration });
-                } else if (key === "missChance") {
-                    this.applyStatus("enemy", {
-                        type: "missChance",
-                        value: value.value * multiplier,
-                        duration: value.duration,
-                    });
-                } else if (key === "damageReduction") {
-                    this.gameFlags.damageReduction = value.value * multiplier;
-                    this.applyStatus("self", {
-                        type: "damageReduction",
-                        value: value.value * multiplier,
-                        duration: value.duration,
-                    });
-                } else if (key === "blockHealing") {
-                    this.gameFlags.blockHealing = true;
-                    this.applyStatus("self", { type: "blockHealing", duration: value === true ? Infinity : 1 });
-                } else if (key === "autoAttackBurn") {
-                    this.gameFlags.autoAttackBurnChance = value.chance * multiplier;
-                    this.gameFlags.autoAttackBurnStacks = value.stacks || 1;
-                    this.applyStatus("self", {
-                        type: "autoAttackBurn",
-                        value: value.chance * multiplier,
-                        duration: value.duration,
-                    });
-                } else if (key === "conditionalDamage") {
-                    const condDamage = value;
-                    if (this.checkCondition(condDamage.condition)) {
-                        totalDamage += condDamage.value * multiplier;
-                    }
-                } else if (key === "conditionalAttack") {
-                    const condAttack = value;
-                    if (this.checkCondition(condAttack.condition)) {
-                        totalDamage += condAttack.value * multiplier;
-                    }
-                } else if (key === "extraAttack") {
-                    const extraAttack = value;
-                    if (Math.random() * 100 < extraAttack.chance * multiplier) {
-                        totalDamage += extraAttack.value * multiplier;
-                    }
-                } else if (key === "burnStacks") {
-                    this.applyStatus("self", {
-                        type: "burnStacks",
-                        value: value.value * multiplier,
-                        duration: value.duration,
-                    });
-                } else if (key === "copyCard") {
-                    const copy = value;
-                    const eligibleCards = this.playerHand.filter(c => !copy.exclude || c.rare !== copy.exclude);
-                    if (eligibleCards.length > 0) {
-                        const randomCard = eligibleCards[Math.floor(Math.random() * eligibleCards.length)];
-                        this.applyCardEffects(randomCard);
-                        this.addToLog(`Скопирована карта: ${randomCard.name}`);
-                    }
-                }
-            }
-            if (attackCount > 1) {
-                let allHit = true;
-                for (let i = 0; i < attackCount; i++) {
-                    const perAttackDamage = (card.bonus.attack || 1) * multiplier + (this.gameFlags.nextAttackBonus || 0);
-                    const hit = this.doAttack(perAttackDamage, ignoreDefense);
-                    if (!hit) {
-                        allHit = false;
-                    }
-                    this.gameFlags.nextAttackBonus = 0;
-                }
-                if (allHit && "criticalNext" in card.bonus) {
-                    this.gameFlags.nextCritical = true;
-                }
-            } else if (totalDamage > 0) {
-                totalDamage += this.gameFlags.nextAttackBonus || 0;
-                if (card.type === "attack" && this.gameFlags.spellDamageBonus > 0) {
-                    totalDamage += this.gameFlags.spellDamageBonus;
-                }
-                this.doAttack(totalDamage, ignoreDefense);
-                this.gameFlags.nextAttackBonus = 0;
-                if (this.gameFlags.autoAttackBurnChance > 0 && Math.random() * 100 < this.gameFlags.autoAttackBurnChance) {
-                    this.applyStatus("enemy", {
-                        type: "burn",
-                        value: 1,
-                        duration: 2,
-                        stacks: this.gameFlags.autoAttackBurnStacks,
-                    });
-                }
-            }
-            if ("attackPerBurnStack" in card.bonus) {
-                const burnStacks = this.mobStatuses.filter(s => s.type === "burn").reduce((sum, s) => sum + (s.stacks || 1), 0);
-                const totalDamage = card.bonus.attackPerBurnStack * burnStacks * multiplier;
-                this.doAttack(totalDamage, ignoreDefense);
-            }
-            if ("healPerBurnStack" in card.bonus) {
-                const burnStacks = this.mobStatuses.filter(s => s.type === "burn").reduce((sum, s) => sum + (s.stacks || 1), 0);
-                const totalHeal = card.bonus.healPerBurnStack * burnStacks * multiplier;
-                this.healPlayer(totalHeal);
-            }
-            if ("stun" in card.bonus && card.id === "inferno-flame-control") {
-                const burnStacks = this.mobStatuses.filter(s => s.type === "burn").reduce((sum, s) => sum + (s.stacks || 1), 0);
-                const stunDuration = Math.floor(burnStacks / 5);
-                if (stunDuration > 0) {
-                    this.applyStatus("enemy", { type: "stun", duration: stunDuration });
-                }
-            }
-        },
-        doAttack(damage, ignoreDefense = 0) {
-            const hitRoll = Math.random() * 100;
-            let hitChance = this.getStat("person", "hitChance");
-            const dodge = this.getStat("mob", "dodge");
-            const missChance = this.mobStatuses.find(s => s.type === "missChance")?.value || 0;
-            if (hitRoll > hitChance - dodge || Math.random() * 100 < missChance) {
-                this.addToLog("Промах!");
-                this.playerStatuses = this.playerStatuses.filter(s => s.type !== "statModifier" || s.duration !== Infinity);
-                return false;
-            }
-            let effectiveDefense = this.getStat("mob", "defence");
-            effectiveDefense = Math.max(0, effectiveDefense - ignoreDefense);
-            let actualDamage = Math.max(1, damage - effectiveDefense);
-            if (this.gameFlags.nextCritical || Math.random() * 100 < this.getStat("person", "critical")) {
-                actualDamage *= 2;
-                this.gameFlags.nextCritical = false;
-                this.addToLog("Критический удар!");
-            }
-            this.baseStats.mob.currentHp = Math.max(0, this.baseStats.mob.currentHp - actualDamage);
-            this.addToLog(`Нанесено ${actualDamage} урона врагу`);
-            return true;
-        },
-        healPlayer(amount) {
-            this.baseStats.person.currentHp = Math.min(this.baseStats.person.currentHp + amount, this.maxHp("person"));
-            this.addToLog(`Восстановлено ${amount} HP`);
-        },
-        applyStatModifier(stat, value, duration, target, source) {
-            if (target === "enemy" && this.gameFlags.debuffImmunity) return;
-            const status = { type: "statModifier", stat, value, duration, source };
-            if (target === "self") {
-                this.playerStatuses.push(status);
-            } else {
-                this.mobStatuses.push(status);
-            }
-        },
-        applyStatus(target, status) {
-            if (target === "enemy" && this.gameFlags.debuffImmunity) return;
-            if (target === "self") {
-                this.playerStatuses.push(status);
-            } else {
-                this.mobStatuses.push(status);
-            }
-        },
-        checkCondition(condition) {
-            if (condition === "twoTraps") {
-                return this.mobStatuses.filter(s => s.source === "ranger-hunting-trap").length >= 2;
-            } else if (condition === "allHits") {
-                return this.gameFlags.allHits;
-            } else if (condition === "twoSmallFlames") {
-                return this.playedCardsThisTurn.filter(id => id === "inferno-small-flame").length >= 2;
-            } else if (condition === "10burnStacks") {
-                return this.mobStatuses.filter(s => s.type === "burn").reduce((sum, s) => sum + (s.stacks || 1), 0) >= 10;
-            } else if (condition === "enemyHP") {
-                const hpPercent = (this.baseStats.mob.currentHp / this.maxHp("mob")) * 100;
-                return hpPercent < 50 ? -1 : 1;
-            } else if (condition === "manaAbove50") {
-                return (this.baseStats.person.currentMp / this.maxMp("person")) * 100 > 50;
-            }
-            return false;
-        },
-        endTurn() {
-            this.isAnimating = true;
-            this.processEffects();
-            if (!this.mobStatuses.some(s => s.type === "stun" || s.type === "freeze")) {
-                this.mobAttack();
-            }
-            if (this.gameFlags.transformActive) {
-                this.doAttack(this.gameFlags.transformAttack, 0);
-            }
-            this.decreaseEffectDurations();
-            this.showDice = true;
-            setTimeout(() => {
-                this.showDice = false;
-                this.initCards();
-                this.resetMessages();
-                this.isAnimating = false;
-            }, 1500);
-        },
-        processEffects() {
-            this.playerStatuses.forEach(status => {
-                if (status.type === "burn" || status.type === "poison") {
-                    this.baseStats.person.currentHp = Math.max(0, this.baseStats.person.currentHp - status.value);
-                    this.addToLog(`${status.type === "burn" ? "Поджог" : "Яд"} наносит ${status.value} урона персонажу`);
-                }
-            });
-            this.mobStatuses.forEach(status => {
-                if (status.type === "burn" || status.type === "poison") {
-                    this.baseStats.mob.currentHp = Math.max(0, this.baseStats.mob.currentHp - status.value);
-                    this.addToLog(`${status.type === "burn" ? "Поджог" : "Яд"} наносит ${status.value} урона мобу`);
-                }
-            });
-        },
-        decreaseEffectDurations() {
-            this.playerStatuses = this.playerStatuses.filter(status => {
-                status.duration -= 1;
-                if (status.duration <= 0) {
-                    if (status.type === "invulnerable") this.gameFlags.invulnerable = false;
-                    if (status.type === "noAttack") this.gameFlags.noAttack = false;
-                    if (status.type === "redirectAttack") this.gameFlags.redirectAttack = false;
-                    if (status.type === "block") this.gameFlags.blockAttacks = 0;
-                    if (status.type === "healOnDamage") this.gameFlags.healOnDamage = 0;
-                    if (status.type === "transform") {
-                        this.gameFlags.transformActive = false;
-                        this.gameFlags.transformAttack = 0;
-                    }
-                    if (status.type === "spellDamage") this.gameFlags.spellDamageBonus = 0;
-                    if (status.type === "spellCostReduction") this.gameFlags.spellCostReduction = 0;
-                    if (status.type === "debuffImmunity") this.gameFlags.debuffImmunity = false;
-                    if (status.type === "missChance") this.gameFlags.missChance = 0;
-                    if (status.type === "damageReduction") this.gameFlags.damageReduction = 0;
-                    if (status.type === "blockHealing") this.gameFlags.blockHealing = false;
-                    if (status.type === "autoAttackBurn") {
-                        this.gameFlags.autoAttackBurnChance = 0;
-                        this.gameFlags.autoAttackBurnStacks = 0;
-                    }
-                    return false;
-                }
-                return true;
-            });
-            this.mobStatuses = this.mobStatuses.filter(status => {
-                status.duration -= 1;
-                return status.duration > 0;
-            });
-        },
-        mobAttack() {
-            const hitRoll = Math.random() * 100;
-            const hitChance = this.getStat("mob", "hitChance");
-            const dodge = this.getStat("person", "dodge");
-            const missChance = this.playerStatuses.find(s => s.type === "missChance")?.value || 0;
-
-            if (hitRoll > hitChance - dodge || Math.random() * 100 < missChance) {
-                this.addToLog("Моб промахнулся!");
-                this.showActionText("mob", "Промах!", "miss");
-                return;
-            }
-
-            let damage = Math.max(1, this.physicalDmg("mob") - this.physicalDef("person"));
-            const isCritical = Math.random() * 100 < this.getStat("mob", "critical");
-            const criticalMultiplier = 2;
-
-            if (isCritical) {
-                damage *= criticalMultiplier;
-            }
-
-            if (this.gameFlags.blockAttacks > 0) {
-                this.gameFlags.blockAttacks -= 1;
-                this.addToLog("Атака моба заблокирована!");
-                this.showActionText("person", "Заблокировано!", "block");
-                return;
-            }
-
-            if (this.gameFlags.redirectAttack) {
-                this.baseStats.mob.currentHp = Math.max(0, this.baseStats.mob.currentHp - damage);
-                this.addToLog(`Урон перенаправлен! Моб получает ${damage} урона!`);
-                this.showActionText("mob", `-${damage}`, isCritical ? "dmg-critical" : "dmg");
-                if (this.baseStats.mob.currentHp <= 0) {
-                    this.addToLog("Моб побежден!");
-                    this.showActionText("mob", "Побежден!", "death");
-                }
-                return;
-            }
-
-            if (this.gameFlags.invulnerable) {
-                this.addToLog("Персонаж неуязвим и не получает урон!");
-                this.showActionText("person", "Неуязвим!", "invulnerable");
-                return;
-            }
-
-            if (this.gameFlags.damageReduction > 0) {
-                damage = Math.max(1, damage - this.gameFlags.damageReduction);
-                this.addToLog(`Урон уменьшен на ${this.gameFlags.damageReduction}!`);
-            }
-
-            this.baseStats.person.currentHp = Math.max(0, this.baseStats.person.currentHp - damage);
-
-            if (isCritical) {
-                this.addToLog(`Критический удар! Моб наносит ${damage} урона!`);
-                this.showActionText("person", `-${damage} (КРИТ!)`, "dmg-critical");
-            } else {
-                this.addToLog(`Моб атакует и наносит ${damage} урона!`);
-                this.showActionText("person", `-${damage}`, "dmg");
-            }
-
-            if (this.gameFlags.healOnDamage > 0) {
-                const healAmount = this.gameFlags.healOnDamage;
-                this.healPlayer(healAmount);
-                this.addToLog(`Персонаж восстанавливает ${healAmount} HP при получении урона!`);
-            }
-
-            const counterAttack = this.playerStatuses.find(s => s.type === "counterAttack");
-            if (counterAttack) {
-                const counterDamage = counterAttack.value;
-                this.baseStats.mob.currentHp = Math.max(0, this.baseStats.mob.currentHp - counterDamage);
-                this.addToLog(`Контратака! Нанесено ${counterDamage} урона мобу!`);
-                this.showActionText("mob", `-${counterDamage}`, "dmg");
-            }
-
-            if (this.baseStats.person.currentHp <= 0) {
-                this.addToLog("Персонаж побежден!");
-                this.showActionText("person", "Побежден!", "death");
-            }
-
-            if (this.baseStats.mob.currentHp <= 0) {
-                this.addToLog("Моб побежден!");
-                this.showActionText("mob", "Побежден!", "death");
-            }
-        },
-        showActionText(target, message, type = "") {
-            this.messages[target] = { message, type };
-        },
-        resetMessages() {
-            this.messages.person = { type: "", message: "" };
-            this.messages.mob = { type: "", message: "" };
-            this.messages.turnKey++;
-        },
-        addToLog(message) {
-            this.battleLog.unshift(message);
-        },
-    },
+    // setup() {
+    //     let char = usePersonState();
+    //     return {
+    //         char
+    //     }
+    // },
+    // data() {
+    //     return {
+    //         playerHand: [],
+    //         battleLog: [],
+    //         isAnimating: false,
+    //         turnCount: 1,
+    //         baseStats: {
+    //             person: {
+    //                 attack: 2,
+    //                 critical: 2,
+    //                 hp: 10,
+    //                 mp: 10,
+    //                 hitChance: 50,
+    //                 dodge: 20,
+    //                 speed: 2,
+    //                 defence: 3,
+    //                 currentHp: 10,
+    //                 currentMp: 10,
+    //             },
+    //             mob: {
+    //                 attack: 1,
+    //                 critical: 5,
+    //                 hp: 15,
+    //                 mp: 1,
+    //                 hitChance: 50,
+    //                 dodge: 20,
+    //                 speed: 1,
+    //                 defence: 5,
+    //                 currentHp: 15,
+    //                 currentMp: 1,
+    //             },
+    //         },
+    //         cardBonuses: {
+    //             person: {
+    //                 attack: 0,
+    //                 critical: 0,
+    //                 hp: 0,
+    //                 mp: 0,
+    //                 hitChance: 0,
+    //                 dodge: 0,
+    //                 speed: 0,
+    //                 defence: 0,
+    //             },
+    //         },
+    //         playerStatuses: [],
+    //         mobStatuses: [],
+    //         messages: {
+    //             person: { type: "", message: "" },
+    //             mob: { type: "", message: "" },
+    //             turnKey: 0,
+    //         },
+    //         showDice: false,
+    //         playedCardsThisTurn: [],
+    //         gameFlags: {
+    //             nextCritical: false,
+    //             allHits: false,
+    //             lethalityStacks: 0,
+    //             burnStacks: 0,
+    //             doubleShotChance: 0,
+    //             spiritualStrikeBonus: 0,
+    //             nextAttackBonus: 0,
+    //             invulnerable: false,
+    //             noAttack: false,
+    //             redirectAttack: false,
+    //             blockAttacks: 0,
+    //             healOnDamage: 0,
+    //             transformActive: false,
+    //             transformAttack: 0,
+    //             spellDamageBonus: 0,
+    //             spellCostReduction: 0,
+    //             debuffImmunity: false,
+    //             missChance: 0,
+    //             damageReduction: 0,
+    //             blockHealing: false,
+    //             autoAttackBurnChance: 0,
+    //             autoAttackBurnStacks: 0,
+    //         },
+    //     };
+    // },
+    // computed: {
+    //     allCards() {
+    //         return cardsByClass["arcanist"] || [];
+    //     },
+    //     personStats() {
+    //         let stats = { ...this.baseStats.person };
+    //         this.playerStatuses.forEach(status => {
+    //             if (status.type === "statModifier") {
+    //                 stats[status.stat] += status.value;
+    //             }
+    //         });
+    //         return {
+    //             ...stats,
+    //             physicalDmg: this.physicalDmg("person"),
+    //             physicalDef: this.physicalDef("person"),
+    //         };
+    //     },
+    //     mobStats() {
+    //         let stats = { ...this.baseStats.mob };
+    //         this.mobStatuses.forEach(status => {
+    //             if (status.type === "statModifier") {
+    //                 stats[status.stat] += status.value;
+    //             }
+    //         });
+    //         return {
+    //             ...stats,
+    //             physicalDmg: this.physicalDmg("mob"),
+    //             physicalDef: this.physicalDef("mob"),
+    //         };
+    //     },
+    //     isAttackDisabled() {
+    //         return this.isAnimating;
+    //     },
+    // },
+    // mounted() {
+    //     this.initGame();
+    // },
+    // methods: {
+    //     initGame() {
+    //         this.initCards();
+    //         this.baseStats.person.attack = this.char.character.stats.attack;
+    //         this.baseStats.person.defence = this.char.character.stats.defence;
+    //         this.baseStats.person.critical = this.char.character.stats.critical;
+    //         this.baseStats.person.hp = this.char.character.stats.hp;
+    //         this.baseStats.person.mp = this.char.character.stats.mp;
+    //         this.baseStats.person.hitChance = this.char.character.stats.hitChance;
+    //         this.baseStats.person.dodge = this.char.character.stats.dodge;
+    //         this.baseStats.person.speed = this.char.character.stats.speed;
+    //         this.baseStats.person.currentHp = this.maxHp("person");
+    //         this.baseStats.person.currentMp = this.maxMp("person");
+    //     },
+    //     initCards() {
+    //         this.playerHand = this.getRandomCards(5);
+    //         this.playedCardsThisTurn = [];
+    //         this.baseStats.person.currentMp = this.maxMp("person");
+    //     },
+    //     getRandomCards(count) {
+    //         const shuffled = [...this.allCards].sort(() => 0.5 - Math.random());
+    //         return shuffled.slice(0, count);
+    //     },
+    //     getStat(target, stat) {
+    //         let base = this.baseStats[target][stat];
+    //         const statuses = target === "person" ? this.playerStatuses : this.mobStatuses;
+    //         statuses.forEach(status => {
+    //             if (status.type === "statModifier" && status.stat === stat) {
+    //                 base += status.value;
+    //             }
+    //         });
+    //         return base;
+    //     },
+    //     maxHp(target, bonus = 0) {
+    //         return this.getStat(target, "hp") + bonus;
+    //     },
+    //     maxMp(target, bonus = 0) {
+    //         return this.getStat(target, "mp") + bonus;
+    //     },
+    //     physicalDmg(target, bonus = 0) {
+    //         return this.getStat(target, "attack") + bonus;
+    //     },
+    //     physicalDef(target, bonus = 0) {
+    //         return this.getStat(target, "defence") + bonus;
+    //     },
+    //     speed(target, bonus = 0) {
+    //         return this.getStat(target, "speed") + bonus;
+    //     },
+    //     dodge(target, bonus = 0) {
+    //         return this.getStat(target, "dodge") + bonus;
+    //     },
+    //     criticalDmg(target, bonus = 0) {
+    //         return this.getStat(target, "critical") + bonus;
+    //     },
+    //     hitChance(target, bonus = 0) {
+    //         return this.getStat(target, "hitChance") + bonus;
+    //     },
+    //     playCard(cardIndex) {
+    //         const card = this.playerHand[cardIndex];
+    //         let manaCost = card.manaCost;
+    //         if (card.type === "attack" && this.gameFlags.spellCostReduction > 0) {
+    //             manaCost = Math.max(0, manaCost - this.gameFlags.spellCostReduction);
+    //         }
+    //         if (this.baseStats.person.currentMp >= manaCost) {
+    //             if (card.type === "attack" && this.gameFlags.noAttack) {
+    //                 this.addToLog("Нельзя атаковать из-за эффекта!");
+    //                 return;
+    //             }
+    //             if (card.type === "heal" && this.gameFlags.blockHealing) {
+    //                 this.addToLog("Исцеление заблокировано!");
+    //                 return;
+    //             }
+    //             this.baseStats.person.currentMp -= manaCost;
+    //             this.applyCardEffects(card);
+    //             this.playerHand.splice(cardIndex, 1);
+    //             if (this.gameFlags.doubleShotChance > 0 && Math.random() * 100 < this.gameFlags.doubleShotChance) {
+    //                 this.addToLog("Сработал дополнительный выстрел!");
+    //                 this.applyCardEffects(card);
+    //             }
+    //         } else {
+    //             this.addToLog("Недостаточно маны!");
+    //         }
+    //     },
+    //     applyCardEffects(card) {
+    //         this.playedCardsThisTurn.push(card.id);
+    //         let multiplier = 1;
+    //         if ("combo" in card.bonus) {
+    //             const combo = card.bonus.combo;
+    //             if (this.checkCondition(combo.condition)) {
+    //                 multiplier = combo.multiplier;
+    //             }
+    //         }
+    //         if ("lethalityBonus" in card.bonus && this.gameFlags.lethalityStacks > 0) {
+    //             multiplier *= card.bonus.lethalityBonus.multiplier;
+    //         }
+    //         let totalDamage = 0;
+    //         let attackCount = 1;
+    //         let ignoreDefense = 0;
+    //         for (const [key, value] of Object.entries(card.bonus)) {
+    //             if (key === "attack") {
+    //                 totalDamage += (value * multiplier) + (card.id === "monk-spiritual-strike" ? this.gameFlags.spiritualStrikeBonus : 0);
+    //             } else if (key === "count") {
+    //                 attackCount = value;
+    //             } else if (key === "ignoreDefense") {
+    //                 ignoreDefense = value;
+    //             } else if (key === "heal") {
+    //                 this.healPlayer(value * multiplier);
+    //             } else if (["attack", "critical", "hp", "mp", "hitChance", "dodge", "speed", "defence"].includes(key)) {
+    //                 const statModifier = value;
+    //                 const modifiedValue = statModifier.value * multiplier;
+    //                 const target = modifiedValue > 0 ? "self" : "enemy";
+    //                 this.applyStatModifier(key, modifiedValue, statModifier.duration || 1, target, card.id);
+    //             } else if (key === "burn") {
+    //                 const burn = value;
+    //                 this.applyStatus("enemy", {
+    //                     type: "burn",
+    //                     value: burn.value * multiplier,
+    //                     duration: burn.duration || 3,
+    //                     stacks: burn.stacks || 1,
+    //                 });
+    //             } else if (key === "freeze") {
+    //                 const freeze = value;
+    //                 this.applyStatus("enemy", { type: "freeze", duration: freeze.duration || 1 });
+    //             } else if (key === "stun") {
+    //                 const stun = value;
+    //                 if (!stun.condition || this.checkCondition(stun.condition)) {
+    //                     this.applyStatus("enemy", {
+    //                         type: "stun",
+    //                         duration: stun.duration * (card.bonus.lethalityBonus && this.gameFlags.lethalityStacks > 0 ? card.bonus.lethalityBonus.multiplier : 1),
+    //                     });
+    //                 }
+    //             } else if (key === "lethality") {
+    //                 this.gameFlags.lethalityStacks += value.stacks;
+    //             } else if (key === "poison") {
+    //                 const poison = value;
+    //                 this.applyStatus("enemy", {
+    //                     type: "poison",
+    //                     value: poison.value * multiplier,
+    //                     duration: poison.duration || 2,
+    //                 });
+    //             } else if (key === "mana") {
+    //                 this.baseStats.person.currentMp = Math.min(this.baseStats.person.currentMp + (value * multiplier), this.maxMp("person"));
+    //                 this.addToLog(`Восстановлено ${value * multiplier} маны`);
+    //             } else if (key === "doubleShot") {
+    //                 this.gameFlags.doubleShotChance = value.chance;
+    //             } else if (key === "criticalChance") {
+    //                 this.applyStatModifier("critical", value.value * multiplier, value.condition === "untilMiss" ? Infinity : 1, "self", card.id);
+    //             } else if (key === "nextSpiritualStrike") {
+    //                 this.gameFlags.spiritualStrikeBonus += value.bonus;
+    //             } else if (key === "nextAttack") {
+    //                 this.gameFlags.nextAttackBonus += value.bonus;
+    //             } else if (key === "counterAttack") {
+    //                 this.applyStatus("self", {
+    //                     type: "counterAttack",
+    //                     value: value * multiplier,
+    //                     duration: card.bonus.duration || 1,
+    //                 });
+    //             } else if (key === "debuff") {
+    //                 const debuff = value;
+    //                 debuff.stats.forEach(stat => {
+    //                     if (stat === "all") {
+    //                         ["attack", "critical", "hitChance", "dodge", "speed", "defence"].forEach(s => {
+    //                             this.applyStatModifier(s, debuff.value * multiplier, debuff.duration, "enemy", card.id);
+    //                         });
+    //                     } else {
+    //                         this.applyStatModifier(stat, debuff.value * multiplier, debuff.duration, "enemy", card.id);
+    //                     }
+    //                 });
+    //             } else if (key === "invulnerability") {
+    //                 this.gameFlags.invulnerable = true;
+    //                 this.applyStatus("self", { type: "invulnerable", duration: value.duration });
+    //             } else if (key === "noAttack") {
+    //                 this.gameFlags.noAttack = true;
+    //                 this.applyStatus("self", { type: "noAttack", duration: value.duration });
+    //             } else if (key === "redirectAttack") {
+    //                 this.gameFlags.redirectAttack = true;
+    //                 this.applyStatus("self", { type: "redirectAttack", duration: value.duration });
+    //             } else if (key === "block") {
+    //                 this.gameFlags.blockAttacks = value.attacks;
+    //                 this.applyStatus("self", { type: "block", value: value.attacks, duration: 1 });
+    //             } else if (key === "healOnDamage") {
+    //                 this.gameFlags.healOnDamage = value.value * multiplier;
+    //                 this.applyStatus("self", {
+    //                     type: "healOnDamage",
+    //                     value: value.value * multiplier,
+    //                     duration: value.duration,
+    //                 });
+    //             } else if (key === "transform") {
+    //                 const transform = value;
+    //                 if (this.checkCondition(transform.condition)) {
+    //                     this.gameFlags.transformActive = true;
+    //                     this.gameFlags.transformAttack = transform.attack * multiplier;
+    //                     this.applyStatus("self", {
+    //                         type: "transform",
+    //                         value: transform.attack * multiplier,
+    //                         duration: transform.duration === "permanent" ? Infinity : transform.duration,
+    //                     });
+    //                 }
+    //             } else if (key === "multiStrike") {
+    //                 const multiStrike = value;
+    //                 if (Math.random() * 100 < multiStrike.chance * multiplier) {
+    //                     for (let i = 0; i < multiStrike.strikes; i++) {
+    //                         this.doAttack(card.bonus.attack || 1, ignoreDefense);
+    //                     }
+    //                 }
+    //             } else if (key === "spellDamage") {
+    //                 this.gameFlags.spellDamageBonus = value * multiplier;
+    //                 this.applyStatus("self", {
+    //                     type: "spellDamage",
+    //                     value: value * multiplier,
+    //                     duration: card.bonus.duration || 1,
+    //                 });
+    //             } else if (key === "spellCostReduction") {
+    //                 this.gameFlags.spellCostReduction = value * multiplier;
+    //                 this.applyStatus("self", {
+    //                     type: "spellCostReduction",
+    //                     value: value * multiplier,
+    //                     duration: card.bonus.duration || 1,
+    //                 });
+    //             } else if (key === "debuffImmunity") {
+    //                 this.gameFlags.debuffImmunity = true;
+    //                 this.applyStatus("self", { type: "debuffImmunity", duration: value.duration });
+    //             } else if (key === "missChance") {
+    //                 this.applyStatus("enemy", {
+    //                     type: "missChance",
+    //                     value: value.value * multiplier,
+    //                     duration: value.duration,
+    //                 });
+    //             } else if (key === "damageReduction") {
+    //                 this.gameFlags.damageReduction = value.value * multiplier;
+    //                 this.applyStatus("self", {
+    //                     type: "damageReduction",
+    //                     value: value.value * multiplier,
+    //                     duration: value.duration,
+    //                 });
+    //             } else if (key === "blockHealing") {
+    //                 this.gameFlags.blockHealing = true;
+    //                 this.applyStatus("self", { type: "blockHealing", duration: value === true ? Infinity : 1 });
+    //             } else if (key === "autoAttackBurn") {
+    //                 this.gameFlags.autoAttackBurnChance = value.chance * multiplier;
+    //                 this.gameFlags.autoAttackBurnStacks = value.stacks || 1;
+    //                 this.applyStatus("self", {
+    //                     type: "autoAttackBurn",
+    //                     value: value.chance * multiplier,
+    //                     duration: value.duration,
+    //                 });
+    //             } else if (key === "conditionalDamage") {
+    //                 const condDamage = value;
+    //                 if (this.checkCondition(condDamage.condition)) {
+    //                     totalDamage += condDamage.value * multiplier;
+    //                 }
+    //             } else if (key === "conditionalAttack") {
+    //                 const condAttack = value;
+    //                 if (this.checkCondition(condAttack.condition)) {
+    //                     totalDamage += condAttack.value * multiplier;
+    //                 }
+    //             } else if (key === "extraAttack") {
+    //                 const extraAttack = value;
+    //                 if (Math.random() * 100 < extraAttack.chance * multiplier) {
+    //                     totalDamage += extraAttack.value * multiplier;
+    //                 }
+    //             } else if (key === "burnStacks") {
+    //                 this.applyStatus("self", {
+    //                     type: "burnStacks",
+    //                     value: value.value * multiplier,
+    //                     duration: value.duration,
+    //                 });
+    //             } else if (key === "copyCard") {
+    //                 const copy = value;
+    //                 const eligibleCards = this.playerHand.filter(c => !copy.exclude || c.rare !== copy.exclude);
+    //                 if (eligibleCards.length > 0) {
+    //                     const randomCard = eligibleCards[Math.floor(Math.random() * eligibleCards.length)];
+    //                     this.applyCardEffects(randomCard);
+    //                     this.addToLog(`Скопирована карта: ${randomCard.name}`);
+    //                 }
+    //             }
+    //         }
+    //         if (attackCount > 1) {
+    //             let allHit = true;
+    //             for (let i = 0; i < attackCount; i++) {
+    //                 const perAttackDamage = (card.bonus.attack || 1) * multiplier + (this.gameFlags.nextAttackBonus || 0);
+    //                 const hit = this.doAttack(perAttackDamage, ignoreDefense);
+    //                 if (!hit) {
+    //                     allHit = false;
+    //                 }
+    //                 this.gameFlags.nextAttackBonus = 0;
+    //             }
+    //             if (allHit && "criticalNext" in card.bonus) {
+    //                 this.gameFlags.nextCritical = true;
+    //             }
+    //         } else if (totalDamage > 0) {
+    //             totalDamage += this.gameFlags.nextAttackBonus || 0;
+    //             if (card.type === "attack" && this.gameFlags.spellDamageBonus > 0) {
+    //                 totalDamage += this.gameFlags.spellDamageBonus;
+    //             }
+    //             this.doAttack(totalDamage, ignoreDefense);
+    //             this.gameFlags.nextAttackBonus = 0;
+    //             if (this.gameFlags.autoAttackBurnChance > 0 && Math.random() * 100 < this.gameFlags.autoAttackBurnChance) {
+    //                 this.applyStatus("enemy", {
+    //                     type: "burn",
+    //                     value: 1,
+    //                     duration: 2,
+    //                     stacks: this.gameFlags.autoAttackBurnStacks,
+    //                 });
+    //             }
+    //         }
+    //         if ("attackPerBurnStack" in card.bonus) {
+    //             const burnStacks = this.mobStatuses.filter(s => s.type === "burn").reduce((sum, s) => sum + (s.stacks || 1), 0);
+    //             const totalDamage = card.bonus.attackPerBurnStack * burnStacks * multiplier;
+    //             this.doAttack(totalDamage, ignoreDefense);
+    //         }
+    //         if ("healPerBurnStack" in card.bonus) {
+    //             const burnStacks = this.mobStatuses.filter(s => s.type === "burn").reduce((sum, s) => sum + (s.stacks || 1), 0);
+    //             const totalHeal = card.bonus.healPerBurnStack * burnStacks * multiplier;
+    //             this.healPlayer(totalHeal);
+    //         }
+    //         if ("stun" in card.bonus && card.id === "inferno-flame-control") {
+    //             const burnStacks = this.mobStatuses.filter(s => s.type === "burn").reduce((sum, s) => sum + (s.stacks || 1), 0);
+    //             const stunDuration = Math.floor(burnStacks / 5);
+    //             if (stunDuration > 0) {
+    //                 this.applyStatus("enemy", { type: "stun", duration: stunDuration });
+    //             }
+    //         }
+    //     },
+    //     doAttack(damage, ignoreDefense = 0) {
+    //         const hitRoll = Math.random() * 100;
+    //         let hitChance = this.getStat("person", "hitChance");
+    //         const dodge = this.getStat("mob", "dodge");
+    //         const missChance = this.mobStatuses.find(s => s.type === "missChance")?.value || 0;
+    //         if (hitRoll > hitChance - dodge || Math.random() * 100 < missChance) {
+    //             this.addToLog("Промах!");
+    //             this.playerStatuses = this.playerStatuses.filter(s => s.type !== "statModifier" || s.duration !== Infinity);
+    //             return false;
+    //         }
+    //         let effectiveDefense = this.getStat("mob", "defence");
+    //         effectiveDefense = Math.max(0, effectiveDefense - ignoreDefense);
+    //         let actualDamage = Math.max(1, damage - effectiveDefense);
+    //         if (this.gameFlags.nextCritical || Math.random() * 100 < this.getStat("person", "critical")) {
+    //             actualDamage *= 2;
+    //             this.gameFlags.nextCritical = false;
+    //             this.addToLog("Критический удар!");
+    //         }
+    //         this.baseStats.mob.currentHp = Math.max(0, this.baseStats.mob.currentHp - actualDamage);
+    //         this.addToLog(`Нанесено ${actualDamage} урона врагу`);
+    //         return true;
+    //     },
+    //     healPlayer(amount) {
+    //         this.baseStats.person.currentHp = Math.min(this.baseStats.person.currentHp + amount, this.maxHp("person"));
+    //         this.addToLog(`Восстановлено ${amount} HP`);
+    //     },
+    //     applyStatModifier(stat, value, duration, target, source) {
+    //         if (target === "enemy" && this.gameFlags.debuffImmunity) return;
+    //         const status = { type: "statModifier", stat, value, duration, source };
+    //         if (target === "self") {
+    //             this.playerStatuses.push(status);
+    //         } else {
+    //             this.mobStatuses.push(status);
+    //         }
+    //     },
+    //     applyStatus(target, status) {
+    //         if (target === "enemy" && this.gameFlags.debuffImmunity) return;
+    //         if (target === "self") {
+    //             this.playerStatuses.push(status);
+    //         } else {
+    //             this.mobStatuses.push(status);
+    //         }
+    //     },
+    //     checkCondition(condition) {
+    //         if (condition === "twoTraps") {
+    //             return this.mobStatuses.filter(s => s.source === "ranger-hunting-trap").length >= 2;
+    //         } else if (condition === "allHits") {
+    //             return this.gameFlags.allHits;
+    //         } else if (condition === "twoSmallFlames") {
+    //             return this.playedCardsThisTurn.filter(id => id === "inferno-small-flame").length >= 2;
+    //         } else if (condition === "10burnStacks") {
+    //             return this.mobStatuses.filter(s => s.type === "burn").reduce((sum, s) => sum + (s.stacks || 1), 0) >= 10;
+    //         } else if (condition === "enemyHP") {
+    //             const hpPercent = (this.baseStats.mob.currentHp / this.maxHp("mob")) * 100;
+    //             return hpPercent < 50 ? -1 : 1;
+    //         } else if (condition === "manaAbove50") {
+    //             return (this.baseStats.person.currentMp / this.maxMp("person")) * 100 > 50;
+    //         }
+    //         return false;
+    //     },
+    //     endTurn() {
+    //         this.isAnimating = true;
+    //         this.processEffects();
+    //         if (!this.mobStatuses.some(s => s.type === "stun" || s.type === "freeze")) {
+    //             this.mobAttack();
+    //         }
+    //         if (this.gameFlags.transformActive) {
+    //             this.doAttack(this.gameFlags.transformAttack, 0);
+    //         }
+    //         this.decreaseEffectDurations();
+    //         this.showDice = true;
+    //         setTimeout(() => {
+    //             this.showDice = false;
+    //             this.initCards();
+    //             this.resetMessages();
+    //             this.isAnimating = false;
+    //         }, 1500);
+    //     },
+    //     processEffects() {
+    //         this.playerStatuses.forEach(status => {
+    //             if (status.type === "burn" || status.type === "poison") {
+    //                 this.baseStats.person.currentHp = Math.max(0, this.baseStats.person.currentHp - status.value);
+    //                 this.addToLog(`${status.type === "burn" ? "Поджог" : "Яд"} наносит ${status.value} урона персонажу`);
+    //             }
+    //         });
+    //         this.mobStatuses.forEach(status => {
+    //             if (status.type === "burn" || status.type === "poison") {
+    //                 this.baseStats.mob.currentHp = Math.max(0, this.baseStats.mob.currentHp - status.value);
+    //                 this.addToLog(`${status.type === "burn" ? "Поджог" : "Яд"} наносит ${status.value} урона мобу`);
+    //             }
+    //         });
+    //     },
+    //     decreaseEffectDurations() {
+    //         this.playerStatuses = this.playerStatuses.filter(status => {
+    //             status.duration -= 1;
+    //             if (status.duration <= 0) {
+    //                 if (status.type === "invulnerable") this.gameFlags.invulnerable = false;
+    //                 if (status.type === "noAttack") this.gameFlags.noAttack = false;
+    //                 if (status.type === "redirectAttack") this.gameFlags.redirectAttack = false;
+    //                 if (status.type === "block") this.gameFlags.blockAttacks = 0;
+    //                 if (status.type === "healOnDamage") this.gameFlags.healOnDamage = 0;
+    //                 if (status.type === "transform") {
+    //                     this.gameFlags.transformActive = false;
+    //                     this.gameFlags.transformAttack = 0;
+    //                 }
+    //                 if (status.type === "spellDamage") this.gameFlags.spellDamageBonus = 0;
+    //                 if (status.type === "spellCostReduction") this.gameFlags.spellCostReduction = 0;
+    //                 if (status.type === "debuffImmunity") this.gameFlags.debuffImmunity = false;
+    //                 if (status.type === "missChance") this.gameFlags.missChance = 0;
+    //                 if (status.type === "damageReduction") this.gameFlags.damageReduction = 0;
+    //                 if (status.type === "blockHealing") this.gameFlags.blockHealing = false;
+    //                 if (status.type === "autoAttackBurn") {
+    //                     this.gameFlags.autoAttackBurnChance = 0;
+    //                     this.gameFlags.autoAttackBurnStacks = 0;
+    //                 }
+    //                 return false;
+    //             }
+    //             return true;
+    //         });
+    //         this.mobStatuses = this.mobStatuses.filter(status => {
+    //             status.duration -= 1;
+    //             return status.duration > 0;
+    //         });
+    //     },
+    //     mobAttack() {
+    //         const hitRoll = Math.random() * 100;
+    //         const hitChance = this.getStat("mob", "hitChance");
+    //         const dodge = this.getStat("person", "dodge");
+    //         const missChance = this.playerStatuses.find(s => s.type === "missChance")?.value || 0;
+    //
+    //         if (hitRoll > hitChance - dodge || Math.random() * 100 < missChance) {
+    //             this.addToLog("Моб промахнулся!");
+    //             this.showActionText("mob", "Промах!", "miss");
+    //             return;
+    //         }
+    //
+    //         let damage = Math.max(1, this.physicalDmg("mob") - this.physicalDef("person"));
+    //         const isCritical = Math.random() * 100 < this.getStat("mob", "critical");
+    //         const criticalMultiplier = 2;
+    //
+    //         if (isCritical) {
+    //             damage *= criticalMultiplier;
+    //         }
+    //
+    //         if (this.gameFlags.blockAttacks > 0) {
+    //             this.gameFlags.blockAttacks -= 1;
+    //             this.addToLog("Атака моба заблокирована!");
+    //             this.showActionText("person", "Заблокировано!", "block");
+    //             return;
+    //         }
+    //
+    //         if (this.gameFlags.redirectAttack) {
+    //             this.baseStats.mob.currentHp = Math.max(0, this.baseStats.mob.currentHp - damage);
+    //             this.addToLog(`Урон перенаправлен! Моб получает ${damage} урона!`);
+    //             this.showActionText("mob", `-${damage}`, isCritical ? "dmg-critical" : "dmg");
+    //             if (this.baseStats.mob.currentHp <= 0) {
+    //                 this.addToLog("Моб побежден!");
+    //                 this.showActionText("mob", "Побежден!", "death");
+    //             }
+    //             return;
+    //         }
+    //
+    //         if (this.gameFlags.invulnerable) {
+    //             this.addToLog("Персонаж неуязвим и не получает урон!");
+    //             this.showActionText("person", "Неуязвим!", "invulnerable");
+    //             return;
+    //         }
+    //
+    //         if (this.gameFlags.damageReduction > 0) {
+    //             damage = Math.max(1, damage - this.gameFlags.damageReduction);
+    //             this.addToLog(`Урон уменьшен на ${this.gameFlags.damageReduction}!`);
+    //         }
+    //
+    //         this.baseStats.person.currentHp = Math.max(0, this.baseStats.person.currentHp - damage);
+    //
+    //         if (isCritical) {
+    //             this.addToLog(`Критический удар! Моб наносит ${damage} урона!`);
+    //             this.showActionText("person", `-${damage} (КРИТ!)`, "dmg-critical");
+    //         } else {
+    //             this.addToLog(`Моб атакует и наносит ${damage} урона!`);
+    //             this.showActionText("person", `-${damage}`, "dmg");
+    //         }
+    //
+    //         if (this.gameFlags.healOnDamage > 0) {
+    //             const healAmount = this.gameFlags.healOnDamage;
+    //             this.healPlayer(healAmount);
+    //             this.addToLog(`Персонаж восстанавливает ${healAmount} HP при получении урона!`);
+    //         }
+    //
+    //         const counterAttack = this.playerStatuses.find(s => s.type === "counterAttack");
+    //         if (counterAttack) {
+    //             const counterDamage = counterAttack.value;
+    //             this.baseStats.mob.currentHp = Math.max(0, this.baseStats.mob.currentHp - counterDamage);
+    //             this.addToLog(`Контратака! Нанесено ${counterDamage} урона мобу!`);
+    //             this.showActionText("mob", `-${counterDamage}`, "dmg");
+    //         }
+    //
+    //         if (this.baseStats.person.currentHp <= 0) {
+    //             this.addToLog("Персонаж побежден!");
+    //             this.showActionText("person", "Побежден!", "death");
+    //         }
+    //
+    //         if (this.baseStats.mob.currentHp <= 0) {
+    //             this.addToLog("Моб побежден!");
+    //             this.showActionText("mob", "Побежден!", "death");
+    //         }
+    //     },
+    //     showActionText(target, message, type = "") {
+    //         this.messages[target] = { message, type };
+    //     },
+    //     resetMessages() {
+    //         this.messages.person = { type: "", message: "" };
+    //         this.messages.mob = { type: "", message: "" };
+    //         this.messages.turnKey++;
+    //     },
+    //     addToLog(message) {
+    //         this.battleLog.unshift(message);
+    //     },
+    // },
 };
 </script>
 
 <template>
-    <div class="game-container flex flex-col h-screen bg-gray-900 text-white">
-        <!-- Верхняя панель: характеристики игрока и моба -->
-        <div class="stats-panel flex justify-between p-4 bg-gray-800 border-b border-gray-700">
-            <!-- Характеристики игрока -->
-            <div class="player-stats w-1/2">
-                <h2 class="text-lg font-bold mb-2">Игрок</h2>
-                <div class="grid grid-cols-2 gap-2 text-sm">
-                    <div>Здоровье: {{ personStats.currentHp }} / {{ maxHp("person") }}</div>
-                    <div>Мана: {{ personStats.currentMp }} / {{ maxMp("person") }}</div>
-                    <div>Атака: {{ personStats.attack }}</div>
-                    <div>Защита: {{ personStats.defence }}</div>
-                    <div>Критический удар: {{ personStats.critical }}%</div>
-                    <div>Шанс попадания: {{ personStats.hitChance }}%</div>
-                    <div>Уклонение: {{ personStats.dodge }}%</div>
-                    <div>Скорость: {{ personStats.speed }}</div>
-                </div>
-                <div v-if="messages.person.message" :key="messages.turnKey"
-                     :class="['action-text absolute mt-2', {
-                        'text-red-500': messages.person.type.includes('dmg'),
-                        'text-yellow-500': messages.person.type === 'dmg-critical',
-                        'text-green-500': messages.person.type === 'heal' || messages.person.type === 'invulnerable',
-                        'text-blue-500': messages.person.type === 'block',
-                        'text-gray-500': messages.person.type === 'miss',
-                        'text-purple-500': messages.person.type === 'death'
-                    }]"
-                     v-html="messages.person.message"></div>
-            </div>
-            <!-- Характеристики моба -->
-            <div class="mob-stats w-1/2 text-right">
-                <h2 class="text-lg font-bold mb-2">Моб</h2>
-                <div class="grid grid-cols-2 gap-2 text-sm">
-                    <div>Здоровье: {{ mobStats.currentHp }} / {{ maxHp("mob") }}</div>
-                    <div>Мана: {{ mobStats.currentMp }} / {{ maxMp("mob") }}</div>
-                    <div>Атака: {{ mobStats.attack }}</div>
-                    <div>Защита: {{ mobStats.defence }}</div>
-                    <div>Критический удар: {{ mobStats.critical }}%</div>
-                    <div>Шанс попадания: {{ mobStats.hitChance }}%</div>
-                    <div>Уклонение: {{ mobStats.dodge }}%</div>
-                    <div>Скорость: {{ mobStats.speed }}</div>
-                </div>
-                <div v-if="messages.mob.message" :key="messages.turnKey"
-                     :class="['action-text absolute mt-2 right-4', {
-                        'text-red-500': messages.mob.type.includes('dmg'),
-                        'text-yellow-500': messages.mob.type === 'dmg-critical',
-                        'text-green-500': messages.mob.type === 'heal',
-                        'text-gray-500': messages.mob.type === 'miss',
-                        'text-purple-500': messages.mob.type === 'death'
-                    }]"
-                     v-html="messages.mob.message"></div>
-            </div>
-        </div>
+<!--    <div class="game-container flex flex-col h-screen bg-gray-900 text-white">-->
+<!--        &lt;!&ndash; Верхняя панель: характеристики игрока и моба &ndash;&gt;-->
+<!--        <div class="stats-panel flex justify-between p-4 bg-gray-800 border-b border-gray-700">-->
+<!--            &lt;!&ndash; Характеристики игрока &ndash;&gt;-->
+<!--            <div class="player-stats w-1/2">-->
+<!--                <h2 class="text-lg font-bold mb-2">Игрок</h2>-->
+<!--                <div class="grid grid-cols-2 gap-2 text-sm">-->
+<!--                    <div>Здоровье: {{ personStats.currentHp }} / {{ maxHp("person") }}</div>-->
+<!--                    <div>Мана: {{ personStats.currentMp }} / {{ maxMp("person") }}</div>-->
+<!--                    <div>Атака: {{ personStats.attack }}</div>-->
+<!--                    <div>Защита: {{ personStats.defence }}</div>-->
+<!--                    <div>Критический удар: {{ personStats.critical }}%</div>-->
+<!--                    <div>Шанс попадания: {{ personStats.hitChance }}%</div>-->
+<!--                    <div>Уклонение: {{ personStats.dodge }}%</div>-->
+<!--                    <div>Скорость: {{ personStats.speed }}</div>-->
+<!--                </div>-->
+<!--                <div v-if="messages.person.message" :key="messages.turnKey"-->
+<!--                     :class="['action-text absolute mt-2', {-->
+<!--                        'text-red-500': messages.person.type.includes('dmg'),-->
+<!--                        'text-yellow-500': messages.person.type === 'dmg-critical',-->
+<!--                        'text-green-500': messages.person.type === 'heal' || messages.person.type === 'invulnerable',-->
+<!--                        'text-blue-500': messages.person.type === 'block',-->
+<!--                        'text-gray-500': messages.person.type === 'miss',-->
+<!--                        'text-purple-500': messages.person.type === 'death'-->
+<!--                    }]"-->
+<!--                     v-html="messages.person.message"></div>-->
+<!--            </div>-->
+<!--            &lt;!&ndash; Характеристики моба &ndash;&gt;-->
+<!--            <div class="mob-stats w-1/2 text-right">-->
+<!--                <h2 class="text-lg font-bold mb-2">Моб</h2>-->
+<!--                <div class="grid grid-cols-2 gap-2 text-sm">-->
+<!--                    <div>Здоровье: {{ mobStats.currentHp }} / {{ maxHp("mob") }}</div>-->
+<!--                    <div>Мана: {{ mobStats.currentMp }} / {{ maxMp("mob") }}</div>-->
+<!--                    <div>Атака: {{ mobStats.attack }}</div>-->
+<!--                    <div>Защита: {{ mobStats.defence }}</div>-->
+<!--                    <div>Критический удар: {{ mobStats.critical }}%</div>-->
+<!--                    <div>Шанс попадания: {{ mobStats.hitChance }}%</div>-->
+<!--                    <div>Уклонение: {{ mobStats.dodge }}%</div>-->
+<!--                    <div>Скорость: {{ mobStats.speed }}</div>-->
+<!--                </div>-->
+<!--                <div v-if="messages.mob.message" :key="messages.turnKey"-->
+<!--                     :class="['action-text absolute mt-2 right-4', {-->
+<!--                        'text-red-500': messages.mob.type.includes('dmg'),-->
+<!--                        'text-yellow-500': messages.mob.type === 'dmg-critical',-->
+<!--                        'text-green-500': messages.mob.type === 'heal',-->
+<!--                        'text-gray-500': messages.mob.type === 'miss',-->
+<!--                        'text-purple-500': messages.mob.type === 'death'-->
+<!--                    }]"-->
+<!--                     v-html="messages.mob.message"></div>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <!-- Основная игровая зона -->
-        <div class="game-area flex flex-1 overflow-hidden">
-            <!-- Лог боя -->
-            <div class="battle-log w-1/4 p-4 bg-gray-700 overflow-y-auto flex flex-col-reverse">
-                <div v-for="(log, index) in battleLog" :key="index" class="text-sm mb-1">
-                    {{ log }}
-                </div>
-            </div>
-            <!-- Зона карт -->
-            <div class="card-area w-3/4 p-4 flex flex-col justify-between">
-                <!-- Рука игрока -->
-                <div class="player-hand flex flex-wrap gap-4">
-                    <div v-for="(card, index) in playerHand" :key="card.id"
-                         class="card bg-gray-800 p-4 rounded-lg w-48 shadow-lg hover:shadow-xl transition-shadow"
-                         :class="{ 'opacity-50': baseStats.person.currentMp < card.manaCost || isAttackDisabled }">
-                        <img :src="card.icon" alt="Card Icon" class="w-16 h-16 mb-2 mx-auto">
-                        <h3 class="text-md font-semibold">{{ card.name }}</h3>
-                        <p class="text-xs text-gray-400">{{ card.description }}</p>
-                        <p class="text-sm mt-2">Мана: {{ card.manaCost }}</p>
-                        <button
-                            @click="playCard(index)"
-                            class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"
-                            :disabled="baseStats.person.currentMp < card.manaCost || isAttackDisabled"
-                        >
-                            Разыграть
-                        </button>
-                    </div>
-                </div>
-                <!-- Кнопка завершения хода -->
-                <div class="end-turn mt-4 flex justify-end">
-                    <button
-                        @click="endTurn"
-                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg"
-                        :disabled="isAttackDisabled"
-                    >
-                        Завершить ход
-                    </button>
-                </div>
-            </div>
-        </div>
+<!--        &lt;!&ndash; Основная игровая зона &ndash;&gt;-->
+<!--        <div class="game-area flex flex-1 overflow-hidden">-->
+<!--            &lt;!&ndash; Лог боя &ndash;&gt;-->
+<!--            <div class="battle-log w-1/4 p-4 bg-gray-700 overflow-y-auto flex flex-col-reverse">-->
+<!--                <div v-for="(log, index) in battleLog" :key="index" class="text-sm mb-1">-->
+<!--                    {{ log }}-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            &lt;!&ndash; Зона карт &ndash;&gt;-->
+<!--            <div class="card-area w-3/4 p-4 flex flex-col justify-between">-->
+<!--                &lt;!&ndash; Рука игрока &ndash;&gt;-->
+<!--                <div class="player-hand flex flex-wrap gap-4">-->
+<!--                    <div v-for="(card, index) in playerHand" :key="card.id"-->
+<!--                         class="card bg-gray-800 p-4 rounded-lg w-48 shadow-lg hover:shadow-xl transition-shadow"-->
+<!--                         :class="{ 'opacity-50': baseStats.person.currentMp < card.manaCost || isAttackDisabled }">-->
+<!--                        <img :src="card.icon" alt="Card Icon" class="w-16 h-16 mb-2 mx-auto">-->
+<!--                        <h3 class="text-md font-semibold">{{ card.name }}</h3>-->
+<!--                        <p class="text-xs text-gray-400">{{ card.description }}</p>-->
+<!--                        <p class="text-sm mt-2">Мана: {{ card.manaCost }}</p>-->
+<!--                        <button-->
+<!--                            @click="playCard(index)"-->
+<!--                            class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"-->
+<!--                            :disabled="baseStats.person.currentMp < card.manaCost || isAttackDisabled"-->
+<!--                        >-->
+<!--                            Разыграть-->
+<!--                        </button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                &lt;!&ndash; Кнопка завершения хода &ndash;&gt;-->
+<!--                <div class="end-turn mt-4 flex justify-end">-->
+<!--                    <button-->
+<!--                        @click="endTurn"-->
+<!--                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg"-->
+<!--                        :disabled="isAttackDisabled"-->
+<!--                    >-->
+<!--                        Завершить ход-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <!-- Компонент кубика (анимация) -->
-        <div v-if="showDice" class="dice-overlay fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <Dice />
-        </div>
-    </div>
+<!--        &lt;!&ndash; Компонент кубика (анимация) &ndash;&gt;-->
+<!--        <div v-if="showDice" class="dice-overlay fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">-->
+<!--            <Dice />-->
+<!--        </div>-->
+<!--    </div>-->
 </template>
 
 <style scoped>
-/* Контейнер всей игры */
-.game-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    background-color: #1a202c;
-    color: #ffffff;
-    z-index: 80000;
-}
 
-/* Панель характеристик игрока и моба */
-.stats-panel {
-    display: flex;
-    justify-content: space-between;
-    padding: 16px;
-    background-color: #2d3748;
-    border-bottom: 1px solid #4a5568;
-}
-
-/* Характеристики игрока */
-.player-stats {
-    width: 50%;
-    position: relative;
-}
-
-/* Характеристики моба */
-.mob-stats {
-    width: 50%;
-    text-align: right;
-    position: relative;
-}
-
-/* Текст действий (урон, промах, исцеление и т.д.) */
-.action-text {
-    position: absolute;
-    margin-top: 8px;
-    animation: fadeOut 1.5s ease-in-out forwards;
-}
-
-/* Цвета для типов действий */
-.action-text.text-red-500 {
-    color: #ef4444;
-}
-.action-text.text-yellow-500 {
-    color: #f59e0b;
-}
-.action-text.text-green-500 {
-    color: #10b981;
-}
-.action-text.text-blue-500 {
-    color: #3b82f6;
-}
-.action-text.text-gray-500 {
-    color: #6b7280;
-}
-.action-text.text-purple-500 {
-    color: #8b5cf6;
-}
-
-/* Основная игровая зона */
-.game-area {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-}
-
-/* Лог боя */
-.battle-log {
-    width: 25%;
-    padding: 16px;
-    background-color: #4a5568;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column-reverse;
-    max-height: 100%;
-    scrollbar-width: thin;
-    scrollbar-color: #4a5568 #2d3748;
-}
-
-.battle-log::-webkit-scrollbar {
-    width: 8px;
-}
-
-.battle-log::-webkit-scrollbar-track {
-    background: #2d3748;
-}
-
-.battle-log::-webkit-scrollbar-thumb {
-    background-color: #4a5568;
-    border-radius: 4px;
-}
-
-/* Зона карт */
-.card-area {
-    width: 75%;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-/* Рука игрока */
-.player-hand {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
-/* Отдельная карта */
-.card {
-    background-color: #2d3748;
-    padding: 16px;
-    border-radius: 8px;
-    width: 192px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.2s ease;
-}
-
-.card:hover {
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
-}
-
-.card.opacity-50 {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.card img {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 8px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.card h3 {
-    font-size: 16px;
-    font-weight: 600;
-    text-align: center;
-}
-
-.card p {
-    font-size: 12px;
-    color: #a0aec0;
-    text-align: center;
-}
-
-.card p.mt-2 {
-    font-size: 14px;
-    color: #ffffff;
-    margin-top: 8px;
-}
-
-.card button {
-    margin-top: 8px;
-    background-color: #2563eb;
-    color: #ffffff;
-    padding: 8px 16px;
-    border-radius: 4px;
-    width: 100%;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.card button:hover {
-    background-color: #1d4ed8;
-}
-
-.card button:disabled {
-    background-color: #6b7280;
-    cursor: not-allowed;
-}
-
-/* Кнопка завершения хода */
-.end-turn {
-    margin-top: 16px;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.end-turn button {
-    background-color: #059669;
-    color: #ffffff;
-    padding: 12px 24px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.end-turn button:hover {
-    background-color: #047857;
-}
-
-.end-turn button:disabled {
-    background-color: #6b7280;
-    cursor: not-allowed;
-}
-
-/* Оверлей для анимации кубика */
-.dice-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-/* Анимация для текста действий */
-@keyframes fadeOut {
-    0% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    50% {
-        opacity: 1;
-        transform: translateY(-20px);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(-40px);
-    }
-}
 </style>

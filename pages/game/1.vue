@@ -505,20 +505,20 @@ export default defineComponent({
                             sourceCard: choice.name,
                             icon: choice.icon,
                         });
-                    } else if (choice.bonus.def || choice.bonus.str) {
+                    } else if (choice.bonus.defence || choice.bonus.attack) {
                         this.addEffect("person", {
                             type: EFFECT_TYPES.BUFF,
                             duration: choice.duration,
-                            val: (choice.bonus.def || choice.bonus.str || 0) as number,
-                            stat: choice.bonus.def ? "def" : "str",
+                            val: (choice.bonus.defence || choice.bonus.attack || 0) as number,
+                            stat: choice.bonus.defence ? "defence" : "attack",
                             sourceCard: choice.name,
                             icon: choice.icon,
                         });
-                        if (choice.bonus.def) {
-                            this.cardBonuses.person.def += choice.bonus.def as number;
+                        if (choice.bonus.defence) {
+                            this.cardBonuses.person.defence += choice.bonus.defence as number;
                         }
-                        if (choice.bonus.str) {
-                            this.cardBonuses.person.str += choice.bonus.str as number;
+                        if (choice.bonus.attack) {
+                            this.cardBonuses.person.attack += choice.bonus.attack as number;
                         }
                     }
                 }
