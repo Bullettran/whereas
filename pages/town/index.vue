@@ -41,9 +41,9 @@ export default defineComponent({
                 }
 
                 if (data) {
-
                     this.char.setCharacter(data);
                     this.species = data.species;
+                    console.log(this.char);
                 }
             } catch (err) {
                 this.errorMessage = "Неизвестная ошибка. Попробуйте позже.";
