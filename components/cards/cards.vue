@@ -634,7 +634,7 @@ const cardsByClass = {
             type: "heal",
             rare: "rare",
             description: "Исцеляет на 1хп за каждый стак подгорания",
-            icon: "inferno-holy-flames.png",
+            icon: "inferno-holy-flame.png",
             manaCost: 5,
             count: 1,
             bonus: { int: 3 },
@@ -872,7 +872,7 @@ export default defineComponent({
         },
         upgradePoints(): number {
             // @ts-ignore
-            return this.person.character.upgradePoints || 0;
+            return this.person.character.upgradePoints || 10;
         },
         selectedCards(): { [key: string]: { level: number; count: number } } {
             // @ts-ignore
