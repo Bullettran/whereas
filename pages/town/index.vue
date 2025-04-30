@@ -1,8 +1,10 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+import Professions from "~/components/professions/professions.vue";
 
 export default defineComponent({
     name: "Index",
+    components: { Professions },
     // setup() {
     //     const char = usePersonState();
     //     return {
@@ -110,9 +112,7 @@ export default defineComponent({
             <LazyAchievements/>
         </Modal>
         <Modal size="lg" id="professions">
-            <div>
-                Ремесло
-            </div>
+            <Professions />
         </Modal>
         <Modal size="lg" id="craft">
             <LazyCraft/>
