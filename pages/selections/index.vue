@@ -292,7 +292,7 @@ export default defineComponent({
             return;
         }
         if (userData.user.user_metadata.isSelectedSpecies) {
-            this.$router.push("/town/");
+            // this.$router.push("/town/");
         }
     },
 });
