@@ -1,0 +1,128 @@
+.beasts {
+    background: url("/images/components/modal/big-frame.png") 0 0/cover no-repeat;
+    width: 100%;
+    height: 450px;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.beasts__title {
+    text-align: center;
+    color: var(--white);
+    margin-bottom: 12px;
+}
+
+.beasts__items {
+    max-width: 100%;
+    overflow: hidden;
+    height: 360px;
+}
+
+.beasts__item {
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+}
+
+.beasts__item--active {
+    filter: brightness(150%);
+}
+
+.beasts__image {
+    display: block;
+    max-width: 100%;
+    border-radius: 50%;
+}
+
+.beasts__grid {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    grid-column-gap: 12px;
+}
+
+.beasts__block {
+    display: grid;
+    grid-template-columns: 35% 62%;
+    grid-gap: 12px;
+    background: url("/images/global/bg-parchment.jpg") 0 0/cover no-repeat;
+    padding: 8px 16px;
+    border-radius: 8px;
+    overflow: auto;
+    height: 360px;
+}
+
+.beasts__wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.beasts__subtitle {
+    margin-bottom: 12px;
+}
+
+.beasts__beast-name {
+    margin-bottom: 12px;
+}
+
+.beasts__beast-desc {
+    margin-bottom: 12px;
+}
+
+.beasts__beast {
+    grid-column: 1;
+    grid-row: 1;
+    background-image: url("/images/sprites/mobs/red-flying-demon/idle.png");
+    background-repeat: no-repeat;
+    height: 71px;
+    width: 81px;
+    transform-origin: center;
+    margin-bottom: 12px;
+}
+
+.beasts__description {
+    font-size: 16px;
+    line-height: 18px;
+}
+
+.beasts__stats {
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.beasts__abilities {
+}
+
+.beasts__beast--idle {
+    animation: mob-idle;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 71px;
+    width: 81px;
+}
+
+@keyframes mob-idle {
+    0% {
+        background-position: 0 0;
+    }
+    /* Кадр 1 */
+    25% {
+        background-position: -81px 0;
+    }
+    /* Кадр 1 */
+    50% {
+        background-position: -162px 0;
+    }
+    /* Кадр 1 */
+    75% {
+        background-position: -243px 0;
+    }
+    /* Кадр 1 */
+    100% {
+        background-position: 0 0;
+    }
+    /* Возвращаемся к первому кадру */
+}
