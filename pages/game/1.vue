@@ -1299,6 +1299,7 @@ export default defineComponent({
         // Получение значения статы с учетом бонусов
         getStat(target: "person" | "mob", stat: keyof Stats): number {
             const base = this.baseStats[target][stat];
+            // @ts-ignore
             return base + (this.cardBonuses[target][stat] || 0);
         },
 
@@ -1352,6 +1353,7 @@ export default defineComponent({
         // Получение случайных карт
         getRandomCards(count: number): Card[] {
             const classCards = this.char.character.species.toLowerCase(); // Получаем класс персонажа
+            // @ts-ignore
             const availableCards = this.allCards[classCards] || []; // Берем карты соответствующего класса
             const shuffled = [...availableCards].sort(() => 0.5 - Math.random());
             return shuffled.slice(0, count);
@@ -1397,6 +1399,7 @@ export default defineComponent({
         // Добавление эффекта
         addEffect(target: "person" | "mob", effect: Effect) {
             const isImmune = this.cardBonuses[target].debuffImmune;
+            // @ts-ignore
             if (isImmune && [EFFECT_TYPES.BLEED, EFFECT_TYPES.POISON, EFFECT_TYPES.BURN, EFFECT_TYPES.FREEZE, EFFECT_TYPES.STUN].includes(effect.type)) {
                 this.addToLog(`${target === "person" ? "Персонаж" : "Моб"} заблокировал эффект ${effect.type} благодаря иммунитету!`);
                 this.showActionText(target, "Заблокировано!", "heal");
@@ -1514,6 +1517,7 @@ export default defineComponent({
                                 icon: choice.icon,
                             });
                         } else if (["attack", "defence", "dodge", "speed", "critical", "hitChance"].includes(stat)) {
+                            // @ts-ignore
                             this.cardBonuses.person[stat as keyof CardBonuses] += value as number;
                             this.addEffect("person", {
                                 type: EFFECT_TYPES.BUFF,
@@ -1592,6 +1596,7 @@ export default defineComponent({
                             });
                             this.addToLog("Исцеление персонажа заблокировано!");
                         } else if (type === "speed" || type === "hitChance" || type === "ignoreDefense") {
+                            // @ts-ignore
                             this.cardBonuses.mob[type as keyof CardBonuses] += effect as number;
                             this.addEffect("mob", {
                                 type: EFFECT_TYPES.BUFF,
@@ -1609,6 +1614,7 @@ export default defineComponent({
                 for (const [stat, value] of Object.entries(choice.bonus)) {
                     if (["hp", "mp", "buff", "debuff"].includes(stat)) continue;
                     if (stat in this.cardBonuses.person) {
+                        // @ts-ignore
                         this.cardBonuses.person[stat as keyof CardBonuses] += value as number;
                     }
                 }
