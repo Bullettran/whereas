@@ -258,5 +258,5 @@ export default defineComponent({
 @use "char";
 @use "block";
 @use "characteristic";
-@use "prof"
+@use "prof";
 </style>

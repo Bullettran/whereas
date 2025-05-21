@@ -238,12 +238,12 @@ export default defineComponent({
                         @click="selectBeast(beast)"
                         :class="{ 'beasts__item--active': selectedBeast?.id === beast.id }"
                     >
-                        <nuxt-img
+                        <img
                             class="beasts__image"
                             :class="getBeastImageClass(beast.id)"
                             :src="beast.icon"
                             :alt="beast.name"
-                        />
+                        >
                     </div>
                 </div>
             </div>
