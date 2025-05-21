@@ -17,6 +17,9 @@ export default defineComponent({
         char: usePersonState()
     }),
     methods: {
+        playGame() {
+            navigateTo("/game/1");
+        },
         async fetchCharacter() {
             try {
                 // Получаем текущего пользователя
@@ -62,51 +65,40 @@ export default defineComponent({
 <template>
     <div class="town" v-cloak>
         <div class="town__container container">
-            <Char />
+            <div class="town__professions" data-bs-toggle="modal" data-bs-target="#professions">
+                <img class="town__plug" src="/images/pages/town/professions.png">
+            </div>
+            <div class="town__shop" data-bs-toggle="modal" data-bs-target="#shop">
+                <img class="town__plug" src="/images/pages/town/shop.png">
+            </div>
+            <div class="town__game" @click="playGame()">
+                <img class="town__plug" src="/images/pages/town/game.png">
+            </div>
+            <div class="town__beasts" data-bs-toggle="modal" data-bs-target="#beasts">
+                <img class="town__plug" src="/images/pages/town/beasts.png">
+            </div>
+            <div class="town__talants" data-bs-toggle="modal" data-bs-target="#talants">
+                <img class="town__plug" src="/images/pages/town/talants.png">
+            </div>
+            <div class="town__craft" data-bs-toggle="modal" data-bs-target="#craft">
+                <img class="town__plug" src="/images/pages/town/craft.png">
+            </div>
+<!--            <Char />-->
             <div :class="`town__person town__person--${species ? species : char.character.species} town__person--idle`"></div>
-            <ul class="town__items list">
-                <li class="town__item">
-                    <nuxt-link class="town__link link link--white" to="/game/1" title="Отправиться в путешествие">
-                        <nuxt-img class="town__image" src="/images/pages/town/battle.png" alt="Изображение Путешествий"/>
-                    </nuxt-link>
-                </li>
-                <li class="town__item">
-                    <button class="town__link link link--white" type="button" data-bs-toggle="modal"
-                            data-bs-target="#achievements" title="Достижения">
-                        <nuxt-img class="town__image" src="/images/pages/town/achiev.png" alt="Изображение Достижения"/>
-                    </button>
-                </li>
-                <li class="town__item town__item--craft">
-                    <button class="town__link link link--white" type="button" data-bs-toggle="modal"
-                            data-bs-target="#professions" title="Ремесло">
-                        <nuxt-img class="town__image" src="/images/pages/town/proffesions.png" alt="Изображение Ремесла"/>
-                    </button>
-                </li>
-                <li class="town__item">
-                    <button class="town__link link link--white" type="button" data-bs-toggle="modal"
-                            data-bs-target="#craft" title="Крафт">
-                        <nuxt-img class="town__image" src="/images/pages/town/craft.png" alt="Изображение Крафта"/>
-                    </button>
-                </li>
-                <li class="town__item">
-                    <button class="town__link link link--white" type="button" data-bs-toggle="modal"
-                            data-bs-target="#beasts" title="Бестиарий">
-                        <nuxt-img class="town__image" src="/images/pages/town/beasts.png" alt="Изображение Бестиария"/>
-                    </button>
-                </li>
-                <li class="town__item">
-                    <button class="town__link link link--white" type="button" data-bs-toggle="modal"
-                            data-bs-target="#talants" title="Таланты">
-                        <nuxt-img class="town__image" src="/images/pages/town/talants.png" alt="Изображение Талантов"/>
-                    </button>
-                </li>
-                <li class="town__item">
-                    <button class="town__link link link--white" type="button" data-bs-toggle="modal"
-                            data-bs-target="#shop" title="Магазин">
-                        <nuxt-img class="town__image" src="/images/pages/town/shop.png" alt="Изображение Достижений"/>
-                    </button>
-                </li>
-            </ul>
+<!--            <ul class="town__items list">-->
+<!--                <li class="town__item">-->
+<!--                    <button class="town__link link link&#45;&#45;white" type="button" data-bs-toggle="modal"-->
+<!--                            data-bs-target="#achievements" title="Достижения">-->
+<!--                        <nuxt-img class="town__image" src="/images/pages/town/achiev.png" alt="Изображение Достижения"/>-->
+<!--                    </button>-->
+<!--                </li>-->
+<!--                <li class="town__item">-->
+<!--                    <button class="town__link link link&#45;&#45;white" type="button" data-bs-toggle="modal"-->
+<!--                            data-bs-target="#shop" title="Магазин">-->
+<!--                        <nuxt-img class="town__image" src="/images/pages/town/shop.png" alt="Изображение Достижений"/>-->
+<!--                    </button>-->
+<!--                </li>-->
+<!--            </ul>-->
         </div>
         <Modal size="lg" id="achievements">
             <LazyAchievements/>

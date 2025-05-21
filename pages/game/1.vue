@@ -27,7 +27,7 @@ const EFFECT_TYPES = {
 
 // Типы для TypeScript
 interface Card {
-    id: string;        // Добавлено поле id
+    id: string;
     name: string;
     type: string;
     rare: string;
@@ -39,10 +39,10 @@ interface Card {
     };
     manaCost: number;
     duration?: number;
-    level?: number;    // Добавлено поле level
-    maxLevel?: number; // Добавлено поле maxLevel
-    upgradeCost?: number; // Добавлено поле upgradeCost
-    upgradeEffect?: { [key: string]: any }; // Добавлено поле upgradeEffect
+    level?: number;
+    maxLevel?: number;
+    upgradeCost?: number;
+    upgradeEffect?: { [key: string]: any };
 }
 
 interface Effect {
