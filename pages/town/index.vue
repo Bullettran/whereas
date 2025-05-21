@@ -43,7 +43,7 @@ export default defineComponent({
     }),
     methods: {
         playGame() {
-            navigateTo("/game/1");
+            navigateTo("/game");
         },
         moveToBuilding(type: string) {
             if (this.character.moving) return
