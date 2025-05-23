@@ -7,6 +7,8 @@
     z-index: 16;
     background-image: url("/images/sprites/persons/inferno/inferno.png");
     background-repeat: no-repeat;
+    height: 128px;
+    width: 288px;
 }
 
 .inferno--left {
@@ -19,9 +21,6 @@
     animation-iteration-count: infinite;
     background-repeat: no-repeat;
     animation-timing-function: steps(1, end);
-    display: block;
-    height: 180px;
-    width: 288px;
 }
 
 @keyframes idle {
@@ -42,9 +41,6 @@
     animation-iteration-count: infinite;
     background-repeat: no-repeat;
     animation-timing-function: steps(1, end);
-    display: block;
-    height: 180px;
-    width: 288px;
 }
 
 @keyframes run {
@@ -56,5 +52,25 @@
     62.5% { background-position: -1440px -128px; } /* Кадр 6 */
     75% { background-position: -1728px -128px; } /* Кадр 7 */
     87.5% { background-position: -2016px -128px; } /* Кадр 8 */
+    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+}
+
+.inferno--attack {
+    animation: attack;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes attack {
+    0% { background-position: 0 -896px; } /* Кадр 1 */
+    16.5% { background-position: -288px -896px; } /* Кадр 2 */
+    25% { background-position: -576px -896px; } /* Кадр 3 */
+    37.5% { background-position: -864px -896px; } /* Кадр 4 */
+    50% { background-position: -1152px -896px; } /* Кадр 5 */
+    62.5% { background-position: -1440px -896px; } /* Кадр 6 */
+    75% { background-position: -1728px -896px; } /* Кадр 7 */
+    100% { background-position: -2016px -896px; } /* Кадр 8 */
     100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
 }

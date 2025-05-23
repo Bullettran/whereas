@@ -71,7 +71,7 @@ export default defineComponent({
                             (this.$refs.typewriter as any).startTyping();
                         }, 300)
                     } else if (type === "violet") {
-                        navigateTo("/game/1");
+                        navigateTo("/game/fly-demon");
                     }
                     return;
                 }
