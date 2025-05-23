@@ -24,8 +24,9 @@ export default defineComponent({
                 previousX: 394,
                 moving: false,
                 moveInterval: null as any,
-                state: "idle"
+                state: "idle",
             },
+            image: "/images/sprites/mobs/red-flying-demon/icon.png",
         },
         person: {
             actions: {
@@ -46,7 +47,7 @@ export default defineComponent({
                 speed: 2,
                 defence: 3,
                 currentHp: 7,
-                currentMp: 6
+                currentMp: 6,
             },
             skills: [
                 {
@@ -58,8 +59,8 @@ export default defineComponent({
                     effect: {
                         damage: 2,          // Урон, наносимый скиллом
                         duration: 0,        // Продолжительность эффекта (0 — мгновенный)
-                        element: "fire"     // Тип урона/эффекта (огонь)
-                    }
+                        element: "fire",     // Тип урона/эффекта (огонь)
+                    },
                 },
                 {
                     id: "blade-of-flame",
@@ -70,8 +71,8 @@ export default defineComponent({
                     effect: {
                         heal: 1,            // Восстановление здоровья
                         duration: 0,
-                        element: "heal"
-                    }
+                        element: "heal",
+                    },
                 },
                 {
                     id: "eternal-flame",
@@ -82,8 +83,8 @@ export default defineComponent({
                     effect: {
                         healPerTurn: 1,     // Восстановление здоровья за ход
                         duration: 2,
-                        element: "heal"
-                    }
+                        element: "heal",
+                    },
                 },
                 {
                     id: "flame-control",
@@ -94,8 +95,8 @@ export default defineComponent({
                     effect: {
                         damagePerTurn: 1,   // Урон за ход
                         duration: 2,
-                        element: "bleed"    // Тип эффекта — кровотечение
-                    }
+                        element: "bleed",    // Тип эффекта — кровотечение
+                    },
                 },
                 {
                     id: "flame-shield",
@@ -106,9 +107,47 @@ export default defineComponent({
                     effect: {
                         dispelDebuffs: true, // Флаг снятия дебафов
                         duration: 0,
-                        element: "dispel"
-                    }
-                }
+                        element: "dispel",
+                    },
+                },
+            ],
+            potions: [
+                {
+                    id: "heal-potion",
+                    name: "Эликсир здоровья",
+                    description: "Восполняет 2 здоровья",
+                    type: "potion",
+                    manaCost: 0,
+                    effect: {
+                        heal: 2,          // Урон, наносимый скиллом
+                        duration: 0,        // Продолжительность эффекта (0 — мгновенный)
+                        element: "heal",     // Тип урона/эффекта (огонь)
+                    },
+                },
+                {
+                    id: "mp-potion",
+                    name: "Эликсир маны",
+                    description: "Восполняет 2 маны",
+                    type: "potion",
+                    manaCost: 0,
+                    effect: {
+                        mp: 2,          // Урон, наносимый скиллом
+                        duration: 0,        // Продолжительность эффекта (0 — мгновенный)
+                        element: "mana",     // Тип урона/эффекта (огонь)
+                    },
+                },
+                {
+                    id: "mp-potion",
+                    name: "Эликсир маны",
+                    description: "Увеличивает защиту на ",
+                    type: "potion",
+                    manaCost: 0,
+                    effect: {
+                        defence: 2,          // Урон, наносимый скиллом
+                        duration: 0,        // Продолжительность эффекта (0 — мгновенный)
+                        element: "defence",     // Тип урона/эффекта (огонь)
+                    },
+                },
             ]
         },
         targets: {
@@ -124,15 +163,15 @@ export default defineComponent({
     }),
     methods: {
         moveTo(type: string) {
-            if (this.person.actions.moving) return
+            if (this.person.actions.moving) return;
             this.person.actions.moving = true;
             this.person.actions.state = "run";
             const target = {
                 // @ts-ignore
                 x: this.targets[type].x,
                 // @ts-ignore
-                y: this.targets[type].y
-            }
+                y: this.targets[type].y,
+            };
             clearInterval(this.person.actions.moveInterval);
             this.person.actions.moveInterval = setInterval(() => {
                 const dx = target.x - this.person.actions.x;
@@ -152,11 +191,11 @@ export default defineComponent({
                     if (type === "battle") {
                         this.person.actions.state = "attack";
 
-                        this.applyDamageToMob(1);
+                        this.applyDamageToMob(9);
 
                         setTimeout(() => {
                             this.moveTo("start");
-                        }, 1000)
+                        }, 1000);
                     } else if (type === "start") {
                         this.person.actions.state = "idle";
                         this.person.actions.facingLeft = false;
@@ -173,22 +212,82 @@ export default defineComponent({
             this.mob.actions.state = "hit";
             setTimeout(() => {
                 this.mob.actions.state = "idle";
-            }, 1000)
+            }, 1000);
         },
         applyDamageToMob(damage: number) {
             this.mob.stats.currentHp -= damage;
             if (this.mob.stats.currentHp < 0) this.mob.stats.currentHp = 0;
             this.mobHitAnimation();
+        },
+        autoAttack() {
+            this.moveTo("battle");
+        },
+        onPercentage(exp:number, needExp: number): any {
+            return (exp / needExp) * 100;
+        },
+        drinkPotion() {
+
         }
     },
     mounted() {
-    }
+    },
 });
 </script>
 
 <template>
     <div class="fight">
         <div class="fight__container container">
+            <div class="fight__stats stats">
+                <div class="stats__block stats__block--person">
+                    <div class="stats__picture">
+                        <img class="stats__image" alt="Изображение персонажа"
+                             :src="`/images/sprites/persons/${char.character.species}/icon-${char.character.species}.png`">
+                    </div>
+                    <div class="stats__specifications">
+                        <ProgressBar class="stats__hp" :value="onPercentage(person.stats.currentHp, person.stats.hp)">{{person.stats.currentHp}}/{{person.stats.hp}}</ProgressBar>
+                        <ProgressBar class="stats__mp" :value="onPercentage(person.stats.currentMp, person.stats.mp)">{{person.stats.currentMp}}/{{person.stats.mp}}</ProgressBar>
+                        <div class="stats__buffs">
+                            <p class="stats__text">Бафы:</p>
+                            <div class="stats__wrap">
+                                <img class="stats__icon" src="/images/skills/all/auto-attack.png" alt="Автоатка">
+                                <div class="stats__desc">Получает 2 урона каждый ход</div>
+                            </div>
+                        </div>
+                        <div class="stats__buffs">
+                            <p class="stats__text">Дебафы:</p>
+                            <div class="stats__wrap">
+                                <img class="stats__icon" src="/images/skills/all/auto-attack.png" alt="Автоатка">
+                                <div class="stats__desc">Получает 2 урона каждый ход</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats__mobs">
+                    <div class="stats__block stats__block--mob">
+                        <div class="stats__picture">
+                            <img class="stats__image" :src="mob.image" alt="Изображение моба">
+                        </div>
+                        <div class="stats__specifications">
+                            <ProgressBar class="stats__hp" :value="onPercentage(mob.stats.currentHp, mob.stats.hp)">{{mob.stats.currentHp}}/{{mob.stats.hp}}</ProgressBar>
+                            <ProgressBar class="stats__mp" :value="onPercentage(mob.stats.currentMp, mob.stats.mp)">{{mob.stats.currentMp}}/{{mob.stats.mp}}</ProgressBar>
+                            <div class="stats__buffs">
+                                <p class="stats__text">Бафы:</p>
+                                <div class="stats__wrap">
+                                    <img class="stats__icon" src="/images/skills/all/auto-attack.png" alt="Автоатка">
+                                    <div class="stats__desc">Получает 2 урона каждый ход</div>
+                                </div>
+                            </div>
+                            <div class="stats__buffs">
+                                <p class="stats__text">Дебафы:</p>
+                                <div class="stats__wrap">
+                                    <img class="stats__icon" src="/images/skills/all/auto-attack.png" alt="Автоатка">
+                                    <div class="stats__desc">Получает 2 урона каждый ход</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div :class="[
                 person.actions.state === 'run' ? `${char.character.species}--run` :
                 person.actions.state === 'attack' ? `${char.character.species}--attack` :
@@ -213,12 +312,30 @@ export default defineComponent({
             }"></div>
             </div>
             <div class="fight__skills skills">
-                <div class="skills__skill" v-for="skill in person.skills" @click="moveTo('battle')">
-                    <img class="skills__image" :src="`/images/skills/${char.character.species}/${skill.id}.png`" :alt="skill.name">
-                    <div class="skills__desc">{{skill.description}}</div>
-                    <div class="skills__cost">
-                        {{skill.manaCost}}
-                        <nuxt-icon class="skills__icon-mana" name="stats/mana" />
+                <div class="skills__wrap">
+                    <div class="skills__skill" @click="autoAttack">
+                        <img class="skills__image" src="/images/skills/all/auto-attack.png" alt="Автоатка">
+                        <div class="skills__desc">Автоатака</div>
+                        <div class="skills__cost">
+                            0
+                            <nuxt-icon class="skills__icon-mana" name="stats/mana" />
+                        </div>
+                    </div>
+                    <div class="skills__skill" v-for="skill in person.skills" @click="moveTo('battle')">
+                        <img class="skills__image" :src="`/images/skills/${char.character.species}/${skill.id}.png`"
+                             :alt="skill.name">
+                        <div class="skills__desc">{{ skill.description }}</div>
+                        <div class="skills__cost">
+                            {{ skill.manaCost }}
+                            <nuxt-icon class="skills__icon-mana" name="stats/mana" />
+                        </div>
+                    </div>
+                </div>
+                <div class="skills__wrap skills__wrap--potions">
+                    <div class="skills__skill" v-for="potion in person.potions" @click="drinkPotion()">
+                        <img class="skills__image" :src="`/images/skills/${char.character.species}/${potion.id}.png`"
+                             :alt="potion.name">
+                        <div class="skills__desc skills__desc--potions">{{ potion.description }}</div>
                     </div>
                 </div>
             </div>
