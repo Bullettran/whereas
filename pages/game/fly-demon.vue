@@ -42,16 +42,23 @@ export default defineComponent({
                 state: "idle",
             },
             stats: {
-                attack: 1,
-                critical: 2,
-                hp: 7,
-                mp: 6,
-                speed: 2,
-                defence: 3,
                 currentHp: 7,
                 currentMp: 6,
             },
             skills: [
+                {
+                    id: "auto-attack",
+                    name: "Автоатака",
+                    description: "Наносит урон врагу",
+                    type: "attack",
+                    manaCost: 0,
+                    effect: {
+                        damage: 0,
+                        duration: 0,
+                        element: "",
+                    },
+                    animType: "attack",
+                },
                 {
                     id: "burning",
                     name: "Огненный шар",
@@ -72,7 +79,7 @@ export default defineComponent({
                     type: "attack",
                     manaCost: 2,
                     effect: {
-                        heal: 1,
+                        damage: 3,
                         duration: 0,
                         element: "",
                     },
@@ -85,6 +92,7 @@ export default defineComponent({
                     type: "attack",
                     manaCost: 3,
                     effect: {
+                        damage: 1,
                         damagePerTurn: 1,
                         duration: 2,
                         element: "bleed",
@@ -215,14 +223,19 @@ export default defineComponent({
         // Метод самой битвы
         onFight(type: any, skill: any) {
             if (skill) {
-                console.log(skill);
-                this.playAnimType(skill.animType);
-                // Здесь можно добавить эффект скилла, например:
-                this.applyDamageToMob(skill.effect.damage || 0);
-            } else {
-                this.playAnimType("attack");
-                this.applyDamageToMob(4);
+                if (skill.animType === "buff") {
+                    this.playAnimType(skill.animType);
+                } else {
+                    this.playAnimType(skill.animType);
+                    // todo(kharal): Продумать крит шанс
+                    const dmg = skill.effect.damage + this.char.character.stats.attack;
+                    this.applyDamageToMob(dmg);
+                    this.onReturnStart();
+                }
             }
+        },
+        // Возврат к месту стойки персонажа
+        onReturnStart() {
             setTimeout(() => {
                 this.moveTo("start", null);
             }, 1000);
@@ -257,21 +270,19 @@ export default defineComponent({
         },
         // Использование скиллов
         useSkill(skill: any) {
+            // Если баф то не бежим к мобу
             if (skill.animType !== "buff") {
                 this.moveTo("battle", skill);
             } else {
-                this.playAnimType("buff");
+                this.onFight("battle", skill)
             }
         },
         // Получение урона мобом
         applyDamageToMob(damage: number) {
+            // todo(kharal): Продумать деф моба
             this.mob.stats.currentHp -= damage;
             if (this.mob.stats.currentHp < 0) this.mob.stats.currentHp = 0;
             this.mobHitAnimation();
-        },
-        // Автоатака
-        autoAttack() {
-            this.moveTo("battle", null);
         },
         // Получение процента
         onPercentage(exp: number, needExp: number): any {
@@ -296,11 +307,11 @@ export default defineComponent({
                              :src="`/images/sprites/persons/${char.character.species}/icon-${char.character.species}.png`">
                     </div>
                     <div class="stats__specifications">
-                        <ProgressBar class="stats__hp" :value="onPercentage(person.stats.currentHp, person.stats.hp)">
-                            {{ person.stats.currentHp }}/{{ person.stats.hp }}
+                        <ProgressBar class="stats__hp" :value="onPercentage(person.stats.currentHp, char.character.stats.hp)">
+                            {{ person.stats.currentHp }}/{{ char.character.stats.hp }}
                         </ProgressBar>
-                        <ProgressBar class="stats__mp" :value="onPercentage(person.stats.currentMp, person.stats.mp)">
-                            {{ person.stats.currentMp }}/{{ person.stats.mp }}
+                        <ProgressBar class="stats__mp" :value="onPercentage(person.stats.currentMp, char.character.stats.mp)">
+                            {{ person.stats.currentMp }}/{{ char.character.stats.mp }}
                         </ProgressBar>
                         <div class="stats__buffs">
                             <p class="stats__text">Бафы:</p>
@@ -396,14 +407,6 @@ export default defineComponent({
             </div>
             <div class="fight__skills skills">
                 <div class="skills__wrap">
-                    <div class="skills__skill" @click="autoAttack">
-                        <img class="skills__image" src="/images/skills/all/auto-attack.png" alt="Автоатка">
-                        <div class="skills__desc">Автоатака</div>
-                        <div class="skills__cost">
-                            0
-                            <nuxt-icon class="skills__icon-mana" name="stats/mana" />
-                        </div>
-                    </div>
                     <div class="skills__skill" v-for="skill in person.skills" @click="useSkill(skill)">
                         <img class="skills__image" :src="`/images/skills/${char.character.species}/${skill.id}.png`"
                              :alt="skill.name">
