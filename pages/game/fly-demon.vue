@@ -26,6 +26,8 @@ export default defineComponent({
                 moveInterval: null as any,
                 state: "idle",
             },
+            buffs: [],
+            debuffs: [],
             image: "/images/sprites/mobs/red-flying-demon/icon.png",
         },
         person: {
@@ -53,65 +55,65 @@ export default defineComponent({
                 {
                     id: "burning",
                     name: "Огненный шар",
-                    description: "Наносит 2 огненного урона врагу",
-                    type: "attack",       // Тип скилла: атака, защита, баф и т.д.
-                    manaCost: 1,          // Стоимость маны
+                    description: "Наносит урон врагу",
+                    type: "attack",
+                    manaCost: 1,
                     effect: {
-                        damage: 2,          // Урон, наносимый скиллом
-                        duration: 0,        // Продолжительность эффекта (0 — мгновенный)
-                        element: "fire",     // Тип урона/эффекта (огонь)
+                        damage: 2,
+                        duration: 0,
+                        element: "",
                     },
                     animType: "attack1",
                 },
                 {
                     id: "blade-of-flame",
-                    name: "Лечение",
-                    description: "Восстанавливает 1 здоровье союзнику",
-                    type: "defense",      // Защитный скилл (хил, баф)
+                    name: "Меч пламени",
+                    description: "Наносит множесветнный урон врагу",
+                    type: "attack",
                     manaCost: 2,
                     effect: {
-                        heal: 1,            // Восстановление здоровья
+                        heal: 1,
                         duration: 0,
-                        element: "heal",
+                        element: "",
                     },
                     animType: "attack2",
                 },
                 {
                     id: "eternal-flame",
-                    name: "Регенерация",
-                    description: "Восстанавливает 1 здоровье в течение 2 ходов",
-                    type: "buff",         // Баф (положительный эффект)
+                    name: "блабла",
+                    description: "Атакует и вешает дебаф",
+                    type: "attack",
                     manaCost: 3,
                     effect: {
-                        healPerTurn: 1,     // Восстановление здоровья за ход
+                        damagePerTurn: 1,
                         duration: 2,
-                        element: "heal",
+                        element: "bleed",
                     },
                     animType: "attack3",
                 },
                 {
                     id: "flame-control",
-                    name: "Кровотечение",
-                    description: "Наносит 1 урона в течение 2 ходов",
-                    type: "attack",
+                    name: "бббб",
+                    description: "Восстанавливает жизни 2 хода",
+                    type: "buff",
                     manaCost: 3,
                     effect: {
-                        damagePerTurn: 1,   // Урон за ход
+                        healPerTurn: 1,
                         duration: 2,
-                        element: "bleed",    // Тип эффекта — кровотечение
+                        element: "heal",
                     },
                     animType: "buff",
                 },
                 {
                     id: "flame-shield",
-                    name: "Рассеивание",
-                    description: "Снимает все дебафы с союзника",
-                    type: "defense",
+                    name: "ббб",
+                    description: "Увеличивает атаку на 5 ходов",
+                    type: "buff",
                     manaCost: 4,
                     effect: {
-                        dispelDebuffs: true, // Флаг снятия дебафов
-                        duration: 0,
-                        element: "dispel",
+                        attack: 3,
+                        duration: 5,
+                        element: "buff",
                     },
                     animType: "buff",
                 },
@@ -153,7 +155,9 @@ export default defineComponent({
                         element: "defence",     // Тип урона/эффекта (огонь)
                     },
                 },
-            ]
+            ],
+            buffs: [],
+            debuffs: [],
         },
         targets: {
             start: {
@@ -167,6 +171,7 @@ export default defineComponent({
         },
     }),
     methods: {
+        // Метож передвижения персонажа
         moveTo(type: string, skill: any) {
             if (this.person.actions.moving) return;
             this.person.actions.moving = true;
@@ -194,18 +199,7 @@ export default defineComponent({
                     this.person.actions.moving = false;
                     clearInterval(this.person.actions.moveInterval);
                     if (type === "battle") {
-                        if (skill) {
-                            this.playAnimType(skill.animType);
-                            // Здесь можно добавить эффект скилла, например:
-                            this.applyDamageToMob(skill.effect.damage || 0);
-                        } else {
-                            this.playAnimType("attack");
-                            this.applyDamageToMob(4);
-                        }
-
-                        setTimeout(() => {
-                            this.moveTo("start", null);
-                        }, 1000);
+                        this.onFight(type, skill);
                     } else if (type === "start") {
                         this.person.actions.state = "idle";
                         this.person.actions.facingLeft = false;
@@ -218,6 +212,22 @@ export default defineComponent({
                 this.person.actions.y += (dy / dist) * this.person.actions.speed;
             }, 16); // ~60fps
         },
+        // Метод самой битвы
+        onFight(type: any, skill: any) {
+            if (skill) {
+                console.log(skill);
+                this.playAnimType(skill.animType);
+                // Здесь можно добавить эффект скилла, например:
+                this.applyDamageToMob(skill.effect.damage || 0);
+            } else {
+                this.playAnimType("attack");
+                this.applyDamageToMob(4);
+            }
+            setTimeout(() => {
+                this.moveTo("start", null);
+            }, 1000);
+        },
+        // Анимация получения урона мобом
         mobHitAnimation() {
             this.mob.actions.state = "hit";
             setTimeout(() => {
@@ -236,7 +246,7 @@ export default defineComponent({
                 `${this.char.character.species}--attack2`,
                 `${this.char.character.species}--attack3`,
                 `${this.char.character.species}--def`,
-                `${this.char.character.species}--buff`
+                `${this.char.character.species}--buff`,
             ].forEach(cls => classList.remove(cls));
             if (animType) {
                 classList.add(`${this.char.character.species}--${animType}`);
@@ -245,6 +255,7 @@ export default defineComponent({
                 classList.remove(`${this.char.character.species}--${animType}`);
             }, 1000);
         },
+        // Использование скиллов
         useSkill(skill: any) {
             if (skill.animType !== "buff") {
                 this.moveTo("battle", skill);
@@ -252,20 +263,23 @@ export default defineComponent({
                 this.playAnimType("buff");
             }
         },
+        // Получение урона мобом
         applyDamageToMob(damage: number) {
             this.mob.stats.currentHp -= damage;
             if (this.mob.stats.currentHp < 0) this.mob.stats.currentHp = 0;
             this.mobHitAnimation();
         },
+        // Автоатака
         autoAttack() {
             this.moveTo("battle", null);
         },
-        onPercentage(exp:number, needExp: number): any {
+        // Получение процента
+        onPercentage(exp: number, needExp: number): any {
             return (exp / needExp) * 100;
         },
         drinkPotion() {
 
-        }
+        },
     },
     mounted() {
     },
@@ -282,20 +296,36 @@ export default defineComponent({
                              :src="`/images/sprites/persons/${char.character.species}/icon-${char.character.species}.png`">
                     </div>
                     <div class="stats__specifications">
-                        <ProgressBar class="stats__hp" :value="onPercentage(person.stats.currentHp, person.stats.hp)">{{person.stats.currentHp}}/{{person.stats.hp}}</ProgressBar>
-                        <ProgressBar class="stats__mp" :value="onPercentage(person.stats.currentMp, person.stats.mp)">{{person.stats.currentMp}}/{{person.stats.mp}}</ProgressBar>
+                        <ProgressBar class="stats__hp" :value="onPercentage(person.stats.currentHp, person.stats.hp)">
+                            {{ person.stats.currentHp }}/{{ person.stats.hp }}
+                        </ProgressBar>
+                        <ProgressBar class="stats__mp" :value="onPercentage(person.stats.currentMp, person.stats.mp)">
+                            {{ person.stats.currentMp }}/{{ person.stats.mp }}
+                        </ProgressBar>
                         <div class="stats__buffs">
                             <p class="stats__text">Бафы:</p>
-                            <div class="stats__wrap">
-                                <img class="stats__icon" src="/images/skills/all/auto-attack.png" alt="Автоатка">
-                                <div class="stats__desc">Получает 2 урона каждый ход</div>
+                            <div class="stats__wrap" v-for="buff in person.buffs">
+                                <img class="stats__icon" :src="
+                                    //@ts-ignore
+                                    buff.image" alt="Изображение бафа">
+                                <div class="stats__desc">{{
+                                        //@ts-ignore
+                                        buff.desc
+                                    }}
+                                </div>
                             </div>
                         </div>
                         <div class="stats__buffs">
                             <p class="stats__text">Дебафы:</p>
-                            <div class="stats__wrap">
-                                <img class="stats__icon" src="/images/skills/all/auto-attack.png" alt="Автоатка">
-                                <div class="stats__desc">Получает 2 урона каждый ход</div>
+                            <div class="stats__wrap" v-for="buff in person.debuffs">
+                                <img class="stats__icon" :src="
+                                    //@ts-ignore
+                                    buff.image" alt="Изображение бафа">
+                                <div class="stats__desc">{{
+                                        //@ts-ignore
+                                        buff.desc
+                                    }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -306,20 +336,36 @@ export default defineComponent({
                             <img class="stats__image" :src="mob.image" alt="Изображение моба">
                         </div>
                         <div class="stats__specifications">
-                            <ProgressBar class="stats__hp" :value="onPercentage(mob.stats.currentHp, mob.stats.hp)">{{mob.stats.currentHp}}/{{mob.stats.hp}}</ProgressBar>
-                            <ProgressBar class="stats__mp" :value="onPercentage(mob.stats.currentMp, mob.stats.mp)">{{mob.stats.currentMp}}/{{mob.stats.mp}}</ProgressBar>
+                            <ProgressBar class="stats__hp" :value="onPercentage(mob.stats.currentHp, mob.stats.hp)">
+                                {{ mob.stats.currentHp }}/{{ mob.stats.hp }}
+                            </ProgressBar>
+                            <ProgressBar class="stats__mp" :value="onPercentage(mob.stats.currentMp, mob.stats.mp)">
+                                {{ mob.stats.currentMp }}/{{ mob.stats.mp }}
+                            </ProgressBar>
                             <div class="stats__buffs">
                                 <p class="stats__text">Бафы:</p>
-                                <div class="stats__wrap">
-                                    <img class="stats__icon" src="/images/skills/all/auto-attack.png" alt="Автоатка">
-                                    <div class="stats__desc">Получает 2 урона каждый ход</div>
+                                <div class="stats__wrap" v-for="buff in mob.buffs">
+                                    <img class="stats__icon" :src="
+                                    //@ts-ignore
+                                    buff.image" alt="Изображение бафа">
+                                    <div class="stats__desc">{{
+                                            //@ts-ignore
+                                            buff.desc
+                                        }}
+                                    </div>
                                 </div>
                             </div>
                             <div class="stats__buffs">
                                 <p class="stats__text">Дебафы:</p>
-                                <div class="stats__wrap">
-                                    <img class="stats__icon" src="/images/skills/all/auto-attack.png" alt="Автоатка">
-                                    <div class="stats__desc">Получает 2 урона каждый ход</div>
+                                <div class="stats__wrap" v-for="buff in mob.debuffs">
+                                    <img class="stats__icon" :src="
+                                    //@ts-ignore
+                                    buff.image" alt="Изображение бафа">
+                                    <div class="stats__desc">{{
+                                            //@ts-ignore
+                                            buff.desc
+                                        }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
