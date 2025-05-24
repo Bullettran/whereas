@@ -1,0 +1,13 @@
+.logs {
+    margin-top: 12px;
+    background-color: rgba(#333, 0.7);
+    border: 2px solid var(--grey);
+    border-radius: 8px;
+    padding: 8px;
+    height: 120px;
+    overflow-y: auto;
+}
+
+.logs__log {
+    opacity: 1;
+}

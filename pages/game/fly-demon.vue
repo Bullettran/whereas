@@ -5,6 +5,7 @@ export default defineComponent({
     name: "FlyDemon",
     data: () => ({
         char: usePersonState(),
+        log: [] as Array<any>,
         mob: {
             stats: {
                 attack: 1,
@@ -12,8 +13,8 @@ export default defineComponent({
                 hp: 20,
                 mp: 6,
                 speed: 1,
-                defence: 1,
-                currentHp: 20,
+                defence: 20,
+                currentHp: 17,
                 currentMp: 6,
             },
             actions: {
@@ -222,16 +223,14 @@ export default defineComponent({
         },
         // Метод самой битвы
         onFight(type: any, skill: any) {
-            if (skill) {
-                if (skill.animType === "buff") {
-                    this.playAnimType(skill.animType);
-                } else {
-                    this.playAnimType(skill.animType);
-                    // todo(kharal): Продумать крит шанс
-                    const dmg = skill.effect.damage + this.char.character.stats.attack;
-                    this.applyDamageToMob(dmg);
-                    this.onReturnStart();
-                }
+            if (skill.animType === "buff") {
+                this.playAnimType(skill.animType);
+            } else {
+                this.playAnimType(skill.animType);
+                // todo(kharal): Продумать крит шанс
+                const dmg = skill.effect.damage + this.char.character.stats.attack;
+                this.applyDamageToMob(dmg);
+                this.onReturnStart();
             }
         },
         // Возврат к месту стойки персонажа
@@ -274,13 +273,16 @@ export default defineComponent({
             if (skill.animType !== "buff") {
                 this.moveTo("battle", skill);
             } else {
-                this.onFight("battle", skill)
+                this.onFight("battle", skill);
             }
         },
         // Получение урона мобом
         applyDamageToMob(damage: number) {
-            // todo(kharal): Продумать деф моба
-            this.mob.stats.currentHp -= damage;
+            if (damage > this.mob.stats.defence) {
+                this.mob.stats.currentHp -= (damage - this.mob.stats.defence);
+            } else {
+                this.setLogs("Защита не пробита");
+            }
             if (this.mob.stats.currentHp < 0) this.mob.stats.currentHp = 0;
             this.mobHitAnimation();
         },
@@ -291,6 +293,9 @@ export default defineComponent({
         drinkPotion() {
 
         },
+        setLogs(text: string) {
+            this.log.unshift(text);
+        }
     },
     mounted() {
     },
@@ -301,43 +306,52 @@ export default defineComponent({
     <div class="fight">
         <div class="fight__container container">
             <div class="fight__stats stats">
-                <div class="stats__block stats__block--person">
-                    <div class="stats__picture">
-                        <img class="stats__image" alt="Изображение персонажа"
-                             :src="`/images/sprites/persons/${char.character.species}/icon-${char.character.species}.png`">
-                    </div>
-                    <div class="stats__specifications">
-                        <ProgressBar class="stats__hp" :value="onPercentage(person.stats.currentHp, char.character.stats.hp)">
-                            {{ person.stats.currentHp }}/{{ char.character.stats.hp }}
-                        </ProgressBar>
-                        <ProgressBar class="stats__mp" :value="onPercentage(person.stats.currentMp, char.character.stats.mp)">
-                            {{ person.stats.currentMp }}/{{ char.character.stats.mp }}
-                        </ProgressBar>
-                        <div class="stats__buffs">
-                            <p class="stats__text">Бафы:</p>
-                            <div class="stats__wrap" v-for="buff in person.buffs">
-                                <img class="stats__icon" :src="
+                <div class="stats__wrapper">
+                    <div class="stats__block stats__block--person">
+                        <div class="stats__picture">
+                            <img class="stats__image" alt="Изображение персонажа"
+                                 :src="`/images/sprites/persons/${char.character.species}/icon-${char.character.species}.png`">
+                        </div>
+                        <div class="stats__specifications">
+                            <ProgressBar class="stats__hp"
+                                         :value="onPercentage(person.stats.currentHp, char.character.stats.hp)">
+                                {{ person.stats.currentHp }}/{{ char.character.stats.hp }}
+                            </ProgressBar>
+                            <ProgressBar class="stats__mp"
+                                         :value="onPercentage(person.stats.currentMp, char.character.stats.mp)">
+                                {{ person.stats.currentMp }}/{{ char.character.stats.mp }}
+                            </ProgressBar>
+                            <div class="stats__buffs">
+                                <p class="stats__text">Бафы:</p>
+                                <div class="stats__wrap" v-for="buff in person.buffs">
+                                    <img class="stats__icon" :src="
                                     //@ts-ignore
                                     buff.image" alt="Изображение бафа">
-                                <div class="stats__desc">{{
-                                        //@ts-ignore
-                                        buff.desc
-                                    }}
+                                    <div class="stats__desc">{{
+                                            //@ts-ignore
+                                            buff.desc
+                                        }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="stats__buffs">
+                                <p class="stats__text">Дебафы:</p>
+                                <div class="stats__wrap" v-for="buff in person.debuffs">
+                                    <img class="stats__icon" :src="
+                                    //@ts-ignore
+                                    buff.image" alt="Изображение бафа">
+                                    <div class="stats__desc">{{
+                                            //@ts-ignore
+                                            buff.desc
+                                        }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="stats__buffs">
-                            <p class="stats__text">Дебафы:</p>
-                            <div class="stats__wrap" v-for="buff in person.debuffs">
-                                <img class="stats__icon" :src="
-                                    //@ts-ignore
-                                    buff.image" alt="Изображение бафа">
-                                <div class="stats__desc">{{
-                                        //@ts-ignore
-                                        buff.desc
-                                    }}
-                                </div>
-                            </div>
+                    </div>
+                    <div class="fight__logs logs">
+                        <div class="logs__log" v-for="item in log">
+                            {{item}}
                         </div>
                     </div>
                 </div>
