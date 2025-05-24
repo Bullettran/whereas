@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+import { sk } from "cronstrue/dist/i18n/locales/sk";
 
 export default defineComponent({
     name: "FlyDemon",
@@ -28,7 +29,7 @@ export default defineComponent({
                 state: "idle",
             },
             buffs: [],
-            debuffs: [],
+            debuffs: [] as any,
             image: "/images/sprites/mobs/red-flying-demon/icon.png",
         },
         person: {
@@ -96,6 +97,7 @@ export default defineComponent({
                         damage: 1,
                         damagePerTurn: 1,
                         duration: 2,
+                        description: "Каждый ход получает урон",
                         element: "bleed",
                     },
                     animType: "attack3",
@@ -166,7 +168,7 @@ export default defineComponent({
                 },
             ],
             buffs: [],
-            debuffs: [],
+            debuffs: [] as any,
         },
         targets: {
             start: {
@@ -208,7 +210,7 @@ export default defineComponent({
                     this.person.actions.moving = false;
                     clearInterval(this.person.actions.moveInterval);
                     if (type === "battle") {
-                        this.onFight(type, skill);
+                        this.onFightPerson(type, skill);
                     } else if (type === "start") {
                         this.person.actions.state = "idle";
                         this.person.actions.facingLeft = false;
@@ -221,14 +223,24 @@ export default defineComponent({
                 this.person.actions.y += (dy / dist) * this.person.actions.speed;
             }, 16); // ~60fps
         },
-        // Метод самой битвы
-        onFight(type: any, skill: any) {
+        // Метод самой битвы для персонажа
+        onFightPerson(type: any, skill: any) {
             if (skill.animType === "buff") {
                 this.playAnimType(skill.animType);
             } else {
                 this.playAnimType(skill.animType);
-                const dmg = skill.effect.damage + this.char.character.stats.attack;
-                this.applyDamageToMob(this.isCriticalHit("person", dmg));
+                if (skill.effect.element === "bleed") {
+                    // todo(kharal): Вынести в отдельный метод ВАЖНО
+                    this.mob.debuffs.push({
+                        duration: skill.effect.duration,
+                        damagePerTurn: skill.effect.damagePerTurn,
+                        image: `/images/skills/${this.char.character.species}/${skill.id}.png`,
+                        desc: skill.effect.description,
+                    })
+                } else {
+                    const dmg = skill.effect.damage + this.char.character.stats.attack;
+                    this.applyDamageToMob(this.isCriticalHit("person", dmg));
+                }
                 this.onReturnStart();
             }
         },
@@ -272,7 +284,7 @@ export default defineComponent({
             if (skill.animType !== "buff") {
                 this.moveTo("battle", skill);
             } else {
-                this.onFight("battle", skill);
+                this.onFightPerson("battle", skill);
             }
         },
         // Получение урона мобом
@@ -349,6 +361,10 @@ export default defineComponent({
                                             buff.desc
                                         }}
                                     </div>
+                                    <div class="stats__duration">{{
+                                            //@ts-ignore
+                                            buff.duration
+                                        }}</div>
                                 </div>
                             </div>
                             <div class="stats__buffs">
@@ -362,6 +378,9 @@ export default defineComponent({
                                             buff.desc
                                         }}
                                     </div>
+                                    <div class="stats__duration">{{
+                                            //@ts-ignore
+                                            buff.duration}}</div>
                                 </div>
                             </div>
                         </div>
@@ -395,6 +414,9 @@ export default defineComponent({
                                             buff.desc
                                         }}
                                     </div>
+                                    <div class="stats__duration">{{
+                                            //@ts-ignore
+                                            buff.duration}}</div>
                                 </div>
                             </div>
                             <div class="stats__buffs">
@@ -406,8 +428,13 @@ export default defineComponent({
                                     <div class="stats__desc">{{
                                             //@ts-ignore
                                             buff.desc
-                                        }}
+                                        }} {{
+                                            //@ts-ignore
+                                            buff.damagePerTurn}} ед.
                                     </div>
+                                    <div class="stats__duration">{{
+                                            //@ts-ignore
+                                            buff.duration}}</div>
                                 </div>
                             </div>
                         </div>
