@@ -16,14 +16,14 @@
 }
 
 .inferno--idle {
-    animation: idle;
+    animation: inferno-idle;
     animation-duration: 1s;
     animation-iteration-count: infinite;
     background-repeat: no-repeat;
     animation-timing-function: steps(1, end);
 }
 
-@keyframes idle {
+@keyframes inferno-idle {
     0% { background-position: 0 0; } /* Кадр 1 */
     16.5% { background-position: -288px 0; } /* Кадр 2 */
     25% { background-position: -576px 0; } /* Кадр 3 */
@@ -36,14 +36,14 @@
 }
 
 .inferno--run {
-    animation: run;
+    animation: inferno-run;
     animation-duration: 1s;
     animation-iteration-count: infinite;
     background-repeat: no-repeat;
     animation-timing-function: steps(1, end);
 }
 
-@keyframes run {
+@keyframes inferno-run {
     0% { background-position: 0 -128px; } /* Кадр 1 */
     16.5% { background-position: -288px -128px; } /* Кадр 2 */
     25% { background-position: -576px -128px; } /* Кадр 3 */
@@ -56,14 +56,14 @@
 }
 
 .inferno--attack {
-    animation: attack;
+    animation: inferno-attack;
     animation-duration: 1s;
     animation-iteration-count: infinite;
     background-repeat: no-repeat;
     animation-timing-function: steps(1, end);
 }
 
-@keyframes attack {
+@keyframes inferno-attack {
     0% { background-position: 0 -896px; } /* Кадр 1 */
     16.5% { background-position: -288px -896px; } /* Кадр 2 */
     25% { background-position: -576px -896px; } /* Кадр 3 */
@@ -74,3 +74,109 @@
     100% { background-position: -2016px -896px; } /* Кадр 8 */
     100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
 }
+
+.inferno--attack1 {
+    animation: inferno-attack1;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes inferno-attack1 {
+    0% { background-position: 0 -640px; } /* Кадр 1 */
+    16.5% { background-position: -288px -640px; } /* Кадр 2 */
+    25% { background-position: -576px -640px; } /* Кадр 3 */
+    37.5% { background-position: -864px -640px; } /* Кадр 4 */
+    50% { background-position: -1152px -640px; } /* Кадр 5 */
+    62.5% { background-position: -1440px -640px; } /* Кадр 6 */
+    75% { background-position: -1728px -640px; } /* Кадр 7 */
+    100% { background-position: -2016px -640px; } /* Кадр 8 */
+    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+}
+
+.inferno--attack2 {
+    animation: inferno-attack2;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes inferno-attack2 {
+    0% { background-position: 0 -1152px; }           /* Кадр 1 (0px) */
+    4.545% { background-position: -288px -1152px; } /* Кадр 2 (288px) */
+    9.09% { background-position: -576px -1152px; }  /* Кадр 3 (576px) */
+    13.635% { background-position: -864px -1152px; } /* Кадр 4 (864px) */
+    18.18% { background-position: -1152px -1152px; } /* Кадр 5 (1152px) */
+    22.725% { background-position: -1440px -1152px; } /* Кадр 6 (1440px) */
+    27.27% { background-position: -1728px -1152px; } /* Кадр 7 (1728px) */
+    31.815% { background-position: -2016px -1152px; } /* Кадр 8 (2016px) */
+    36.36% { background-position: -2304px -1152px; } /* Кадр 9 (2304px) */
+    40.905% { background-position: -2592px -1152px; } /* Кадр 10 (2592px) */
+    45.45% { background-position: -2880px -1152px; } /* Кадр 11 (2880px) */
+    50% { background-position: -3168px -1152px; }   /* Кадр 12 (3168px) */
+    54.545% { background-position: -3456px -1152px; } /* Кадр 13 (3456px) */
+    59.09% { background-position: -3744px -1152px; } /* Кадр 14 (3744px) */
+    63.635% { background-position: -4032px -1152px; } /* Кадр 15 (4032px) */
+    68.18% { background-position: -4320px -1152px; } /* Кадр 16 (4320px) */
+    72.725% { background-position: -4608px -1152px; } /* Кадр 17 (4608px) */
+    77.27% { background-position: -4896px -1152px; } /* Кадр 18 (4896px) */
+    81.815% { background-position: -5184px -1152px; } /* Кадр 19 (5184px) */
+    86.36% { background-position: -5472px -1152px; } /* Кадр 20 (5472px) */
+    90.905% { background-position: -5760px -1152px; } /* Кадр 21 (5760px) */
+    95.45% { background-position: -6048px -1152px; } /* Кадр 22 (6048px) */
+    100% { background-position: 0 0; }              /* Возврат в начало */
+}
+
+.inferno--attack3 {
+    animation: inferno-attack3;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes inferno-attack3 {
+    0% { background-position: 0 -1280px; } /* Кадр 1 (0px) */
+    8.25% { background-position: -288px -1280px; } /* Кадр 2 (288px) */
+    12.5% { background-position: -576px -1280px; } /* Кадр 3 (576px) */
+    18.75% { background-position: -864px -1280px; } /* Кадр 4 (864px) */
+    25% { background-position: -1152px -1280px; } /* Кадр 5 (1152px) */
+    31.25% { background-position: -1440px -1280px; } /* Кадр 6 (1440px) */
+    37.5% { background-position: -1728px -1280px; } /* Кадр 7 (1728px) */
+    43.75% { background-position: -2016px -1280px; } /* Кадр 8 (2016px) */
+    50% { background-position: -2304px -1280px; } /* Кадр 9 (2304px) */
+    56.25% { background-position: -2592px -1280px; } /* Кадр 10 (2592px) */
+    62.5% { background-position: -2880px -1280px; } /* Кадр 11 (2880px) */
+    68.75% { background-position: -3168px -1280px; } /* Кадр 12 (3168px) */
+    75% { background-position: -3456px -1280px; } /* Кадр 13 (3456px) */
+    81.25% { background-position: -3744px -1280px; } /* Кадр 14 (3744px) */
+    87.5% { background-position: -4032px -1280px; } /* Кадр 15 (4032px) */
+    93.75% { background-position: -4320px -1280px; } /* Кадр 16 (4320px) */
+    100% { background-position: -4608px -1280px; } /* Кадр 17 (4608px) */
+    100% { background-position: 0 0; } /* Возврат в начало (Кадр 18) */
+}
+
+.inferno--buff {
+    animation: inferno-buff;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes inferno-buff {
+    0% { background-position: 0 -1408px; } /* Кадр 1 (0px) */
+    10% { background-position: -288px -1408px; } /* Кадр 2 (288px) */
+    20% { background-position: -576px -1408px; } /* Кадр 3 (576px) */
+    30% { background-position: -864px -1408px; } /* Кадр 4 (864px) */
+    40% { background-position: -1152px -1408px; } /* Кадр 5 (1152px) */
+    50% { background-position: -1440px -1408px; } /* Кадр 6 (1440px) */
+    60% { background-position: -1728px -1408px; } /* Кадр 7 (1728px) */
+    70% { background-position: -2016px -1408px; } /* Кадр 8 (2016px) */
+    80% { background-position: -2304px -1408px; } /* Кадр 9 (2304px) */
+    90% { background-position: -2592px -1408px; } /* Кадр 10 (2592px) */
+    100% { background-position: 0 0; } /* Возврат в начало */
+}
+

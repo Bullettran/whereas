@@ -61,6 +61,7 @@ export default defineComponent({
                         duration: 0,        // Продолжительность эффекта (0 — мгновенный)
                         element: "fire",     // Тип урона/эффекта (огонь)
                     },
+                    animType: "attack1",
                 },
                 {
                     id: "blade-of-flame",
@@ -73,6 +74,7 @@ export default defineComponent({
                         duration: 0,
                         element: "heal",
                     },
+                    animType: "attack2",
                 },
                 {
                     id: "eternal-flame",
@@ -85,6 +87,7 @@ export default defineComponent({
                         duration: 2,
                         element: "heal",
                     },
+                    animType: "attack3",
                 },
                 {
                     id: "flame-control",
@@ -97,6 +100,7 @@ export default defineComponent({
                         duration: 2,
                         element: "bleed",    // Тип эффекта — кровотечение
                     },
+                    animType: "buff",
                 },
                 {
                     id: "flame-shield",
@@ -109,6 +113,7 @@ export default defineComponent({
                         duration: 0,
                         element: "dispel",
                     },
+                    animType: "buff",
                 },
             ],
             potions: [
@@ -162,7 +167,7 @@ export default defineComponent({
         },
     }),
     methods: {
-        moveTo(type: string) {
+        moveTo(type: string, skill: any) {
             if (this.person.actions.moving) return;
             this.person.actions.moving = true;
             this.person.actions.state = "run";
@@ -189,12 +194,17 @@ export default defineComponent({
                     this.person.actions.moving = false;
                     clearInterval(this.person.actions.moveInterval);
                     if (type === "battle") {
-                        this.person.actions.state = "attack";
-
-                        this.applyDamageToMob(9);
+                        if (skill) {
+                            this.playAnimType(skill.animType);
+                            // Здесь можно добавить эффект скилла, например:
+                            this.applyDamageToMob(skill.effect.damage || 0);
+                        } else {
+                            this.playAnimType("attack");
+                            this.applyDamageToMob(4);
+                        }
 
                         setTimeout(() => {
-                            this.moveTo("start");
+                            this.moveTo("start", null);
                         }, 1000);
                     } else if (type === "start") {
                         this.person.actions.state = "idle";
@@ -214,13 +224,41 @@ export default defineComponent({
                 this.mob.actions.state = "idle";
             }, 1000);
         },
+        // Анимации атак и бафоф
+        playAnimType(animType: string) {
+            const characterEl = this.$refs.character;
+            if (!characterEl) return;
+            // @ts-ignore
+            const classList = characterEl.classList;
+            [
+                `${this.char.character.species}--attack`,
+                `${this.char.character.species}--attack1`,
+                `${this.char.character.species}--attack2`,
+                `${this.char.character.species}--attack3`,
+                `${this.char.character.species}--def`,
+                `${this.char.character.species}--buff`
+            ].forEach(cls => classList.remove(cls));
+            if (animType) {
+                classList.add(`${this.char.character.species}--${animType}`);
+            }
+            setTimeout(() => {
+                classList.remove(`${this.char.character.species}--${animType}`);
+            }, 1000);
+        },
+        useSkill(skill: any) {
+            if (skill.animType !== "buff") {
+                this.moveTo("battle", skill);
+            } else {
+                this.playAnimType("buff");
+            }
+        },
         applyDamageToMob(damage: number) {
             this.mob.stats.currentHp -= damage;
             if (this.mob.stats.currentHp < 0) this.mob.stats.currentHp = 0;
             this.mobHitAnimation();
         },
         autoAttack() {
-            this.moveTo("battle");
+            this.moveTo("battle", null);
         },
         onPercentage(exp:number, needExp: number): any {
             return (exp / needExp) * 100;
@@ -302,7 +340,6 @@ export default defineComponent({
             }"></div>
             <div class="fight__mobs">
                 <div
-                    @click="moveTo('battle')"
                     :class="[
                     mob.actions.state === 'hit' ? 'fight__mob--hit' : 'fight__mob--idle',
                     'fight__mob'
@@ -321,7 +358,7 @@ export default defineComponent({
                             <nuxt-icon class="skills__icon-mana" name="stats/mana" />
                         </div>
                     </div>
-                    <div class="skills__skill" v-for="skill in person.skills" @click="moveTo('battle')">
+                    <div class="skills__skill" v-for="skill in person.skills" @click="useSkill(skill)">
                         <img class="skills__image" :src="`/images/skills/${char.character.species}/${skill.id}.png`"
                              :alt="skill.name">
                         <div class="skills__desc">{{ skill.description }}</div>
