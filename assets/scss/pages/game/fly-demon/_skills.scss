@@ -63,3 +63,17 @@
 .skills__wrap--potions {
     margin-right: 120px;
 }
+
+.skills__wrap--potions .skills__skill {
+    background-color: #333;
+    border: 2px solid var(--grey);
+    border-radius: 8px;
+}
+
+.skills__wrap--potions .skills__image {
+    image-rendering: pixelated;
+    /* Для кроссбраузерности */
+    image-rendering: crisp-edges;
+    width: 80px;
+    height: 80px;
+}

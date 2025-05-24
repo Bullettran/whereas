@@ -118,7 +118,7 @@ export default defineComponent({
             ],
             potions: [
                 {
-                    id: "heal-potion",
+                    id: "hp-1",
                     name: "Эликсир здоровья",
                     description: "Восполняет 2 здоровья",
                     type: "potion",
@@ -130,7 +130,7 @@ export default defineComponent({
                     },
                 },
                 {
-                    id: "mp-potion",
+                    id: "mp-1",
                     name: "Эликсир маны",
                     description: "Восполняет 2 маны",
                     type: "potion",
@@ -142,7 +142,7 @@ export default defineComponent({
                     },
                 },
                 {
-                    id: "mp-potion",
+                    id: "def-1",
                     name: "Эликсир маны",
                     description: "Увеличивает защиту на ",
                     type: "potion",
@@ -370,7 +370,7 @@ export default defineComponent({
                 </div>
                 <div class="skills__wrap skills__wrap--potions">
                     <div class="skills__skill" v-for="potion in person.potions" @click="drinkPotion()">
-                        <img class="skills__image" :src="`/images/skills/${char.character.species}/${potion.id}.png`"
+                        <img class="skills__image" :src="`/images/potions/${potion.id}.png`"
                              :alt="potion.name">
                         <div class="skills__desc skills__desc--potions">{{ potion.description }}</div>
                     </div>
