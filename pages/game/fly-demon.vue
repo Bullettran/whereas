@@ -13,7 +13,7 @@ export default defineComponent({
                 hp: 20,
                 mp: 6,
                 speed: 1,
-                defence: 20,
+                defence: 2,
                 currentHp: 17,
                 currentMp: 6,
             },
@@ -227,9 +227,8 @@ export default defineComponent({
                 this.playAnimType(skill.animType);
             } else {
                 this.playAnimType(skill.animType);
-                // todo(kharal): Продумать крит шанс
                 const dmg = skill.effect.damage + this.char.character.stats.attack;
-                this.applyDamageToMob(dmg);
+                this.applyDamageToMob(this.isCriticalHit("person", dmg));
                 this.onReturnStart();
             }
         },
@@ -280,6 +279,7 @@ export default defineComponent({
         applyDamageToMob(damage: number) {
             if (damage > this.mob.stats.defence) {
                 this.mob.stats.currentHp -= (damage - this.mob.stats.defence);
+                this.setLogs(`Нанесено ${damage - this.mob.stats.defence} ед. урона мобу`);
             } else {
                 this.setLogs("Защита не пробита");
             }
@@ -290,6 +290,23 @@ export default defineComponent({
         onPercentage(exp: number, needExp: number): any {
             return (exp / needExp) * 100;
         },
+        // Расчет критического урона
+        isCriticalHit(target: "person" | "mob", dmg: number): number {
+            let criticalChance = 0 as number;
+            if (target === "person") {
+                criticalChance = this.char.character.stats.critical;
+                this.log.unshift("Успех критического удара");
+            } else {
+                criticalChance = this.mob.stats.critical;
+            }
+            const roll = Math.random() * 100;
+            if (roll <= criticalChance) {
+                return dmg * 2
+            } else {
+                return dmg
+            }
+        },
+
         drinkPotion() {
 
         },
