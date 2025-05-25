@@ -287,8 +287,72 @@ export default defineComponent({
                 desc: skill.effect.description,
             });
         },
+        /**
+         * Универсальная обработка всех бафов и дебафов у цели (персонажа или моба)
+         * - Применяет эффекты (лечение, урон, бонусы)
+         * - Уменьшает длительность
+         * - Удаляет истекшие эффекты
+         */
+        processEffects(target: any) {
+            // Бафы
+            if (Array.isArray(target.buffs)) {
+                for (let i = target.buffs.length - 1; i >= 0; i--) {
+                    const buff = target.buffs[i];
+
+                    // Обработка лечения
+                    if (buff.healPerTurn) {
+                        // Хиляем но не больше максимума хп
+                        target.stats.currentHp = Math.min(target.stats.currentHp + buff.healPerTurn, this.char.character.stats.hp);
+                        this.setLogs(`+${buff.healPerTurn} здоровья от бафа (${buff.desc})`);
+                    }
+
+                    // Обработка бонусов статов
+                    if (buff.bonus) {
+                        Object.keys(buff.bonus).forEach((key) => {
+                            if (buff.bonus[key]) {
+                                target.bonus[key] = (target.bonus[key] || 0);
+                            }
+                        });
+                    }
+                    buff.duration--;
+                    // обработка длительности эффектов
+                    if (buff.duration <= 0 ) {
+                        if (buff.bonus) {
+                            Object.keys(buff.bonus).forEach((key) => {
+                                if (buff.bonus[key]) {
+                                    target.bonus[key] = (target.bonus[key] || 0);
+                                }
+                            });
+                        }
+                        target.buffs.splice(i, 1);
+                        this.setLogs(`Баф (${buff.desc}) закончился`);
+                    }
+                }
+            }
+            // Дебафы
+            if (Array.isArray(target.debuffs)) {
+                for (let i = target.debuffs.length - 1; i >= 0; i--) {
+                    const debuff = target.debuffs[i];
+
+                    //обработка урона за ход
+                    if (debuff.damagePerTurn) {
+                        target.stats.currentHp = Math.max(target.stats.currentHp - debuff.damagePerTurn, 0);
+                        this.setLogs(`-${debuff.damagePerTurn} здоровья от дебафа (${debuff.desc})`);
+                    }
+
+                    debuff.duration--;
+                    if (debuff.duration <= 0) {
+                        target.debuffs.splice(i, 1);
+                        this.setLogs(`Дебаф "${debuff.desc}" закончился`);
+                    }
+
+                }
+            }
+        },
         onEndTurn() {
-            this.log.unshift("Ход пройден");
+            this.processEffects(this.person);
+            this.processEffects(this.mob);
+            this.log.unshift("Ход персонажа закончился");
         },
         // Возврат к месту стойки персонажа
         onReturnStart() {
@@ -353,7 +417,7 @@ export default defineComponent({
             let criticalChance = 0 as number;
             if (target === "person") {
                 criticalChance = this.char.character.stats.critical + this.person.bonus.critical;
-                this.log.unshift("Успех критического удара");
+                this.setLogs("Успех критического удара");
             } else {
                 criticalChance = this.mob.stats.critical + this.mob.bonus.critical;
             }
