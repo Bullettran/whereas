@@ -1,8 +1,10 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+import Reward from "~/components/reward/reward.vue";
 
 export default defineComponent({
     name: "FlyDemon",
+    components: { Reward },
     data: () => ({
         char: usePersonState(),
         log: [] as Array<any>,
@@ -236,13 +238,67 @@ export default defineComponent({
             },
             person: {
                 x: 350,
-                y: 500
+                y: 500,
             },
             mob: {
                 x: 640,
                 y: 520,
-            }
+            },
         },
+        rewardGold: 10,
+        rewards: [
+            {
+                id: "moonstone",
+                name: "Лунный камень",
+                description: "Камень, светящийся мягким лунным светом.",
+                type: "material",
+                rare: "standard",
+                chance: 20,
+                icon: "moonstone",
+                count: 2,
+                stats: {},
+                set: {},
+                buffs: {},
+                questItem: {
+                    isQuest: false,
+                    type: "",
+                },
+            },
+            {
+                id: "demon-essence",
+                name: "Эссенция демона",
+                description: "Таинственная субстанция, добытая из демонических существ.",
+                type: "material",
+                rare: "standard",
+                icon: "demon-essence",
+                chance: 100,
+                count: 1,
+                stats: {},
+                set: {},
+                buffs: {},
+                questItem: {
+                    isQuest: false,
+                    type: "",
+                },
+            },
+            {
+                id: "tree",
+                name: "Простая древесина",
+                description: "Простая древесина",
+                type: "material",
+                rare: "standard",
+                icon: "tree",
+                count: 1,
+                chance: 50,
+                stats: {},
+                set: {},
+                buffs: {},
+                questItem: {
+                    isQuest: false,
+                    type: "",
+                },
+            },
+        ],
     }),
     methods: {
         // проверка что персонаж жив
@@ -367,7 +423,7 @@ export default defineComponent({
             const skills = this.mob.skills;
             const affordableSkills = skills.filter((skill) => {
                 return this.mob.stats.currentMp >= (skill.manaCost || 0);
-            })
+            });
 
             if (affordableSkills.length === 0) {
                 return skills.find(skill => skill.id === "auto-attack") || skills[0];
@@ -397,7 +453,7 @@ export default defineComponent({
                     this.processEffects(this.mob);
                     this.regenMana();
                     this.isPlayerTurn = true;
-                }, 1200)
+                }, 1200);
             }, 700);
         },
         // Реген маны todo(kharal):
@@ -500,13 +556,12 @@ export default defineComponent({
             this.checkPlayerDeath();
         },
         endPlayerTurn() {
-            this.processEffects(this.person);
-            this.processEffects(this.mob);
-            this.log.unshift("Ход персонажа закончился");
-
             setTimeout(() => {
+                this.processEffects(this.person);
+                this.processEffects(this.mob);
+                this.log.unshift("Ход персонажа закончился");
                 this.enemyTurn();
-            }, 1000);
+            }, 2000);
         },
         // Возврат к месту стойки персонажа
         onReturnStart() {
@@ -565,14 +620,16 @@ export default defineComponent({
             const finalDmg = Math.max(damage - defence, 1);
 
             this.person.stats.currentHp = Math.max(this.person.stats.currentHp - finalDmg, 0);
-            this.playAnimType("hit");
+            setTimeout(() => {
+                this.playAnimType("hit");
+            }, 500);
             setTimeout(() => {
                 if (this.person.stats.currentHp > 0) {
                     this.person.actions.state = "idle";
                 } else {
                     this.playAnimType("death");
                 }
-            }, 400);
+            }, 1000);
             this.setLogs(`Персонаж получил ${finalDmg} урона (с учётом защиты ${defence})`);
             this.checkPlayerDeath();
         },
@@ -600,7 +657,7 @@ export default defineComponent({
             this.mob.stats.currentHp = Math.max(this.mob.stats.currentHp - finalDmg, 0);
             setTimeout(() => {
                 this.mob.actions.state = "hit";
-            }, 400)
+            }, 400);
             setTimeout(() => {
                 if (this.mob.stats.currentHp > 0) {
                     this.mob.actions.state = "idle";
@@ -624,7 +681,8 @@ export default defineComponent({
                 this.isPlayerTurn = false;
                 setTimeout(() => {
                     this.isMobHidden = true;
-                }, 1000);
+                    this.openReward();
+                }, 1500);
             }
         },
         // Получение процента
@@ -671,8 +729,23 @@ export default defineComponent({
             }
             potion.used = true;
         },
+        // Логи боя
         setLogs(text: string) {
             this.log.unshift(text);
+        },
+        // Получение награды
+        openReward() {
+            //@ts-ignore
+            let modal = new this.$bootstrap.Modal(document.getElementById("reward"), {
+                backdrop: "static",
+                keyboard: false,
+            });
+            modal.show();
+        },
+        onRewardClose(generatedRewards: any) {
+            // todo(kharal): Добавить вещи в инвентарь
+            console.log(generatedRewards);
+            navigateTo("/town");
         },
     },
     mounted() {
@@ -832,7 +905,8 @@ export default defineComponent({
                     </div>
                 </div>
                 <div class="skills__wrap skills__wrap--potions">
-                    <button :class="[potion.used ? 'skills__skill--used' : '', 'skills__skill button']" :disabled="potion.used" v-for="potion in person.potions" @click="drinkPotion(potion)">
+                    <button :class="[potion.used ? 'skills__skill--used' : '', 'skills__skill button']"
+                            :disabled="potion.used" v-for="potion in person.potions" @click="drinkPotion(potion)">
                         <img class="skills__image" :src="`/images/potions/${potion.id}.png`"
                              :alt="potion.name">
                         <div class="skills__desc skills__desc--potions">{{ potion.description }}</div>
@@ -841,6 +915,9 @@ export default defineComponent({
             </div>
         </div>
     </div>
+    <Modal id="reward" size="lg">
+        <Reward :gold="rewardGold" :rewards="rewards" @close="onRewardClose" />
+    </Modal>
 </template>
 
 <style scoped lang="scss">
