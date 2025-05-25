@@ -7,6 +7,7 @@ export default defineComponent({
     data: () => ({
         char: usePersonState(),
         log: [] as Array<any>,
+        isPlayerTurn: true,
         mob: {
             stats: {
                 attack: 1,
@@ -28,6 +29,36 @@ export default defineComponent({
                 moveInterval: null as any,
                 state: "idle",
             },
+            skills: [
+                {
+                    id: "auto-attack",
+                    name: "Автоатака",
+                    description: "Наносит урон врагу",
+                    type: "attack",
+                    manaCost: 0,
+                    effect: {
+                        damage: 0,
+                        duration: 0,
+                        element: "",
+                    },
+                    animType: "attack",
+                },
+                {
+                    id: "bleed",
+                    name: "блабла",
+                    description: "Атакует и вешает дебаф",
+                    type: "attack",
+                    manaCost: 3,
+                    effect: {
+                        damage: 1,
+                        damagePerTurn: 1,
+                        duration: 2,
+                        description: "Каждый ход получает урон",
+                        element: "debuff",
+                    },
+                    animType: "attack",
+                },
+            ],
             buffs: [],
             debuffs: [] as any,
             bonus: {
@@ -197,9 +228,66 @@ export default defineComponent({
                 x: 460,
                 y: 440,
             },
+            person: {
+                x: 350,
+                y: 500
+            },
+            mob: {
+                x: 640,
+                y: 520,
+            }
         },
     }),
     methods: {
+        // Метод передвижения моба
+        moveMobTo(type: string) {
+            if (this.mob.actions.moving) return;
+            this.mob.actions.moving = true;
+            this.mob.actions.state = "run";
+            const target = {
+                // @ts-ignore
+                x: this.targets[type].x,
+                // @ts-ignore
+                y: this.targets[type].y,
+            };
+            clearInterval(this.mob.actions.moveInterval);
+            this.mob.actions.moveInterval = setInterval(() => {
+                const dx = target.x - this.mob.actions.x;
+                const dy = target.y - this.mob.actions.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                // Определяем направление по оси X
+                if (dx > 0) {
+                    this.mob.actions.facingLeft = true;
+                } else if (dx < 0) {
+                    this.mob.actions.facingLeft = false;
+                }
+                if (dist < this.mob.actions.speed) {
+                    this.mob.actions.x = target.x;
+                    this.mob.actions.y = target.y;
+                    this.mob.actions.moving = false;
+                    clearInterval(this.mob.actions.moveInterval);
+                    if (type === "person") {
+                        this.mob.actions.state = "attack";
+                        this.mobAnimations("attack");
+                        setTimeout(() => {
+                            this.mob.actions.state = "idle";
+                            this.moveMobTo("mob");
+                        }, 600);
+                    } else if (type === "mob") {
+                        this.mob.actions.state = "idle";
+                        this.mob.actions.facingLeft = false;
+                    }
+                    return;
+                }
+                this.mob.actions.previousX = this.mob.actions.x;
+                // Двигаем моба по направлению к цели
+                this.mob.actions.x += (dx / dist) * this.mob.actions.speed;
+                this.mob.actions.y += (dy / dist) * this.mob.actions.speed;
+                if (this.mob.actions.state !== "run") {
+                    this.mob.actions.state = "run";
+                }
+            }, 16); // ~60fps
+        },
         // Метож передвижения персонажа
         moveTo(type: string, skill: any) {
             if (this.person.actions.moving) return;
@@ -258,7 +346,14 @@ export default defineComponent({
 
                 this.onReturnStart();
             }
-            this.onEndTurn();
+            this.endPlayerTurn();
+        },
+        enemyTurn() {
+            setTimeout(() => {
+                this.moveMobTo("person");
+            }, 700);
+            this.setDebuff(this.mob.skills[1], "person");
+            this.isPlayerTurn = true;
         },
         setBuff(skill: any, target: any) {
             // @ts-ignore
@@ -275,7 +370,7 @@ export default defineComponent({
                 },
                 image: `/images/skills/${this.char.character.species}/${skill.id}.png`,
                 desc: skill.effect.description,
-            })
+            });
         },
         // Получение мобом дебафоф
         setDebuff(skill: any, target: any) {
@@ -283,7 +378,7 @@ export default defineComponent({
             this[target].debuffs.push({
                 duration: skill.effect.duration,
                 damagePerTurn: skill.effect.damagePerTurn,
-                image: `/images/skills/${this.char.character.species}/${skill.id}.png`,
+                image: target === "mob" ? `/images/skills/${this.char.character.species}/${skill.id}.png` : `/images/skills/mob/${skill.id}.png`,
                 desc: skill.effect.description,
             });
         },
@@ -316,7 +411,7 @@ export default defineComponent({
                     }
                     buff.duration--;
                     // обработка длительности эффектов
-                    if (buff.duration <= 0 ) {
+                    if (buff.duration <= 0) {
                         if (buff.bonus) {
                             Object.keys(buff.bonus).forEach((key) => {
                                 if (buff.bonus[key]) {
@@ -349,10 +444,14 @@ export default defineComponent({
                 }
             }
         },
-        onEndTurn() {
+        endPlayerTurn() {
             this.processEffects(this.person);
             this.processEffects(this.mob);
             this.log.unshift("Ход персонажа закончился");
+
+            setTimeout(() => {
+                this.enemyTurn();
+            }, 1000);
         },
         // Возврат к месту стойки персонажа
         onReturnStart() {
@@ -361,11 +460,8 @@ export default defineComponent({
             }, 1000);
         },
         // Анимация получения урона мобом
-        mobHitAnimation() {
-            this.mob.actions.state = "hit";
-            setTimeout(() => {
-                this.mob.actions.state = "idle";
-            }, 1000);
+        mobAnimations(type: string) {
+            this.mob.actions.state = type;
         },
         // Анимации атак и бафоф
         playAnimType(animType: string) {
@@ -390,6 +486,12 @@ export default defineComponent({
         },
         // Использование скиллов
         useSkill(skill: any) {
+            if (!this.isPlayerTurn) return;
+            // Уменьшаем ману и проверяем
+            if (this.person.stats.currentMp < skill.manaCost) return;
+            this.person.stats.currentMp -= skill.manaCost;
+
+            this.isPlayerTurn = false;
             // Если баф то не бежим к мобу
             if (skill.animType !== "buff") {
                 this.moveTo("battle", skill);
@@ -406,7 +508,7 @@ export default defineComponent({
                 this.setLogs("Защита не пробита");
             }
             if (this.mob.stats.currentHp < 0) this.mob.stats.currentHp = 0;
-            this.mobHitAnimation();
+            this.mobAnimations("hit");
         },
         // Получение процента
         onPercentage(exp: number, needExp: number): any {
@@ -571,6 +673,8 @@ export default defineComponent({
                 <div
                     :class="[
                     mob.actions.state === 'hit' ? 'fight__mob--hit' : 'fight__mob--idle',
+                    mob.actions.state === 'attack' ? 'fight__mob--attack' : '',
+                    mob.actions.facingLeft ? `fight__mob--left` : '',
                     'fight__mob'
                     ]" ref="mob" :style="{
                 left: mob.actions.x + 'px',

@@ -39,6 +39,10 @@
     image-rendering: crisp-edges;
 }
 
+.fight__mob--left {
+    transform: scaleX(-1.3) scaleY(1.3);
+}
+
 .fight__mob--idle {
     animation: mob-idle;
     animation-duration: 1s;
@@ -55,9 +59,25 @@
     100% {background-position: 0 0;} /* Возвращаемся к первому кадру */
 }
 
+.fight__mob--run {
+    animation: mob-run;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes mob-run {
+    0% {background-position: 0 0;} /* Кадр 1 */
+    25% {background-position: -81px 0;} /* Кадр 2 */
+    50% {background-position: -162px 0;} /* Кадр 3 */
+    75% {background-position: -243px 0;} /* Кадр 4 */
+    100% {background-position: 0 0;} /* Возвращаемся к первому кадру */
+}
+
 .fight__mob--hit {
     animation: mob-hit;
-    animation-duration: 1s;
+    animation-duration: 0.5s;
     animation-iteration-count: infinite;
     background-repeat: no-repeat;
     animation-timing-function: steps(1, end);
@@ -89,4 +109,19 @@
         transform: translateX(0);
         filter: none;
     }
+}
+
+.fight__mob--attack {
+    animation: mob-attack;
+    animation-duration: 0.5s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes mob-attack {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-15px); }
+    50% { transform: translateX(-40px); }
+    75% { transform: translateX(-10px); }
 }
