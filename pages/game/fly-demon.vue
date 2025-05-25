@@ -30,6 +30,14 @@ export default defineComponent({
             },
             buffs: [],
             debuffs: [] as any,
+            bonus: {
+                attack: 0,
+                critical: 0,
+                hp: 0,
+                mp: 0,
+                speed: 0,
+                defence: 0,
+            },
             image: "/images/sprites/mobs/red-flying-demon/icon.png",
         },
         person: {
@@ -98,7 +106,7 @@ export default defineComponent({
                         damagePerTurn: 1,
                         duration: 2,
                         description: "Каждый ход получает урон",
-                        element: "bleed",
+                        element: "debuff",
                     },
                     animType: "attack3",
                 },
@@ -112,6 +120,7 @@ export default defineComponent({
                         healPerTurn: 1,
                         duration: 2,
                         element: "heal",
+                        description: "Восстанавливает здоровье",
                     },
                     animType: "buff",
                 },
@@ -125,6 +134,7 @@ export default defineComponent({
                         attack: 3,
                         duration: 5,
                         element: "buff",
+                        description: "Увеличена атака",
                     },
                     animType: "buff",
                 },
@@ -169,6 +179,14 @@ export default defineComponent({
             ],
             buffs: [],
             debuffs: [] as any,
+            bonus: {
+                attack: 0,
+                critical: 0,
+                hp: 0,
+                mp: 0,
+                speed: 0,
+                defence: 0,
+            } as any,
         },
         targets: {
             start: {
@@ -226,23 +244,51 @@ export default defineComponent({
         // Метод самой битвы для персонажа
         onFightPerson(type: any, skill: any) {
             if (skill.animType === "buff") {
+                this.setBuff(skill, "person");
                 this.playAnimType(skill.animType);
             } else {
                 this.playAnimType(skill.animType);
-                if (skill.effect.element === "bleed") {
-                    // todo(kharal): Вынести в отдельный метод ВАЖНО
-                    this.mob.debuffs.push({
-                        duration: skill.effect.duration,
-                        damagePerTurn: skill.effect.damagePerTurn,
-                        image: `/images/skills/${this.char.character.species}/${skill.id}.png`,
-                        desc: skill.effect.description,
-                    })
-                } else {
-                    const dmg = skill.effect.damage + this.char.character.stats.attack;
-                    this.applyDamageToMob(this.isCriticalHit("person", dmg));
+                // Если имеется свойство дебафа
+                if (skill.effect.element === "debuff") {
+                    this.setDebuff(skill, "mob");
                 }
+
+                const dmg = skill.effect.damage + this.char.character.stats.attack + this.person.bonus.attack;
+                this.applyDamageToMob(this.isCriticalHit("person", dmg));
+
                 this.onReturnStart();
             }
+            this.onEndTurn();
+        },
+        setBuff(skill: any, target: any) {
+            // @ts-ignore
+            this[target].buffs.push({
+                duration: skill.effect.duration,
+                healPerTurn: skill.effect.healPerTurn ? skill.effect.healPerTurn : 0,
+                bonus: {
+                    attack: skill.effect.attack ? skill.effect.attack : 0,
+                    critical: skill.effect.critical ? skill.effect.critical : 0,
+                    hp: skill.effect.hp ? skill.effect.hp : 0,
+                    mp: skill.effect.mp ? skill.effect.mp : 0,
+                    speed: skill.effect.speed ? skill.effect.speed : 0,
+                    defence: skill.effect.defence ? skill.effect.defence : 0,
+                },
+                image: `/images/skills/${this.char.character.species}/${skill.id}.png`,
+                desc: skill.effect.description,
+            })
+        },
+        // Получение мобом дебафоф
+        setDebuff(skill: any, target: any) {
+            // @ts-ignore
+            this[target].debuffs.push({
+                duration: skill.effect.duration,
+                damagePerTurn: skill.effect.damagePerTurn,
+                image: `/images/skills/${this.char.character.species}/${skill.id}.png`,
+                desc: skill.effect.description,
+            });
+        },
+        onEndTurn() {
+            this.log.unshift("Ход пройден");
         },
         // Возврат к месту стойки персонажа
         onReturnStart() {
@@ -306,16 +352,16 @@ export default defineComponent({
         isCriticalHit(target: "person" | "mob", dmg: number): number {
             let criticalChance = 0 as number;
             if (target === "person") {
-                criticalChance = this.char.character.stats.critical;
+                criticalChance = this.char.character.stats.critical + this.person.bonus.critical;
                 this.log.unshift("Успех критического удара");
             } else {
-                criticalChance = this.mob.stats.critical;
+                criticalChance = this.mob.stats.critical + this.mob.bonus.critical;
             }
             const roll = Math.random() * 100;
             if (roll <= criticalChance) {
-                return dmg * 2
+                return dmg * 2;
             } else {
-                return dmg
+                return dmg;
             }
         },
 
@@ -324,7 +370,7 @@ export default defineComponent({
         },
         setLogs(text: string) {
             this.log.unshift(text);
-        }
+        },
     },
     mounted() {
     },
@@ -364,7 +410,8 @@ export default defineComponent({
                                     <div class="stats__duration">{{
                                             //@ts-ignore
                                             buff.duration
-                                        }}</div>
+                                        }}
+                                    </div>
                                 </div>
                             </div>
                             <div class="stats__buffs">
@@ -380,14 +427,15 @@ export default defineComponent({
                                     </div>
                                     <div class="stats__duration">{{
                                             //@ts-ignore
-                                            buff.duration}}</div>
+                                            buff.duration }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="fight__logs logs">
                         <div class="logs__log" v-for="item in log">
-                            {{item}}
+                            {{ item }}
                         </div>
                     </div>
                 </div>
@@ -416,7 +464,8 @@ export default defineComponent({
                                     </div>
                                     <div class="stats__duration">{{
                                             //@ts-ignore
-                                            buff.duration}}</div>
+                                            buff.duration }}
+                                    </div>
                                 </div>
                             </div>
                             <div class="stats__buffs">
@@ -430,11 +479,12 @@ export default defineComponent({
                                             buff.desc
                                         }} {{
                                             //@ts-ignore
-                                            buff.damagePerTurn}} ед.
+                                            buff.damagePerTurn }} ед.
                                     </div>
                                     <div class="stats__duration">{{
                                             //@ts-ignore
-                                            buff.duration}}</div>
+                                            buff.duration }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
