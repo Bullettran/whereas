@@ -180,3 +180,45 @@
     100% { background-position: 0 0; } /* Возврат в начало */
 }
 
+.inferno--hit {
+    animation: inferno-hit;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes inferno-hit {
+    0% { background-position: 0 -1536px; }       /* Кадр 1: Начальная позиция */
+    16.66% { background-position: -288px -1536px; }  /* Кадр 2: Подготовка к атаке */
+    33.33% { background-position: -576px -1536px; }  /* Кадр 3: Замах */
+    50% { background-position: -864px -1536px; }    /* Кадр 4: Пик атаки */
+    66.66% { background-position: -1152px -1536px; } /* Кадр 5: Откат */
+    83.33% { background-position: -1440px -1536px; } /* Кадр 6: Возврат в стойку */
+    100% { background-position: 0 0; }
+}
+
+.inferno--death {
+    animation: inferno-death;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes inferno-death {
+    0% { background-position: 0 -1664px; }
+    8.33% { background-position: -288px -1664px; }
+    16.66% { background-position: -576px -1664px; }
+    25% { background-position: -864px -1664px; }
+    33.33% { background-position: -1152px -1664px; }
+    41.66% { background-position: -1440px -1664px; }
+    50% { background-position: -1728px -1664px; }
+    58.33% { background-position: -2016px -1664px; }
+    66.66% { background-position: -2304px -1664px; }
+    75% { background-position: -2592px -1664px; }
+    83.33% { background-position: -2880px -1664px; }
+    91.66% { background-position: -3168px -1664px; }
+    100% { background-position: 0 0; }
+}
+

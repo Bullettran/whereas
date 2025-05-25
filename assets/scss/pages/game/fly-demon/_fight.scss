@@ -125,3 +125,38 @@
     50% { transform: translateX(-40px); }
     75% { transform: translateX(-10px); }
 }
+
+.fight__mob--death {
+    animation: mob-death;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes mob-death {
+    0% {
+        transform: translateX(0);
+        filter: drop-shadow(0 0 0 transparent);
+    }
+    20% {
+        transform: translateX(-5px);
+        filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.7));
+    }
+    40% {
+        transform: translateX(5px);
+        filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.7));
+    }
+    60% {
+        transform: translateX(-3px);
+        filter: drop-shadow(0 0 3px rgba(255, 0, 0, 0.5));
+    }
+    80% {
+        transform: translateX(3px);
+        filter: drop-shadow(0 0 3px rgba(255, 0, 0, 0.5));
+    }
+    100% {
+        transform: translateX(0);
+        filter: none;
+    }
+}

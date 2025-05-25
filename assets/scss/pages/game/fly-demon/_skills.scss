@@ -68,6 +68,7 @@
     background-color: #333;
     border: 2px solid var(--grey);
     border-radius: 8px;
+    color: #fff;
 }
 
 .skills__wrap--potions .skills__image {
@@ -76,4 +77,8 @@
     image-rendering: crisp-edges;
     width: 80px;
     height: 80px;
+}
+
+.skills__wrap--potions .skills__skill--used {
+    opacity: 0.2;
 }

@@ -1,6 +1,5 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import { sk } from "cronstrue/dist/i18n/locales/sk";
 
 export default defineComponent({
     name: "FlyDemon",
@@ -8,15 +7,19 @@ export default defineComponent({
         char: usePersonState(),
         log: [] as Array<any>,
         isPlayerTurn: true,
+        isMobDied: false,
+        isPlayerDied: false,
+        isPlayerHidden: false,
+        isMobHidden: false,
         mob: {
             stats: {
-                attack: 1,
+                attack: 4,
                 critical: 0,
-                hp: 20,
+                hp: 10,
                 mp: 6,
                 speed: 1,
                 defence: 2,
-                currentHp: 17,
+                currentHp: 10,
                 currentMp: 6,
             },
             actions: {
@@ -158,12 +161,12 @@ export default defineComponent({
                 {
                     id: "flame-shield",
                     name: "ббб",
-                    description: "Увеличивает атаку на 5 ходов",
+                    description: "Увеличивает атаку на 7 ходов",
                     type: "buff",
                     manaCost: 4,
                     effect: {
-                        attack: 3,
-                        duration: 5,
+                        attack: 2,
+                        duration: 7,
                         element: "buff",
                         description: "Увеличена атака",
                     },
@@ -177,6 +180,7 @@ export default defineComponent({
                     description: "Восполняет 2 здоровья",
                     type: "potion",
                     manaCost: 0,
+                    used: false,
                     effect: {
                         heal: 2,          // Урон, наносимый скиллом
                         duration: 0,        // Продолжительность эффекта (0 — мгновенный)
@@ -189,6 +193,7 @@ export default defineComponent({
                     description: "Восполняет 2 маны",
                     type: "potion",
                     manaCost: 0,
+                    used: false,
                     effect: {
                         mp: 2,          // Урон, наносимый скиллом
                         duration: 0,        // Продолжительность эффекта (0 — мгновенный)
@@ -201,6 +206,7 @@ export default defineComponent({
                     description: "Увеличивает защиту на ",
                     type: "potion",
                     manaCost: 0,
+                    used: false,
                     effect: {
                         defence: 2,          // Урон, наносимый скиллом
                         duration: 0,        // Продолжительность эффекта (0 — мгновенный)
@@ -239,6 +245,14 @@ export default defineComponent({
         },
     }),
     methods: {
+        // проверка что персонаж жив
+        isPersonAlive() {
+            return this.person.stats.currentHp > 0;
+        },
+        // проверка что моб жив
+        isMobAlive() {
+            return this.mob.stats.currentHp > 0;
+        },
         // Метод передвижения моба
         moveMobTo(type: string) {
             if (this.mob.actions.moving) return;
@@ -331,6 +345,7 @@ export default defineComponent({
         },
         // Метод самой битвы для персонажа
         onFightPerson(type: any, skill: any) {
+            if (!this.isPersonAlive() || !this.isMobAlive()) return;
             if (skill.animType === "buff") {
                 this.setBuff(skill, "person");
                 this.playAnimType(skill.animType);
@@ -348,12 +363,47 @@ export default defineComponent({
             }
             this.endPlayerTurn();
         },
+        chooseMobSkill() {
+            const skills = this.mob.skills;
+            const affordableSkills = skills.filter((skill) => {
+                return this.mob.stats.currentMp >= (skill.manaCost || 0);
+            })
+
+            if (affordableSkills.length === 0) {
+                return skills.find(skill => skill.id === "auto-attack") || skills[0];
+            }
+
+            const randomIndex = Math.floor(Math.random() * affordableSkills.length);
+            return affordableSkills[randomIndex];
+        },
         enemyTurn() {
+            if (!this.isPersonAlive() || !this.isMobAlive()) return;
+            const skill = this.chooseMobSkill();
+            if (skill.manaCost) {
+                this.mob.stats.currentMp -= skill.manaCost;
+            }
             setTimeout(() => {
                 this.moveMobTo("person");
+                setTimeout(() => {
+                    // Снова проверяем, не умер ли кто-то за время анимации
+                    if (!this.isPersonAlive() || !this.isMobAlive()) return;
+                    if (skill.effect.element === "debuff") {
+                        this.setDebuff(skill, "person");
+                    }
+                    const damage = (skill.effect.damage || 0) + this.mob.stats.attack + (this.mob.bonus.attack || 0);
+                    this.applyDamageToPerson(damage);
+                    this.setLogs(`Враг использует "${skill.name}" и наносит ${damage} урона`);
+                    this.processEffects(this.person);
+                    this.processEffects(this.mob);
+                    this.regenMana();
+                    this.isPlayerTurn = true;
+                }, 1200)
             }, 700);
-            this.setDebuff(this.mob.skills[1], "person");
-            this.isPlayerTurn = true;
+        },
+        // Реген маны todo(kharal):
+        regenMana() {
+            // @ts-ignore
+            this.person.stats.currentMp = Math.min(this.person.stats.currentMp + 1, this.char.character.stats.mp);
         },
         setBuff(skill: any, target: any) {
             // @ts-ignore
@@ -405,7 +455,7 @@ export default defineComponent({
                     if (buff.bonus) {
                         Object.keys(buff.bonus).forEach((key) => {
                             if (buff.bonus[key]) {
-                                target.bonus[key] = (target.bonus[key] || 0);
+                                target.bonus[key] = (target.bonus[key] || 0) + buff.bonus[key];
                             }
                         });
                     }
@@ -429,12 +479,15 @@ export default defineComponent({
                 for (let i = target.debuffs.length - 1; i >= 0; i--) {
                     const debuff = target.debuffs[i];
 
-                    //обработка урона за ход
-                    if (debuff.damagePerTurn) {
-                        target.stats.currentHp = Math.max(target.stats.currentHp - debuff.damagePerTurn, 0);
-                        this.setLogs(`-${debuff.damagePerTurn} здоровья от дебафа (${debuff.desc})`);
+                    if (debuff.damagePerTurn > 0) {
+                        if (target === this.person) {
+                            this.applyDamageToPerson(debuff.damagePerTurn);
+                            this.setLogs(`-${debuff.damagePerTurn} здоровья от дебафа (${debuff.desc})`);
+                        } else {
+                            this.applyDamageToMob(debuff.damagePerTurn);
+                            this.setLogs(`-${debuff.damagePerTurn} здоровья от дебафа (${debuff.desc})`);
+                        }
                     }
-
                     debuff.duration--;
                     if (debuff.duration <= 0) {
                         target.debuffs.splice(i, 1);
@@ -443,6 +496,8 @@ export default defineComponent({
 
                 }
             }
+            this.checkMobDeath();
+            this.checkPlayerDeath();
         },
         endPlayerTurn() {
             this.processEffects(this.person);
@@ -476,6 +531,8 @@ export default defineComponent({
                 `${this.char.character.species}--attack3`,
                 `${this.char.character.species}--def`,
                 `${this.char.character.species}--buff`,
+                `${this.char.character.species}--hit`,
+                `${this.char.character.species}--death`,
             ].forEach(cls => classList.remove(cls));
             if (animType) {
                 classList.add(`${this.char.character.species}--${animType}`);
@@ -486,6 +543,7 @@ export default defineComponent({
         },
         // Использование скиллов
         useSkill(skill: any) {
+            if (!this.isPersonAlive() || !this.isMobAlive()) return;
             if (!this.isPlayerTurn) return;
             // Уменьшаем ману и проверяем
             if (this.person.stats.currentMp < skill.manaCost) return;
@@ -499,16 +557,75 @@ export default defineComponent({
                 this.onFightPerson("battle", skill);
             }
         },
+        // Получение урона персонажем
+        applyDamageToPerson(damage: number) {
+            if (!this.isPersonAlive() || !this.isMobAlive()) return;
+            const defence = this.char.character.stats.defence + this.person.bonus.defence;
+            // todo(kharal): Продумать баланс может минимум 1 урон
+            const finalDmg = Math.max(damage - defence, 1);
+
+            this.person.stats.currentHp = Math.max(this.person.stats.currentHp - finalDmg, 0);
+            this.playAnimType("hit");
+            setTimeout(() => {
+                if (this.person.stats.currentHp > 0) {
+                    this.person.actions.state = "idle";
+                } else {
+                    this.playAnimType("death");
+                }
+            }, 400);
+            this.setLogs(`Персонаж получил ${finalDmg} урона (с учётом защиты ${defence})`);
+            this.checkPlayerDeath();
+        },
+        // проверка смерти игрока
+        checkPlayerDeath() {
+            if (this.isPlayerDied) return;
+            if (this.person.stats.currentHp <= 0) {
+                this.isPlayerDied = true;
+                this.person.stats.currentHp = 0;
+                this.playAnimType("death");
+                this.setLogs("Персонаж погиб!");
+                // Блокируем действия игрока
+                this.isPlayerTurn = false;
+                setTimeout(() => {
+                    this.isPlayerHidden = true;
+                }, 1000);
+            }
+        },
         // Получение урона мобом
         applyDamageToMob(damage: number) {
-            if (damage > this.mob.stats.defence) {
-                this.mob.stats.currentHp -= (damage - this.mob.stats.defence);
-                this.setLogs(`Нанесено ${damage - this.mob.stats.defence} ед. урона мобу`);
-            } else {
-                this.setLogs("Защита не пробита");
+            if (!this.isPersonAlive() || !this.isMobAlive()) return;
+            const defence = this.mob.stats.defence + (this.mob.bonus.defence || 0);
+            // todo(kharal): Продумать баланс может минимум 1 урон
+            const finalDmg = Math.max(damage - defence, 1);
+            this.mob.stats.currentHp = Math.max(this.mob.stats.currentHp - finalDmg, 0);
+            setTimeout(() => {
+                this.mob.actions.state = "hit";
+            }, 400)
+            setTimeout(() => {
+                if (this.mob.stats.currentHp > 0) {
+                    this.mob.actions.state = "idle";
+                } else {
+                    this.mob.actions.state = "death";
+                    this.isMobDied = true;
+                }
+            }, 2000);
+            this.setLogs(`Моб получил ${finalDmg} урона (с учётом защиты ${defence})`);
+            this.checkMobDeath();
+        },
+        // проверка смерти моба
+        checkMobDeath() {
+            if (this.isMobDied) return;
+            if (this.mob.stats.currentHp <= 0) {
+                this.isMobDied = true;
+                this.mob.stats.currentHp = 0;
+                this.mob.actions.state = "death";
+                this.setLogs("Моб повержен!");
+                // Блокируем действия врага
+                this.isPlayerTurn = false;
+                setTimeout(() => {
+                    this.isMobHidden = true;
+                }, 1000);
             }
-            if (this.mob.stats.currentHp < 0) this.mob.stats.currentHp = 0;
-            this.mobAnimations("hit");
         },
         // Получение процента
         onPercentage(exp: number, needExp: number): any {
@@ -531,8 +648,28 @@ export default defineComponent({
             }
         },
 
-        drinkPotion() {
-
+        drinkPotion(potion: any) {
+            this.setLogs(`Использовано зелье: ${potion.name}`);
+            // Лечение HP
+            if (potion.effect.heal) {
+                const maxHp = this.char.character.stats.hp;
+                const prevHp = this.person.stats.currentHp;
+                this.person.stats.currentHp = Math.min(this.person.stats.currentHp + potion.effect.heal, maxHp);
+                this.setLogs(`+${this.person.stats.currentHp - prevHp} Здоровья`);
+            }
+            // Восстановление MP
+            if (potion.effect.mp) {
+                const maxMp = this.char.character.stats.mp;
+                const prevMp = this.person.stats.currentMp;
+                this.person.stats.currentMp = Math.min(this.person.stats.currentMp + potion.effect.mp, maxMp);
+                this.setLogs(`+${this.person.stats.currentMp - prevMp} MP`);
+            }
+            // Мгновенное усиление защиты
+            if (potion.effect.defence) {
+                this.person.bonus.defence = (this.person.bonus.defence || 0) + potion.effect.defence;
+                this.setLogs(`Защита увеличена на ${potion.effect.defence}`);
+            }
+            potion.used = true;
         },
         setLogs(text: string) {
             this.log.unshift(text);
@@ -657,10 +794,9 @@ export default defineComponent({
                     </div>
                 </div>
             </div>
-            <div :class="[
-                person.actions.state === 'run' ? `${char.character.species}--run` :
-                person.actions.state === 'attack' ? `${char.character.species}--attack` :
-                `${char.character.species}--idle`,
+            <div v-if="!isPlayerHidden" :class="[
+                person.actions.state === 'run' ? `${char.character.species}--run` : ``,
+                person.actions.state === 'idle' ? `${char.character.species}--idle` : ``,
                 person.actions.facingLeft ? `${char.character.species}--left` : '',
                  `${char.character.species ? char.character.species : 'arcanist'}`,
                   'fight__person'
@@ -671,9 +807,11 @@ export default defineComponent({
             }"></div>
             <div class="fight__mobs">
                 <div
+                    v-if="!isMobHidden"
                     :class="[
-                    mob.actions.state === 'hit' ? 'fight__mob--hit' : 'fight__mob--idle',
-                    mob.actions.state === 'attack' ? 'fight__mob--attack' : '',
+                    mob.actions.state === 'hit' ? 'fight__mob--hit' :
+                    mob.actions.state === 'attack' ? 'fight__mob--attack' :
+                    mob.actions.state === 'death' ? 'fight__mob--death' : 'fight__mob--idle',
                     mob.actions.facingLeft ? `fight__mob--left` : '',
                     'fight__mob'
                     ]" ref="mob" :style="{
@@ -694,11 +832,11 @@ export default defineComponent({
                     </div>
                 </div>
                 <div class="skills__wrap skills__wrap--potions">
-                    <div class="skills__skill" v-for="potion in person.potions" @click="drinkPotion()">
+                    <button :class="[potion.used ? 'skills__skill--used' : '', 'skills__skill button']" :disabled="potion.used" v-for="potion in person.potions" @click="drinkPotion(potion)">
                         <img class="skills__image" :src="`/images/potions/${potion.id}.png`"
                              :alt="potion.name">
                         <div class="skills__desc skills__desc--potions">{{ potion.description }}</div>
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>
