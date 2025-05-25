@@ -1,0 +1,144 @@
+.game {
+    overflow: hidden;
+}
+
+.game__container {
+    height: 860px;
+    width: 1100px;
+    margin: 48px auto;
+    padding: 32px 24px;
+    background: url("/images/pages/game/index/game-1.jpg") 0 0/contain no-repeat;
+    color: #fff;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.game__container--1 {
+    height: 860px;
+    width: 1100px;
+    margin: 48px auto;
+    padding: 32px 24px;
+    background: url("/images/pages/game/index/game-1-1.jpg") 0 0/contain no-repeat;
+    color: #fff;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.game__person {
+    position: absolute;
+    transform: scale(1.5);
+}
+
+.game__plug {
+    display: block;
+    max-width: 100%;
+}
+
+.game__npc--start {
+    position: absolute;
+    left: 534px;
+    top: 478px;
+    cursor: pointer;
+}
+
+.game__npc--start:hover .game__plug {
+    filter: brightness(600%);
+}
+
+.game__typewriter--disabled {
+    display: none;
+}
+
+.game__typewriter--npc {
+    position: absolute;
+    width: 300px;
+    top: 0;
+    left: 60px;
+}
+
+@keyframes intenseShake {
+    0% { transform: translate(0) rotate(0); }
+    5% { transform: translate(-15px, 10px) rotate(-3deg); }
+    10% { transform: translate(12px, -8px) rotate(2deg); }
+    15% { transform: translate(-18px, 15px) rotate(4deg); }
+    20% { transform: translate(20px, -12px) rotate(-5deg); }
+    25% { transform: translate(-25px, 18px) rotate(6deg); }
+    30% { transform: translate(22px, -15px) rotate(-4deg); }
+    35% { transform: translate(-20px, 12px) rotate(3deg); }
+    40% { transform: translate(15px, -10px) rotate(-2deg); }
+    45% { transform: translate(-10px, 5px) rotate(1deg); }
+    50% { transform: translate(5px, -3px) rotate(-1deg); }
+    55% { transform: translate(-3px, 2px); }
+    60% { transform: translate(2px, -1px); }
+    65% { transform: translate(-1px, 1px); }
+    100% { transform: translate(0) rotate(0); }
+}
+
+.container--shake {
+    animation: intenseShake 3s cubic-bezier(.36,.07,.19,.97) both;
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+    box-shadow: 0 0 10px red;
+    filter: brightness(1.2) contrast(1.5);
+}
+
+.game__portal {
+    position: absolute;
+    top: 450px;
+    left: 600px;
+    cursor: pointer;
+    z-index: 30;
+}
+
+.game__portal:hover {
+    filter: brightness(150%);
+}
+
+.game__portal--violet {
+    animation: portal-idle;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+    display: block;
+    height: 80px;
+    width: 96px;
+    background-image: url("/images/sprites/components/portals/violet.png");
+}
+
+@keyframes portal-idle {
+    /* Первый ряд (Y = 0) */
+    0% { background-position: 0 0; }        /* Кадр 1 (колонка 1) */
+    5% { background-position: -96px 0; }    /* Кадр 2 (колонка 2) */
+    10% { background-position: -192px 0; }  /* Кадр 3 (колонка 3) */
+    15% { background-position: -288px 0; }  /* Кадр 4 (колонка 4) */
+
+    /* Второй ряд (Y = -80px) */
+    20% { background-position: 0 -80px; }    /* Кадр 5 */
+    25% { background-position: -96px -80px; } /* Кадр 6 */
+    30% { background-position: -192px -80px; } /* Кадр 7 */
+    35% { background-position: -288px -80px; } /* Кадр 8 */
+
+    /* Третий ряд (Y = -160px) */
+    40% { background-position: 0 -160px; }    /* Кадр 9 */
+    45% { background-position: -96px -160px; } /* Кадр 10 */
+    50% { background-position: -192px -160px; } /* Кадр 11 */
+    55% { background-position: -288px -160px; } /* Кадр 12 */
+
+    /* Четвертый ряд (Y = -240px) */
+    60% { background-position: 0 -240px; }    /* Кадр 13 */
+    65% { background-position: -96px -240px; } /* Кадр 14 */
+    70% { background-position: -192px -240px; } /* Кадр 15 */
+    75% { background-position: -288px -240px; } /* Кадр 16 */
+
+    /* Пятый ряд (Y = -320px) */
+    80% { background-position: 0 -320px; }    /* Кадр 17 */
+    85% { background-position: -96px -320px; } /* Кадр 18 */
+    90% { background-position: -192px -320px; } /* Кадр 19 */
+    95% { background-position: -288px -320px; } /* Кадр 20 */
+
+    100% { background-position: 0 0; } /* Зацикливание */
+}
+

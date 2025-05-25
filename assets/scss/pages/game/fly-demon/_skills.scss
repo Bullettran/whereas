@@ -1,0 +1,84 @@
+.skills {
+    display: flex;
+    grid-column-gap: 12px;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.skills__wrap {
+    display: flex;
+    grid-column-gap: 12px;
+}
+
+.skills__skill {
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    position: relative;
+}
+
+.skills__skill:hover .skills__cost {
+    opacity: 1;
+}
+
+.skills__skill:hover .skills__desc {
+    display: block;
+    position: absolute;
+    bottom: calc(100% + 12px);
+    background-color: #333;
+    border-radius: 4px;
+    width: 250px;
+    min-height: 50px;
+    text-align: center;
+    padding: 4px;
+    border: 1px solid var(--grey);
+}
+
+.skills__image {
+    display: block;
+    max-width: 100%;
+}
+
+.skills__desc {
+    display: none;
+}
+
+.skills__skill:hover .skills__desc--potions {
+    width: 150px;
+}
+
+.skills__cost {
+    position: absolute;
+    display: flex;
+    grid-column-gap: 2px;
+    align-items: center;
+    background-color: #333;
+    border-radius: 4px;
+    padding: 2px;
+    bottom: 0;
+    right: 0;
+    opacity: .7;
+}
+
+.skills__wrap--potions {
+    margin-right: 120px;
+}
+
+.skills__wrap--potions .skills__skill {
+    background-color: #333;
+    border: 2px solid var(--grey);
+    border-radius: 8px;
+    color: #fff;
+}
+
+.skills__wrap--potions .skills__image {
+    image-rendering: pixelated;
+    /* Для кроссбраузерности */
+    image-rendering: crisp-edges;
+    width: 80px;
+    height: 80px;
+}
+
+.skills__wrap--potions .skills__skill--used {
+    opacity: 0.2;
+}

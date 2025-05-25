@@ -1,0 +1,23 @@
+.typewriter {
+    white-space: pre-wrap; /* сохраняет переносы строк */
+    background-color: #fff;
+    display: block;
+    padding: 4px;
+    border-radius: 4px;
+    color: #333;
+    z-index: 20;
+    pointer-events: none;
+}
+
+.typewriter__icon {
+    position: absolute;
+    transform: translateY(6px);
+    font-size: 12px;
+    transition: transform 0.2s;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.typewriter__icon:hover {
+    filter: brightness(400%);
+}

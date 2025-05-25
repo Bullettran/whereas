@@ -83,7 +83,7 @@ export default defineComponent({
 
 <template>
     <div class="professions">
-
+        <h2 class="professions__title">Профессии</h2>
     </div>
 </template>
 
