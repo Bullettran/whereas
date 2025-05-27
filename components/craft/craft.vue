@@ -2,14 +2,12 @@
 import { defineComponent } from "vue";
 
 interface Stats {
-    str?: number;
-    def?: number;
-    luc?: number;
-    spd?: number;
-    int?: number;
-    acc?: number;
-    vit?: number;
-    agi?: number;
+    attack: string,
+    critical: string,
+    hp: string,
+    mp: string,
+    speed: string,
+    defence: string,
 }
 
 interface Set {
@@ -22,15 +20,18 @@ interface Buffs {
 }
 
 interface InventoryItem {
-    id: string;
-    name: string;
-    icon: string;
-    count: number;
-    type: "material" | "equip" | "weapon" | "potion";
-    description: string;
-    stats?: Stats;
-    set?: Set;
-    buffs?: Buffs;
+    id: string,
+    name: string,
+    description: string,
+    type: string,
+    rare: string,
+    chance: number,
+    icon: string,
+    quantity: number,
+    stats: any,
+    set: any,
+    buffs: any,
+    questItem: any,
 }
 
 interface RecipeIngredient {
@@ -55,72 +56,7 @@ export default defineComponent({
     name: "Craft",
     setup() {
         // @ts-ignore
-        const inventory = reactive<(InventoryItem | SimpleInventoryItem)[]>([
-            {
-                id: "herb-green",
-                name: "Зеленая трава",
-                icon: "🌿",
-                count: 20,
-                type: "material",
-                description: "Простая трава",
-            },
-            {
-                id: "beast-milk",
-                name: "Молоко зверя",
-                icon: "⚗️",
-                count: 40,
-                type: "material",
-                description: "Простое молоко",
-            },
-            {
-                id: "shield1", name: "Щит", icon: "🛡️", count: 1, type: "equip", description: "Щит со статами", stats: {
-                    str: 1,
-                    def: 0,
-                    luc: 0,
-                    spd: 0,
-                    int: 0,
-                    acc: 0,
-                    vit: 1,
-                    agi: 0,
-                },
-                set: {
-                    type: "",
-                },
-            },
-            {
-                id: "weapon1", name: "Мечи", icon: "⚔️", count: 1, type: "weapon",
-                description: "Оружие со статами",
-                stats: {
-                    str: 1,
-                    def: 0,
-                    luc: 0,
-                    spd: 2,
-                    int: 0,
-                    acc: 0,
-                    vit: 0,
-                    agi: 0,
-                },
-                set: {
-                    type: "",
-                },
-                buffs: {
-                    value: 0,
-                    type: "",
-                },
-            },
-            {
-                id: "potion1",
-                name: "Зелье маны",
-                icon: "️🧪",
-                count: 2,
-                type: "potion",
-                description: "Восполняет ману на 1 ед.",
-                buffs: {
-                    value: 1,
-                    type: "mp",
-                },
-            },
-        ]);
+        const inventory = useInventoryState();
         const recipes = [
             {
                 id: "health_potion",
@@ -184,8 +120,9 @@ export default defineComponent({
         },
         removeAllIngridient() {
             this.craftSlots.forEach(slot => {
+                // @ts-ignore
                 const inventoryItem = this.inventory.find((i: any) => i.id === slot.id);
-                if (inventoryItem) inventoryItem.count += slot.count;
+                if (inventoryItem) inventoryItem.count += slot.quantity;
             });
             this.craftSlots = [];
         },
@@ -204,6 +141,7 @@ export default defineComponent({
 
             // Проверяем, есть ли уже такой предмет в слотах
             const existingIndex = this.craftSlots.findIndex(slot => slot.id === item.id);
+            // @ts-ignore
             const inventoryItem = this.inventory.find((i: any) => i.id === item.id);
 
             if (!inventoryItem || inventoryItem.count <= 0) {
@@ -213,10 +151,10 @@ export default defineComponent({
 
             if (existingIndex >= 0) {
                 // Увеличиваем количество существующего предмета
-                this.craftSlots[existingIndex].count++;
+                this.craftSlots[existingIndex].quantity++;
             } else {
                 // Добавляем новый предмет в слоты
-                this.craftSlots.push({ ...item, count: 1 });
+                this.craftSlots.push({ ...item, quantity: 1 });
             }
 
             // Уменьшаем количество в инвентаре
@@ -228,13 +166,14 @@ export default defineComponent({
             if (!item) return;
 
             // Возвращаем предмет в инвентарь
+            // @ts-ignore
             const inventoryItem = this.inventory.find((i: any) => i.id === item.id);
             if (inventoryItem) inventoryItem.count += 1;
 
             // Удаляем из слотов
             // Уменьшаем количество в слоте или удаляю, если 1
-            if (item.count > 1) {
-                this.craftSlots[slotIndex].count--;
+            if (item.quantity > 1) {
+                this.craftSlots[slotIndex].quantity--;
             } else {
                 this.craftSlots.splice(slotIndex, 1);
             }
@@ -245,17 +184,19 @@ export default defineComponent({
 
             // Проверяем, все ли ингредиенты собраны в нужном количестве
             const hasAllIngredients = this.selectedRecipe.ingredients.every(recipeIng => {
+                // @ts-ignore
                 const slotIng = this.craftSlots.find(slot => slot.id === recipeIng.id);
-                return slotIng && slotIng.count >= recipeIng.count;
+                return slotIng && slotIng.quantity >= recipeIng.count;
             });
 
             if (hasAllIngredients) {
                 // Уменьшаем количество использованных предметов
                 this.selectedRecipe.ingredients.forEach(recipeIng => {
+                    // @ts-ignore
                     const slotIndex = this.craftSlots.findIndex(slot => slot.id === recipeIng.id);
                     if (slotIndex >= 0) {
-                        this.craftSlots[slotIndex].count -= recipeIng.count;
-                        if (this.craftSlots[slotIndex].count <= 0) {
+                        this.craftSlots[slotIndex].quantity -= recipeIng.count;
+                        if (this.craftSlots[slotIndex].quantity <= 0) {
                             this.craftSlots.splice(slotIndex, 1);
                         }
                     }
@@ -265,17 +206,23 @@ export default defineComponent({
                     id: this.selectedRecipe.id,
                     name: this.selectedRecipe.name,
                     icon: this.selectedRecipe.image,
-                    count: 1,
-                    type: this.selectedRecipe.type as "potion" | "material" | "equip" | "weapon",
+                    quantity: 1,
+                    type: this.selectedRecipe.type,
                     description: this.selectedRecipe.description,
-                    buffs: this.selectedRecipe.buffs || { value: 0, type: "" },
+                    buffs: this.selectedRecipe.buffs,
+                    chance: 0,
+                    rare: "",
+                    stats: {},
+                    set: {},
+                    questItem: {},
                 };
                 // проверяем наличие в инвентаре
+                // @ts-ignore
                 const exitingItem = this.inventory.find((item: any) => item.id === craftedItem.id);
                 if (exitingItem) {
-                    exitingItem.count += craftedItem.count;
+                    exitingItem.count += craftedItem.quantity;
                 } else {
-                    this.inventory.push(craftedItem);
+                    this.inventory.addItem(craftedItem);
                 }
             } else {
                 alert("Не хватает ингредиентов!");
@@ -288,7 +235,7 @@ export default defineComponent({
 
             return this.selectedRecipe.ingredients.every(recipeIng => {
                 const slotIng = this.craftSlots.find(slot => slot.id === recipeIng.id);
-                return slotIng && slotIng.count >= recipeIng.count;
+                return slotIng && slotIng.quantity >= recipeIng.count;
             });
         },
     },
@@ -311,7 +258,7 @@ export default defineComponent({
                 >
                     <div v-if="slot" class="craft__slot-content">
                         {{ slot.icon }}
-                        <span class="craft__count">{{ slot.count }}</span>
+                        <span class="craft__count">{{ slot.quantity }}</span>
                     </div>
                     <div v-else class="craft__empty-slot">Слот {{ index + 1 }}</div>
                 </div>
@@ -326,7 +273,7 @@ export default defineComponent({
             </div>
         </div>
         <CraftRecipes :recipes="recipes" @select-recipe="selectRecipe" class="craft__recipes" />
-        <Inventory :inventory="inventory" location="craft"
+        <Inventory :inventory="inventory.items" location="craft"
                    @item-click="addIngredient"
                    class="craft__inventory" />
     </div>

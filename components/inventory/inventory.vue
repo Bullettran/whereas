@@ -1,14 +1,12 @@
 <script lang="ts">
-
+import { useInventoryState } from "~/stores/inventory";
 interface Stats {
-    str?: number;
-    def?: number;
-    luc?: number;
-    spd?: number;
-    int?: number;
-    acc?: number;
-    vit?: number;
-    agi?: number;
+    attack: string,
+    critical: string,
+    hp: string,
+    mp: string,
+    speed: string,
+    defence: string,
 }
 
 interface Set {
@@ -21,15 +19,18 @@ interface Buffs {
 }
 
 interface InventoryItem {
-    id: string;
-    name: string;
-    icon: string;
-    count: number;
-    type: "material" | "equip" | "weapon" | "potion";
-    description: string;
-    stats?: Stats;
-    set?: Set;
-    buffs?: Buffs;
+    id: string,
+    name: string,
+    description: string,
+    type: string,
+    rare: string,
+    chance: number,
+    icon: string,
+    quantity: number,
+    stats: any,
+    set: any,
+    buffs: any,
+    questItem: any,
 }
 
 interface RecipeIngredient {
@@ -78,6 +79,7 @@ export default defineComponent({
     data: () => ({
         activeContextItemId: null as string | null,
         activeFilter: "all" as "all" | "equip" | "potion" | "material",
+        inventoryState: useInventoryState(),
     }),
     computed: {
         filteredInventory(): (InventoryItem | SimpleInventoryItem)[] {
@@ -128,7 +130,7 @@ export default defineComponent({
             console.log("Правый клик по предмету:", item);
         },
         removeItem(item: any) {
-            this.$emit("item-remove", item);
+            this.inventoryState.removeItem(item.id);
         },
         onEquip(item: any) {
 
@@ -154,8 +156,8 @@ export default defineComponent({
                     title="Весь инвентарь"
                     @click="setFilter('all')"
                 >
-                    <nuxt-img class="inventory__filter-image" src="/images/components/filters/all.png"
-                              alt="Декоративное изображение" />
+                    <img class="inventory__filter-image" src="/images/components/filters/all.png"
+                              alt="Декоративное изображение" >
                 </button>
                 <button
                     :class="[activeFilter === 'equip' ? 'active' : '', 'inventory__button button button--metal-sm']"
@@ -163,8 +165,8 @@ export default defineComponent({
                     title="Снаряжение"
                     @click="setFilter('equip')"
                 >
-                    <nuxt-img class="inventory__filter-image" src="/images/components/filters/equip.png"
-                              alt="Декоративное изображение" />
+                    <img class="inventory__filter-image" src="/images/components/filters/equip.png"
+                              alt="Декоративное изображение" >
                 </button>
                 <button
                     :class="[activeFilter === 'potion' ? 'active' : '', 'inventory__button button button--metal-sm']"
@@ -172,8 +174,8 @@ export default defineComponent({
                     title="Еда и зелья"
                     @click="setFilter('potion')"
                 >
-                    <nuxt-img class="inventory__filter-image" src="/images/components/filters/potion.png"
-                              alt="Декоративное изображение" />
+                    <img class="inventory__filter-image" src="/images/components/filters/potion.png"
+                              alt="Декоративное изображение" >
                 </button>
                 <button
                     :class="[activeFilter === 'material' ? 'active' : '', 'inventory__button button button--metal-sm']"
@@ -181,8 +183,8 @@ export default defineComponent({
                     title="Материалы"
                     @click="setFilter('material')"
                 >
-                    <nuxt-img class="inventory__filter-image" src="/images/components/filters/material.png"
-                              alt="Декоративное изображение" />
+                    <img class="inventory__filter-image" src="/images/components/filters/material.png"
+                              alt="Декоративное изображение" >
                 </button>
             </div>
         </div>
@@ -190,8 +192,13 @@ export default defineComponent({
             <div v-for="(item, index) in filteredInventory" :key="index" @click="handleClick(item)"
                  @contextmenu="handleContext(item, $event)" draggable="true"
                  :class="[activeContextItemId === item.id ? 'inventory__slot--context' : '','inventory__slot']">
-                <span class="inventory__icon">{{ item.icon }}</span>
-                <span class="inventory__count">{{ item.count }}</span>
+                <span class="inventory__icon">
+                    <img class="inventory__image" :src="`/images/components/rewards/${item.icon}.png`">
+                </span>
+                <span class="inventory__count">{{
+                        // @ts-ignore
+                        item.quantity
+                    }}</span>
             </div>
         </div>
         <div class="inventory__context" v-if="activeContextItemId">
@@ -199,39 +206,31 @@ export default defineComponent({
                 <div v-if="activeContextItemId === item.id">
                     <div class="inventory__name">{{ item.name }}</div>
                     <div class="inventory__description">{{ item.description }}</div>
-                    <div class="inventory__stats" v-if="item.stats">
+                    <div class="inventory__stats" v-if="Object.keys(item.stats).length">
                         <div class="inventory__stat">
-                            <div class="inventory__block" v-if="item.stats.str !== 0">
-                                <div class="inventory__stat-name">Сила</div>
-                                <div class="inventory__stat-value">{{ item.stats.str }}</div>
+                            <div class="inventory__block" v-if="item.stats.attack !== 0">
+                                <div class="inventory__stat-name">Атака</div>
+                                <div class="inventory__stat-value">{{ item.stats.attack }}</div>
                             </div>
-                            <div class="inventory__block" v-if="item.stats.def !== 0">
-                                <div class="inventory__stat-name">Защита</div>
-                                <div class="inventory__stat-value">{{ item.stats.def }}</div>
+                            <div class="inventory__block" v-if="item.stats.critical !== 0">
+                                <div class="inventory__stat-name">Крит. шанс</div>
+                                <div class="inventory__stat-value">{{ item.stats.critical }}</div>
                             </div>
-                            <div class="inventory__block" v-if="item.stats.vit !== 0">
-                                <div class="inventory__stat-name">Вынос.</div>
-                                <div class="inventory__stat-value">{{ item.stats.vit }}</div>
+                            <div class="inventory__block" v-if="item.stats.hp !== 0">
+                                <div class="inventory__stat-name">Здоровье</div>
+                                <div class="inventory__stat-value">{{ item.stats.hp }}</div>
                             </div>
-                            <div class="inventory__block" v-if="item.stats.int !== 0">
-                                <div class="inventory__stat-name">Интелект</div>
-                                <div class="inventory__stat-value">{{ item.stats.int }}</div>
+                            <div class="inventory__block" v-if="item.stats.mp !== 0">
+                                <div class="inventory__stat-name">Мана</div>
+                                <div class="inventory__stat-value">{{ item.stats.mp }}</div>
                             </div>
-                            <div class="inventory__block" v-if="item.stats.luc !== 0">
-                                <div class="inventory__stat-name">Удача</div>
-                                <div class="inventory__stat-value">{{ item.stats.luc }}</div>
-                            </div>
-                            <div class="inventory__block" v-if="item.stats.agi !== 0">
-                                <div class="inventory__stat-name">Ловкость</div>
-                                <div class="inventory__stat-value">{{ item.stats.agi }}</div>
-                            </div>
-                            <div class="inventory__block" v-if="item.stats.acc !== 0">
-                                <div class="inventory__stat-name">Меткость</div>
-                                <div class="inventory__stat-value">{{ item.stats.acc }}</div>
-                            </div>
-                            <div class="inventory__block" v-if="item.stats.spd !== 0">
+                            <div class="inventory__block" v-if="item.stats.speed !== 0">
                                 <div class="inventory__stat-name">Скорость</div>
-                                <div class="inventory__stat-value">{{ item.stats.spd }}</div>
+                                <div class="inventory__stat-value">{{ item.stats.speed }}</div>
+                            </div>
+                            <div class="inventory__block" v-if="item.stats.defence !== 0">
+                                <div class="inventory__stat-name">Защита</div>
+                                <div class="inventory__stat-value">{{ item.stats.defence }}</div>
                             </div>
                         </div>
 

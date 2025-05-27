@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+import { useInventoryState } from "~/stores/inventory";
 
 export default defineComponent({
     name: "Reward",
@@ -15,6 +16,7 @@ export default defineComponent({
     },
     data: () => ({
         generatedRewards: [] as any[],
+        inventory: useInventoryState(),
     }),
     methods: {
         generateRewards() {
@@ -24,6 +26,9 @@ export default defineComponent({
             }).map(item => ({ ...item }));
         },
         closeReward() {
+            this.generatedRewards.forEach((el: any) => {
+                this.inventory.addItem(el, el.quantity);
+            })
             this.$emit("close", this.generatedRewards);
         },
     },

@@ -255,7 +255,7 @@ export default defineComponent({
                 rare: "standard",
                 chance: 20,
                 icon: "moonstone",
-                count: 2,
+                quantity: 2,
                 stats: {},
                 set: {},
                 buffs: {},
@@ -272,7 +272,7 @@ export default defineComponent({
                 rare: "standard",
                 icon: "demon-essence",
                 chance: 100,
-                count: 1,
+                quantity: 1,
                 stats: {},
                 set: {},
                 buffs: {},
@@ -288,7 +288,7 @@ export default defineComponent({
                 type: "material",
                 rare: "standard",
                 icon: "tree",
-                count: 1,
+                quantity: 1,
                 chance: 50,
                 stats: {},
                 set: {},
@@ -743,9 +743,7 @@ export default defineComponent({
             modal.show();
         },
         onRewardClose(generatedRewards: any) {
-            // todo(kharal): Добавить вещи в инвентарь
-            console.log(generatedRewards);
-            navigateTo("/town");
+            navigateTo("/game/");
         },
     },
     mounted() {
