@@ -37,7 +37,7 @@ interface RecipeIngredient {
     id: string;
     name: string;
     icon: string;
-    count: number;
+    quantity: number;
 }
 
 interface Recipe {
@@ -55,7 +55,7 @@ interface SimpleInventoryItem {
     id: string;
     name: string;
     icon: string;
-    count: number;
+    quantity: number;
     description: string;
     type: string;
     stats?: Stats;
@@ -101,7 +101,7 @@ export default defineComponent({
     },
     methods: {
         handleClick(item: any) {
-            if (item.count > 0) {
+            if (item.quantity > 0) {
                 this.$emit("item-click", item);
             }
         },
@@ -193,7 +193,7 @@ export default defineComponent({
                  @contextmenu="handleContext(item, $event)" draggable="true"
                  :class="[activeContextItemId === item.id ? 'inventory__slot--context' : '','inventory__slot']">
                 <span class="inventory__icon">
-                    <img class="inventory__image" :src="`/images/components/rewards/${item.icon}.png`">
+                    <img class="inventory__image" :src="item.icon">
                 </span>
                 <span class="inventory__count">{{
                         // @ts-ignore

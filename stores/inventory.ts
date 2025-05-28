@@ -21,7 +21,8 @@ export interface InventoryItem {
 //@ts-ignore
 export const useInventoryState = defineStore("inventory", {
     state: () => ({
-        items: [] as InventoryItem | any,
+        items: [] as InventoryItem[],
+        gold: 0 as number,
     }),
     actions: {
         addItem(newItem: Omit<InventoryItem, "quantity">, count = 1) {
@@ -39,6 +40,12 @@ export const useInventoryState = defineStore("inventory", {
             if (existing.quantity <= 0) {
                 this.items = this.items.filter((item:any) => item.id !== itemId);
             }
+        },
+        addGold(val: number) {
+            this.gold += val;
+        },
+        removeGold(val: number) {
+            this.gold -= val;
         },
         clearInventory() {
             this.items = [];

@@ -142,3 +142,20 @@
     100% { background-position: 0 0; } /* Зацикливание */
 }
 
+.game__picture {
+    position: absolute;
+    bottom: 0;
+    left: 390px;
+    z-index: 30;
+    cursor: pointer;
+}
+
+.game__picture:hover .game__back {
+    filter: brightness(150%);
+}
+
+.game__back {
+    display: block;
+    max-width: 100%;
+}
+

@@ -22,36 +22,17 @@ export default defineComponent({
         },
         profPercentage(exp:number, needExp: number): any {
             return (exp / needExp) * 100;
-        }
+        },
+
     },
     computed: {
-        // Процент HP
-        // hpPercentage() {
-        //     return (this.maxHp / this.maxHp) * 100;
-        // },
-        // // Процент MP
-        // mpPercentage() {
-        //     return (this.maxMp / this.maxMp) * 100;
-        // },
-        // Процент EXP
-        expPercentage(): any {
-            const expNeeded = this.char.character.game_stats.level * 10;
-            // Если опыт превышает необходимый для уровня
-            if (this.char.character.game_stats.currentExp >= expNeeded) {
-                const excessExp = this.char.character.game_stats.currentExp - expNeeded;
-                this.char.setUpLevel();
-                this.char.character.game_stats.currentExp = excessExp; // Переносим избыточный опыт
-
-                // Рекурсивно проверяем, не хватает ли избыточного опыта для следующего уровня
-                if (this.char.character.game_stats.currentExp >= this.char.character.game_stats.level * 10) {
-                    return this.expPercentage;
-                }
-            }
-            return (this.char.character.game_stats.currentExp / expNeeded) * 100;
-        },
+        expPercentage() {
+            let currentExp = this.char.character.game_stats.currentExp;
+            let getExpToNext = 10 + (this.char.character.game_stats.level - 1) * 2;
+            return (currentExp / getExpToNext) * 100
+        }
     },
-    mounted() {
-    }
+    mounted() {}
 });
 </script>
 
@@ -153,7 +134,7 @@ export default defineComponent({
                     <div class="block__exp">
                         <ProgressBar class="block__progress" :value="expPercentage" :showValue="false"></ProgressBar>
                         <div class="block__value">
-                            Опыт {{ char.character.game_stats.currentExp }}/{{ char.character.game_stats.level * 10 }}
+                            Опыт {{ char.character.game_stats.currentExp }}/{{ 10 + (char.character.game_stats.level - 1) * 2 }}
                         </div>
                     </div>
                 </div>

@@ -45,11 +45,12 @@ interface Recipe {
     id: string;
     name: string;
     description: string;
-    image: string;
+    icon: string;
     type: "potion" | string; // Уточните возможные типы рецептов
     buffs?: Buffs;
     ingredients: RecipeIngredient[];
     requirements: string;
+    effect: any;
 }
 
 export default defineComponent({
@@ -59,49 +60,17 @@ export default defineComponent({
         const inventory = useInventoryState();
         const recipes = [
             {
-                id: "health_potion",
+                id: "health-potion-1",
                 name: "Зелье здоровья",
-                description: "Восстанавливает 50 HP",
-                image: "🧪",
+                description: "Восстанавливает 2 HP",
                 type: "potion",
-                buffs: {
-                    value: 1,
-                    type: "hp",
-                },
+                rare: "standard",
+                icon: "/images/potions/hp-1.png",
                 ingredients: [
-                    { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 3 },
-                    { id: "beast-milk", name: "Молоко зверя", icon: "⚗️", count: 4 },
-                    { id: "potion1", name: "Зелье маны", icon: "🧪", count: 1 },
+                    // { id: "moonstone", name: "Лунный камень", icon: "moonstone", count: 1 },
+                    { id: "tree", name: "Простая древесина", icon: "/images/components/rewards/tree.png", count: 1 },
                 ],
-                requirements: "Уровень алхимии 2",
-            },
-            {
-                id: "mana_potion",
-                name: "Зелье маны",
-                description: "Восстанавливает 50 Маны",
-                image: "🧪",
-                type: "potion",
-                ingredients: [
-                    { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 2 },
-                    { id: "beast-milk", name: "Молоко зверя", icon: "⚗️", count: 4 },
-                ],
-                requirements: "Уровень алхимии 2",
-            },
-            {
-                id: "str_potion1",
-                name: "Зелье силы",
-                description: "Добавляет 1 силы в бою",
-                image: "🧪",
-                type: "potion",
-                buffs: {
-                    value: 1,
-                    type: "str",
-                },
-                ingredients: [
-                    { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 4 },
-                    { id: "beast-milk", name: "Молоко зверя", icon: "⚗️", count: 5 },
-                ],
-                requirements: "Уровень алхимии 2",
+                requirements: "",
             },
         ];
         return {
@@ -121,14 +90,13 @@ export default defineComponent({
         removeAllIngridient() {
             this.craftSlots.forEach(slot => {
                 // @ts-ignore
-                const inventoryItem = this.inventory.find((i: any) => i.id === slot.id);
-                if (inventoryItem) inventoryItem.count += slot.quantity;
+                const inventoryItem = this.inventory.items.find((i: any) => i.id === slot.id);
+                if (inventoryItem) inventoryItem.quantity += slot.quantity;
             });
             this.craftSlots = [];
         },
         addIngredient(item: InventoryItem) {
             if (!this.selectedRecipe) return;
-
             // Проверяем, нужен ли этот предмет в рецепте
             const isNeeded = this.selectedRecipe.ingredients.some(
                 ing => ing.id === item.id,
@@ -142,9 +110,9 @@ export default defineComponent({
             // Проверяем, есть ли уже такой предмет в слотах
             const existingIndex = this.craftSlots.findIndex(slot => slot.id === item.id);
             // @ts-ignore
-            const inventoryItem = this.inventory.find((i: any) => i.id === item.id);
+            const inventoryItem = this.inventory.items.find((i: any) => i.id === item.id);
 
-            if (!inventoryItem || inventoryItem.count <= 0) {
+            if (!inventoryItem || inventoryItem.quantity <= 0) {
                 alert("Недостаточно предметов в инвентаре!");
                 return;
             }
@@ -158,7 +126,7 @@ export default defineComponent({
             }
 
             // Уменьшаем количество в инвентаре
-            if (inventoryItem) inventoryItem.count--;
+            if (inventoryItem) inventoryItem.quantity--;
         },
 
         removeIngredient(slotIndex: number) {
@@ -167,8 +135,8 @@ export default defineComponent({
 
             // Возвращаем предмет в инвентарь
             // @ts-ignore
-            const inventoryItem = this.inventory.find((i: any) => i.id === item.id);
-            if (inventoryItem) inventoryItem.count += 1;
+            const inventoryItem = this.inventory.items.find((i: any) => i.id === item.id);
+            if (inventoryItem) inventoryItem.quantity += 1;
 
             // Удаляем из слотов
             // Уменьшаем количество в слоте или удаляю, если 1
@@ -184,7 +152,6 @@ export default defineComponent({
 
             // Проверяем, все ли ингредиенты собраны в нужном количестве
             const hasAllIngredients = this.selectedRecipe.ingredients.every(recipeIng => {
-                // @ts-ignore
                 const slotIng = this.craftSlots.find(slot => slot.id === recipeIng.id);
                 return slotIng && slotIng.quantity >= recipeIng.count;
             });
@@ -200,12 +167,20 @@ export default defineComponent({
                             this.craftSlots.splice(slotIndex, 1);
                         }
                     }
+                    // уменьшаем количество в интвентаре
+                    const invItem = this.inventory.items.find((item: any) => item.id === recipeIng.id);
+                    if (invItem) {
+                        invItem.quantity -= recipeIng.count;
+                        if (invItem.quantity <= 0) {
+                            this.inventory.removeItem(invItem.id, 0); // удалит если quantity <= 0
+                        }
+                    }
                 });
                 // Создаем готовый предмет
                 const craftedItem: InventoryItem = {
                     id: this.selectedRecipe.id,
                     name: this.selectedRecipe.name,
-                    icon: this.selectedRecipe.image,
+                    icon: this.selectedRecipe.icon,
                     quantity: 1,
                     type: this.selectedRecipe.type,
                     description: this.selectedRecipe.description,
@@ -214,16 +189,11 @@ export default defineComponent({
                     rare: "",
                     stats: {},
                     set: {},
-                    questItem: {},
+                    questItem: {
+                        isQuest: false, type: ""
+                    },
                 };
-                // проверяем наличие в инвентаре
-                // @ts-ignore
-                const exitingItem = this.inventory.find((item: any) => item.id === craftedItem.id);
-                if (exitingItem) {
-                    exitingItem.count += craftedItem.quantity;
-                } else {
-                    this.inventory.addItem(craftedItem);
-                }
+                this.inventory.addItem(craftedItem);
             } else {
                 alert("Не хватает ингредиентов!");
             }
@@ -247,7 +217,9 @@ export default defineComponent({
         <div class="craft__bug">
             <div class="craft__wrap">
                 <h4 class="craft__title">{{ selectedRecipe?.name || "Выберите рецепт" }}</h4>
-                <div class="craft__image">{{ selectedRecipe?.image || "❓" }}</div>
+                <div class="craft__image">
+                    <img class="craft__icon" :src="selectedRecipe?.icon" :alt="selectedRecipe?.name">
+                </div>
             </div>
             <div class="craft__system">
                 <div
@@ -257,7 +229,7 @@ export default defineComponent({
                     @click="slot ? removeIngredient(index) : null"
                 >
                     <div v-if="slot" class="craft__slot-content">
-                        {{ slot.icon }}
+                        <img class="craft__icon" :src="slot.icon">
                         <span class="craft__count">{{ slot.quantity }}</span>
                     </div>
                     <div v-else class="craft__empty-slot">Слот {{ index + 1 }}</div>

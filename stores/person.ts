@@ -5,6 +5,7 @@ export const usePersonState = defineStore("person", {
         username: "" as string,
         isSelectedSpecies: false as boolean,
         isAdmin: false as boolean,
+        act: 0,
         character: {
             stats: {
                 attack: 1,
@@ -55,6 +56,15 @@ export const usePersonState = defineStore("person", {
             this.username = "";
             this.isSelectedSpecies = false;
             this.isAdmin = false;
+        },
+
+        setExpChar(amount: number) {
+            const getExpToNext = (level: number) => 10 + (level - 1) * 2;
+            this.character.game_stats.currentExp += amount;
+            while (this.character.game_stats.currentExp >= getExpToNext(this.character.game_stats.level)) {
+                this.character.game_stats.currentExp -= getExpToNext(this.character.game_stats.level);
+                this.setUpLevel();
+            }
         },
 
         //todo(kharal)

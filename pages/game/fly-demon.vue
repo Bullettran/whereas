@@ -246,6 +246,7 @@ export default defineComponent({
             },
         },
         rewardGold: 10,
+        rewardExp: 5,
         rewards: [
             {
                 id: "moonstone",
@@ -254,7 +255,7 @@ export default defineComponent({
                 type: "material",
                 rare: "standard",
                 chance: 20,
-                icon: "moonstone",
+                icon: "/images/components/rewards/moonstone.png",
                 quantity: 2,
                 stats: {},
                 set: {},
@@ -270,7 +271,7 @@ export default defineComponent({
                 description: "Таинственная субстанция, добытая из демонических существ.",
                 type: "material",
                 rare: "standard",
-                icon: "demon-essence",
+                icon: "/images/components/rewards/demon-essence.png",
                 chance: 100,
                 quantity: 1,
                 stats: {},
@@ -287,9 +288,9 @@ export default defineComponent({
                 description: "Простая древесина",
                 type: "material",
                 rare: "standard",
-                icon: "tree",
+                icon: "/images/components/rewards/tree.png",
                 quantity: 1,
-                chance: 50,
+                chance: 100,
                 stats: {},
                 set: {},
                 buffs: {},
@@ -914,7 +915,7 @@ export default defineComponent({
         </div>
     </div>
     <Modal id="reward" size="lg">
-        <Reward :gold="rewardGold" :rewards="rewards" @close="onRewardClose" />
+        <Reward :gold="rewardGold" :rewards="rewards" :exp="rewardExp" @close="onRewardClose" />
     </Modal>
 </template>
 
