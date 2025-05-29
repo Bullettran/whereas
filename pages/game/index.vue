@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+import { Howl } from "howler";
 
 export default defineComponent({
     name: "Index",
@@ -41,11 +42,16 @@ export default defineComponent({
         },
         gameProcess: {
             act: 0
-        }
+        },
+        soundHover: null as any,
     }),
     methods: {
+        playHoverSound() {
+            this.soundHover.play();
+        },
         moveTo(type: string) {
             if (this.character.moving) return
+            this.playHoverSound();
             this.character.moving = true;
             const target = {
                 // @ts-ignore
@@ -109,6 +115,13 @@ export default defineComponent({
             this.moveTo("start");
         }, 1000)
     },
+    created() {
+        this.soundHover = new Howl({
+            src: ["/sounds/pages/town/hover.mp3"],
+            loop: false,
+            volume: 0.2
+        })
+    }
 });
 </script>
 
