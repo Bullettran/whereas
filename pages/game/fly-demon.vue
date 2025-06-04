@@ -88,7 +88,7 @@ export default defineComponent({
                 state: "idle",
             },
             stats: {
-                currentHp: 7,
+                currentHp: 4,
                 currentMp: 6,
             },
             skills: [
@@ -628,11 +628,10 @@ export default defineComponent({
                 if (this.person.stats.currentHp > 0) {
                     this.person.actions.state = "idle";
                 } else {
-                    this.playAnimType("death");
+                    this.setLogs(`Персонаж получил ${finalDmg} урона (с учётом защиты ${defence})`);
+                    this.checkPlayerDeath();
                 }
             }, 1000);
-            this.setLogs(`Персонаж получил ${finalDmg} урона (с учётом защиты ${defence})`);
-            this.checkPlayerDeath();
         },
         // проверка смерти игрока
         checkPlayerDeath() {
@@ -640,13 +639,15 @@ export default defineComponent({
             if (this.person.stats.currentHp <= 0) {
                 this.isPlayerDied = true;
                 this.person.stats.currentHp = 0;
-                this.playAnimType("death");
+                setTimeout(() => {
+                    this.playAnimType("death");
+                }, 1000);
                 this.setLogs("Персонаж погиб!");
                 // Блокируем действия игрока
                 this.isPlayerTurn = false;
                 setTimeout(() => {
                     this.isPlayerHidden = true;
-                }, 1000);
+                }, 2000);
             }
         },
         // Получение урона мобом
