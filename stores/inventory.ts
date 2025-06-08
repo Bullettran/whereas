@@ -26,7 +26,7 @@ export const useInventoryState = defineStore("inventory", {
     }),
     actions: {
         addItem(newItem: Omit<InventoryItem, "quantity">, count = 1) {
-            const existing = this.items.find((item:any) => item.id === newItem.id);
+            const existing = this.items.find((item: any) => item.id === newItem.id);
             if (existing) {
                 existing.quantity += count;
             } else {
@@ -34,11 +34,11 @@ export const useInventoryState = defineStore("inventory", {
             }
         },
         removeItem(itemId: string, count = 1) {
-            const existing = this.items.find((item:any) => item.id === itemId);
+            const existing = this.items.find((item: any) => item.id === itemId);
             if (!existing) return;
             existing.quantity -= count;
             if (existing.quantity <= 0) {
-                this.items = this.items.filter((item:any) => item.id !== itemId);
+                this.items = this.items.filter((item: any) => item.id !== itemId);
             }
         },
         addGold(val: number) {
@@ -59,5 +59,7 @@ export const useInventoryState = defineStore("inventory", {
             return (id: string) => state.items.find((item: any) => item.id === id);
         },
     },
-    persist: true,
+    persist: {
+        storage: localStorage,
+    },
 });

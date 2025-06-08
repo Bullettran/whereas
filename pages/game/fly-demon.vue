@@ -1,10 +1,11 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Reward from "~/components/reward/reward.vue";
+import Defeat from "~/components/defeat/defeat.vue";
 
 export default defineComponent({
     name: "FlyDemon",
-    components: { Reward },
+    components: { Defeat, Reward },
     data: () => ({
         char: usePersonState(),
         log: [] as Array<any>,
@@ -245,6 +246,8 @@ export default defineComponent({
                 y: 520,
             },
         },
+        combos: ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"],
+        combo: "",
         rewardGold: 10,
         rewardExp: 5,
         rewards: [
@@ -613,6 +616,7 @@ export default defineComponent({
                 this.onFightPerson("battle", skill);
             }
         },
+
         // Получение урона персонажем
         applyDamageToPerson(damage: number) {
             if (!this.isPersonAlive() || !this.isMobAlive()) return;
@@ -647,6 +651,7 @@ export default defineComponent({
                 this.isPlayerTurn = false;
                 setTimeout(() => {
                     this.isPlayerHidden = true;
+                    this.onDefeat();
                 }, 2000);
             }
         },
@@ -744,11 +749,21 @@ export default defineComponent({
             });
             modal.show();
         },
+        onDefeat() {
+            //@ts-ignore
+            let modal = new this.$bootstrap.Modal(document.getElementById("defeat"), {
+                backdrop: "static",
+                keyboard: false,
+            });
+            modal.show();
+        },
         onRewardClose(generatedRewards: any) {
             navigateTo("/game/");
         },
-    },
-    mounted() {
+        // todo(kharal): Подумать над комбо
+        generateCombo(length = 4) {
+            return Array.from({ length }, () => this.combos[Math.floor(Math.random() * 4)]);
+        },
     },
 });
 </script>
@@ -917,6 +932,9 @@ export default defineComponent({
     </div>
     <Modal id="reward" size="lg">
         <Reward :gold="rewardGold" :rewards="rewards" :exp="rewardExp" @close="onRewardClose" />
+    </Modal>
+    <Modal id="defeat" size="lg">
+        <Defeat />
     </Modal>
 </template>
 

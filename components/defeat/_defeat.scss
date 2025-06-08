@@ -1,0 +1,20 @@
+.defeat {
+    background: url("/images/components/modal/big-frame.png") 0 0/cover no-repeat;
+    width: 100%;
+    height: 450px;
+    border-radius: 12px;
+    padding: 24px;
+    color: #fff;
+}
+
+.defeat__title {
+    text-align: center;
+    color: var(--white);
+    margin-bottom: 48px;
+}
+
+.defeat__buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

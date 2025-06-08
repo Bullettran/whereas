@@ -77,5 +77,7 @@ export const usePersonState = defineStore("person", {
             this.character.game_stats.freeCount += 1;
         },
     },
-    persist: true,
+    persist: {
+        storage: localStorage,
+    },
 });
