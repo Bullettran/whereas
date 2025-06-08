@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Professions from "~/components/professions/professions.vue";
+import { Howl } from "howler";
 
 export default defineComponent({
     name: "Index",
@@ -40,13 +41,18 @@ export default defineComponent({
                 y: 800,
             }
         },
+        soundHover: null as any,
     }),
     methods: {
         playGame() {
             navigateTo("/game");
         },
+        playHoverSound() {
+            this.soundHover.play();
+        },
         moveToBuilding(type: string) {
             if (this.character.moving) return
+            this.playHoverSound();
             this.character.moving = true;
             const target = {
                 // @ts-ignore
@@ -123,6 +129,11 @@ export default defineComponent({
     },
     async created() {
         await this.fetchCharacter();
+        this.soundHover = new Howl({
+            src: ["/sounds/pages/town/hover.mp3"],
+            loop: false,
+            volume: 0.2
+        })
     },
 });
 </script>
@@ -130,6 +141,7 @@ export default defineComponent({
 <template>
     <div class="town" v-cloak>
         <div class="town__container container">
+<!--            <BgSound class="town__music"/>-->
             <div class="town__professions" @click="moveToBuilding('professions')">
                 <img class="town__plug" src="/images/pages/town/professions.png">
                 <div class="town__desc town__desc--professions">Профессии</div>
@@ -142,7 +154,7 @@ export default defineComponent({
                 <img class="town__plug" src="/images/pages/town/game.png">
                 <div class="town__desc town__desc--game">Путешествия</div>
             </div>
-            <div class="town__beasts" data-bs-toggle="modal" data-bs-target="#beasts">
+            <div class="town__beasts" data-bs-toggle="modal" data-bs-target="#beasts" @click="playHoverSound">
                 <img class="town__plug" src="/images/pages/town/beasts.png">
                 <div class="town__desc town__desc--beasts">Бестиарий</div>
             </div>

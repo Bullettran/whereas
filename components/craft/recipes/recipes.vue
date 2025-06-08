@@ -4,7 +4,7 @@ import { defineComponent } from "vue";
 interface Recipe {
     id: string;
     name: string;
-    image: string;
+    icon: string;
 }
 
 export default defineComponent({
@@ -15,7 +15,7 @@ export default defineComponent({
                 id: string;
                 name: string;
                 description: string;
-                image: string;
+                icon: string;
                 ingredients: Array<{
                     id: string;
                     name: string;
@@ -56,17 +56,22 @@ export default defineComponent({
             </div>
         </div>
         <ul class="recipes__items list">
-            <li :class="[isSelected === recipe.id ? 'recipes__item--active' : '', 'recipes__item']" v-for="(recipe, index) in recipes" :key="index" @click="selectRecipe(recipe)">
+            <li :class="[isSelected === recipe.id ? 'recipes__item--active' : '', 'recipes__item']"
+                v-for="(recipe, index) in recipes" :key="index" @click="selectRecipe(recipe)">
                 <div class="recipes__block">
                     <div class="recipes__name"><strong>{{ recipe.name }}</strong></div>
-                    <div class="recipes__image">{{ recipe.image }}</div>
+                    <div class="recipes__image">
+                        <img class="recipes__icon" :src="recipe.icon" :alt="recipe.name">
+                    </div>
                 </div>
                 <div class="recipes__description">{{ recipe.description }}</div>
                 <h4 class="recipes__subtitle">Ингредиенты</h4>
                 <div class="recipes__ingredients">
                     <div class="recipes__ingredient" v-for="(ingr, j) in recipe.ingredients" :key="j">
-                        <div class="recipes__icon">{{ ingr.icon }}</div>
-                        <div class="recipes__ingredient-name">{{ingr.name}}&nbsp;x{{ingr.count}}</div>
+                        <div class="recipes__icon">
+                            <img class="recipes__icon" :src="ingr.icon" :alt="ingr.name">
+                        </div>
+                        <div class="recipes__ingredient-name">{{ ingr.name }}&nbsp;x{{ ingr.count }}</div>
                     </div>
                 </div>
                 <div class="recipes__requirements">

@@ -1,10 +1,11 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Reward from "~/components/reward/reward.vue";
+import Defeat from "~/components/defeat/defeat.vue";
 
 export default defineComponent({
     name: "FlyDemon",
-    components: { Reward },
+    components: { Defeat, Reward },
     data: () => ({
         char: usePersonState(),
         log: [] as Array<any>,
@@ -88,7 +89,7 @@ export default defineComponent({
                 state: "idle",
             },
             stats: {
-                currentHp: 7,
+                currentHp: 4,
                 currentMp: 6,
             },
             skills: [
@@ -245,7 +246,10 @@ export default defineComponent({
                 y: 520,
             },
         },
+        combos: ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"],
+        combo: "",
         rewardGold: 10,
+        rewardExp: 5,
         rewards: [
             {
                 id: "moonstone",
@@ -254,8 +258,8 @@ export default defineComponent({
                 type: "material",
                 rare: "standard",
                 chance: 20,
-                icon: "moonstone",
-                count: 2,
+                icon: "/images/components/rewards/moonstone.png",
+                quantity: 2,
                 stats: {},
                 set: {},
                 buffs: {},
@@ -270,9 +274,9 @@ export default defineComponent({
                 description: "Таинственная субстанция, добытая из демонических существ.",
                 type: "material",
                 rare: "standard",
-                icon: "demon-essence",
+                icon: "/images/components/rewards/demon-essence.png",
                 chance: 100,
-                count: 1,
+                quantity: 1,
                 stats: {},
                 set: {},
                 buffs: {},
@@ -287,9 +291,9 @@ export default defineComponent({
                 description: "Простая древесина",
                 type: "material",
                 rare: "standard",
-                icon: "tree",
-                count: 1,
-                chance: 50,
+                icon: "/images/components/rewards/tree.png",
+                quantity: 1,
+                chance: 100,
                 stats: {},
                 set: {},
                 buffs: {},
@@ -612,6 +616,7 @@ export default defineComponent({
                 this.onFightPerson("battle", skill);
             }
         },
+
         // Получение урона персонажем
         applyDamageToPerson(damage: number) {
             if (!this.isPersonAlive() || !this.isMobAlive()) return;
@@ -627,11 +632,10 @@ export default defineComponent({
                 if (this.person.stats.currentHp > 0) {
                     this.person.actions.state = "idle";
                 } else {
-                    this.playAnimType("death");
+                    this.setLogs(`Персонаж получил ${finalDmg} урона (с учётом защиты ${defence})`);
+                    this.checkPlayerDeath();
                 }
             }, 1000);
-            this.setLogs(`Персонаж получил ${finalDmg} урона (с учётом защиты ${defence})`);
-            this.checkPlayerDeath();
         },
         // проверка смерти игрока
         checkPlayerDeath() {
@@ -639,13 +643,16 @@ export default defineComponent({
             if (this.person.stats.currentHp <= 0) {
                 this.isPlayerDied = true;
                 this.person.stats.currentHp = 0;
-                this.playAnimType("death");
+                setTimeout(() => {
+                    this.playAnimType("death");
+                }, 1000);
                 this.setLogs("Персонаж погиб!");
                 // Блокируем действия игрока
                 this.isPlayerTurn = false;
                 setTimeout(() => {
                     this.isPlayerHidden = true;
-                }, 1000);
+                    this.onDefeat();
+                }, 2000);
             }
         },
         // Получение урона мобом
@@ -742,13 +749,21 @@ export default defineComponent({
             });
             modal.show();
         },
-        onRewardClose(generatedRewards: any) {
-            // todo(kharal): Добавить вещи в инвентарь
-            console.log(generatedRewards);
-            navigateTo("/town");
+        onDefeat() {
+            //@ts-ignore
+            let modal = new this.$bootstrap.Modal(document.getElementById("defeat"), {
+                backdrop: "static",
+                keyboard: false,
+            });
+            modal.show();
         },
-    },
-    mounted() {
+        onRewardClose(generatedRewards: any) {
+            navigateTo("/game/");
+        },
+        // todo(kharal): Подумать над комбо
+        generateCombo(length = 4) {
+            return Array.from({ length }, () => this.combos[Math.floor(Math.random() * 4)]);
+        },
     },
 });
 </script>
@@ -916,7 +931,10 @@ export default defineComponent({
         </div>
     </div>
     <Modal id="reward" size="lg">
-        <Reward :gold="rewardGold" :rewards="rewards" @close="onRewardClose" />
+        <Reward :gold="rewardGold" :rewards="rewards" :exp="rewardExp" @close="onRewardClose" />
+    </Modal>
+    <Modal id="defeat" size="lg">
+        <Defeat />
     </Modal>
 </template>
 

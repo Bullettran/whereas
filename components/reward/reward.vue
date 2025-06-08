@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+import { useInventoryState } from "~/stores/inventory";
 
 export default defineComponent({
     name: "Reward",
@@ -12,9 +13,15 @@ export default defineComponent({
             type: Number,
             default: 0,
         },
+        exp: {
+            type: Number,
+            default: 0,
+        }
     },
     data: () => ({
         generatedRewards: [] as any[],
+        inventory: useInventoryState(),
+        char: usePersonState(),
     }),
     methods: {
         generateRewards() {
@@ -24,6 +31,13 @@ export default defineComponent({
             }).map(item => ({ ...item }));
         },
         closeReward() {
+            this.generatedRewards.forEach((el: any) => {
+                this.inventory.addItem(el, el.quantity);
+                // @ts-ignore
+                this.inventory.addGold(this.gold);
+                // @ts-ignore
+                this.char.setExpChar(this.exp);
+            })
             this.$emit("close", this.generatedRewards);
         },
     },
@@ -40,7 +54,7 @@ export default defineComponent({
         </h2>
         <div class="reward__items">
             <div class="reward__item" v-if="generatedRewards.length > 0" v-for="item in generatedRewards" :key="item.id">
-                <img class="reward__icon" v-if="item.icon" :src="`/images/components/rewards/${item.icon}.png`" :alt="item.name">
+                <img class="reward__icon" v-if="item.icon" :src="item.icon" :alt="item.name">
                 <span class="reward__count">{{ item.count }}</span>
                 <div class="reward__desc">{{item.description}}</div>
             </div>

@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+import { Howl } from "howler";
 
 export default defineComponent({
     name: "Index",
@@ -33,15 +34,24 @@ export default defineComponent({
             violet: {
                 x: 510,
                 y: 390,
+            },
+            town: {
+                x: 400,
+                y: 800,
             }
         },
         gameProcess: {
             act: 0
-        }
+        },
+        soundHover: null as any,
     }),
     methods: {
+        playHoverSound() {
+            this.soundHover.play();
+        },
         moveTo(type: string) {
             if (this.character.moving) return
+            this.playHoverSound();
             this.character.moving = true;
             const target = {
                 // @ts-ignore
@@ -89,26 +99,43 @@ export default defineComponent({
                 container.classList.add("container--shake");
             }
             setTimeout(() => {
-                this.gameProcess.act = 1;
+                this.char.act = 1;
             }, 3000)
         },
+        onBackTown() {
+            this.moveTo("town");
+            setTimeout(() => {
+                navigateTo("/town");
+            }, 1500)
+
+        }
     },
     mounted() {
         setTimeout(() => {
             this.moveTo("start");
         }, 1000)
+    },
+    created() {
+        this.soundHover = new Howl({
+            src: ["/sounds/pages/town/hover.mp3"],
+            loop: false,
+            volume: 0.2
+        })
     }
 });
 </script>
 
 <template>
     <div class="game">
-        <div :class="[gameProcess.act === 0 ? 'game__container' : 'game__container--1']">
-            <div v-if="gameProcess.act === 0" class="game__npc game__npc--start" @click="moveTo('npc')">
+        <div :class="[char.act === 0 ? 'game__container' : 'game__container--1']">
+            <div class="game__picture" @click="onBackTown">
+                <img class="game__back" src="/images/pages/game/index/back.png" alt="Выход в город">
+            </div>
+            <div v-if="char.act === 0" class="game__npc game__npc--start" @click="moveTo('npc')">
                 <img class="game__plug" src="/images/sprites/npc/npc-start.png" alt="Первый нпс">
                 <TypeWriter @next="onEndDialog" :speed="targets.npc.speed" v-if="targets.npc.typewriter" ref="typewriter" class="game__typewriter game__typewriter--npc" :text="targets.npc.text"/>
             </div>
-            <div @click="moveTo('violet')" v-if="gameProcess.act === 1" class="game__portal game__portal--violet"></div>
+            <div @click="moveTo('violet')" v-if="char.act === 1" class="game__portal game__portal--violet"></div>
             <div :class="[
                 character.moving ? `${char.character.species}--run` : `${char.character.species}--idle`,
                 character.facingLeft ? `${char.character.species}--left` : '',

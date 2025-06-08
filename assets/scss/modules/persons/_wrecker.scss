@@ -1,0 +1,211 @@
+.wrecker {
+    display: block;
+    transform: scale(2);
+    image-rendering: pixelated;
+    /* Для кроссбраузерности */
+    image-rendering: crisp-edges;
+    z-index: 16;
+    background-image: url("/images/sprites/persons/wrecker/wrecker.png");
+    background-repeat: no-repeat;
+    height: 128px;
+    width: 288px;
+}
+
+.wrecker--left {
+    transform: scaleX(-2) scaleY(2);
+}
+
+.wrecker--idle {
+    animation: wrecker-idle;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes wrecker-idle {
+    0% { background-position: 0 0; } /* Кадр 1 */
+    16.5% { background-position: -288px 0; } /* Кадр 2 */
+    25% { background-position: -576px 0; } /* Кадр 3 */
+    37.5% { background-position: -864px 0; } /* Кадр 4 */
+    50% { background-position: -1152px 0; } /* Кадр 5 */
+    62.5% { background-position: -1440px 0; } /* Кадр 6 */
+    75% { background-position: -1728px 0; } /* Кадр 7 */
+    87.5% { background-position: -2016px 0; } /* Кадр 8 */
+    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+}
+
+.wrecker--run {
+    animation: wrecker-run;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes wrecker-run {
+    0% { background-position: 0 -128px; } /* Кадр 1 */
+    16.5% { background-position: -288px -128px; } /* Кадр 2 */
+    25% { background-position: -576px -128px; } /* Кадр 3 */
+    37.5% { background-position: -864px -128px; } /* Кадр 4 */
+    50% { background-position: -1152px -128px; } /* Кадр 5 */
+    62.5% { background-position: -1440px -128px; } /* Кадр 6 */
+    75% { background-position: -1728px -128px; } /* Кадр 7 */
+    87.5% { background-position: -2016px -128px; } /* Кадр 8 */
+    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+}
+
+.wrecker--attack {
+    animation: wrecker-attack;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes wrecker-attack {
+    0% { background-position: 0 -896px; } /* Кадр 1 */
+    16.5% { background-position: -288px -896px; } /* Кадр 2 */
+    25% { background-position: -576px -896px; } /* Кадр 3 */
+    37.5% { background-position: -864px -896px; } /* Кадр 4 */
+    50% { background-position: -1152px -896px; } /* Кадр 5 */
+    62.5% { background-position: -1440px -896px; } /* Кадр 6 */
+    75% { background-position: -1728px -896px; } /* Кадр 7 */
+    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+}
+
+.wrecker--attack1 {
+    animation: wrecker-attack1;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes wrecker-attack1 {
+    0% { background-position: 0 -640px; } /* Кадр 1 */
+    16.5% { background-position: -288px -640px; } /* Кадр 2 */
+    25% { background-position: -576px -640px; } /* Кадр 3 */
+    37.5% { background-position: -864px -640px; } /* Кадр 4 */
+    50% { background-position: -1152px -640px; } /* Кадр 5 */
+    62.5% { background-position: -1440px -640px; } /* Кадр 6 */
+    75% { background-position: -1728px -640px; } /* Кадр 7 */
+    100% { background-position: -2016px -640px; } /* Кадр 8 */
+    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+}
+
+.wrecker--attack2 {
+    animation: wrecker-attack2;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes wrecker-attack2 {
+    0% { background-position: 0 -1152px; }            /* Кадр 1 (0px) */
+    6.667% { background-position: -288px -1152px; }   /* Кадр 2 (288px) */
+    13.333% { background-position: -576px -1152px; }  /* Кадр 3 (576px) */
+    20% { background-position: -864px -1152px; }      /* Кадр 4 (864px) */
+    26.667% { background-position: -1152px -1152px; } /* Кадр 5 (1152px) */
+    33.333% { background-position: -1440px -1152px; } /* Кадр 6 (1440px) */
+    40% { background-position: -1728px -1152px; }     /* Кадр 7 (1728px) */
+    46.667% { background-position: -2016px -1152px; } /* Кадр 8 (2016px) */
+    53.333% { background-position: -2304px -1152px; } /* Кадр 9 (2304px) */
+    60% { background-position: -2592px -1152px; }     /* Кадр 10 (2592px) */
+    66.667% { background-position: -2880px -1152px; } /* Кадр 11 (2880px) */
+    73.333% { background-position: -3168px -1152px; } /* Кадр 12 (3168px) */
+    80% { background-position: -3456px -1152px; }     /* Кадр 13 (3456px) */
+    86.667% { background-position: -3744px -1152px; } /* Кадр 14 (3744px) */
+    93.333% { background-position: -4032px -1152px; } /* Кадр 15 (4032px) */
+    100% { background-position: -4320px -1152px; }    /* Кадр 16 (4320px) */
+}
+
+.wrecker--attack3 {
+    animation: wrecker-attack3;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes wrecker-attack3 {
+    0% { background-position: 0 -1280px; }           /* Кадр 1 (0px) */
+    9.091% { background-position: -288px -1280px; } /* Кадр 2 (288px) */
+    18.182% { background-position: -576px -1280px; } /* Кадр 3 (576px) */
+    27.273% { background-position: -864px -1280px; } /* Кадр 4 (864px) */
+    36.364% { background-position: -1152px -1280px; } /* Кадр 5 (1152px) */
+    45.455% { background-position: -1440px -1280px; } /* Кадр 6 (1440px) */
+    54.545% { background-position: -1728px -1280px; } /* Кадр 7 (1728px) */
+    63.636% { background-position: -2016px -1280px; } /* Кадр 8 (2016px) */
+    72.727% { background-position: -2304px -1280px; } /* Кадр 9 (2304px) */
+    81.818% { background-position: -2592px -1280px; } /* Кадр 10 (2592px) */
+    90.909% { background-position: -2880px -1280px; } /* Кадр 11 (2880px) */
+    100% { background-position: -3168px -1280px; }   /* Кадр 12 (3168px) */
+}
+
+.wrecker--buff {
+    animation: wrecker-buff;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes wrecker-buff {
+    0% { background-position: 0 -1408px; }           /* Кадр 1 (0px) */
+    9.091% { background-position: -288px -1408px; } /* Кадр 2 (288px) */
+    18.182% { background-position: -576px -1408px; } /* Кадр 3 (576px) */
+    27.273% { background-position: -864px -1408px; } /* Кадр 4 (864px) */
+    36.364% { background-position: -1152px -1408px; } /* Кадр 5 (1152px) */
+    45.455% { background-position: -1440px -1408px; } /* Кадр 6 (1440px) */
+    54.545% { background-position: -1728px -1408px; } /* Кадр 7 (1728px) */
+    63.636% { background-position: -2016px -1408px; } /* Кадр 8 (2016px) */
+    72.727% { background-position: -2304px -1408px; } /* Кадр 9 (2304px) */
+    100% { background-position: -2304px -1408px; }   /* Кадр 12 (3168px) */
+}
+
+.wrecker--hit {
+    animation: wrecker-hit;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes wrecker-hit {
+    0% { background-position: 0 -1536px; }       /* Кадр 1: Начальная позиция */
+    16.66% { background-position: -288px -1536px; }  /* Кадр 2: Подготовка к атаке */
+    33.33% { background-position: -576px -1536px; }  /* Кадр 3: Замах */
+    50% { background-position: -864px -1536px; }    /* Кадр 4: Пик атаки */
+    66.66% { background-position: -1152px -1536px; } /* Кадр 5: Откат */
+    83.33% { background-position: -1440px -1536px; } /* Кадр 6: Возврат в стойку */
+    100% { background-position: 0 0; }
+}
+
+.wrecker--death {
+    animation: wrecker-death;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes wrecker-death {
+    0% { background-position: 0 -1664px; }            /* Кадр 1 (0px) */
+    6.667% { background-position: -288px -1664px; }   /* Кадр 2 (288px) */
+    13.333% { background-position: -576px -1664px; }  /* Кадр 3 (576px) */
+    20% { background-position: -864px -1664px; }      /* Кадр 4 (864px) */
+    26.667% { background-position: -1152px -1664px; } /* Кадр 5 (1152px) */
+    33.333% { background-position: -1440px -1664px; } /* Кадр 6 (1440px) */
+    40% { background-position: -1728px -1664px; }     /* Кадр 7 (1728px) */
+    46.667% { background-position: -2016px -1664px; } /* Кадр 8 (2016px) */
+    53.333% { background-position: -2304px -1664px; } /* Кадр 9 (2304px) */
+    60% { background-position: -2592px -1664px; }     /* Кадр 10 (2592px) */
+    66.667% { background-position: -2880px -1664px; } /* Кадр 11 (2880px) */
+    73.333% { background-position: -3168px -1664px; } /* Кадр 12 (3168px) */
+    80% { background-position: -3456px -1664px; }     /* Кадр 13 (3456px) */
+    86.667% { background-position: -3744px -1664px; } /* Кадр 14 (3744px) */
+    93.333% { background-position: -4032px -1664px; } /* Кадр 15 (4032px) */
+    100% { background-position: -4320px -1664px; }    /* Кадр 16 (4320px) */
+}

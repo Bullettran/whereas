@@ -1,70 +1,20 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { usePersonState } from "~/stores/person";
+import { useInventoryState } from "~/stores/inventory";
 // import { createClient } from "@supabase/supabase-js";
 
 export default defineComponent({
     name: "Char",
     async setup() {
         const char = usePersonState();
-        const inventory = reactive([
-            { id: "herb-green", name: "Зеленая трава", icon: "🌿", count: 20, type: "material", description: "Простая трава" },
-            { id: "beast-milk", name: "Молоко зверя", icon: "⚗️", count: 40, type: "material", description: "Простое молоко" },
-            {
-                id: "shield1", name: "Щит", icon: "🛡️", count: 1, type: "equip", description: "Щит со статами", stats: {
-                    str: 1,
-                    def: 0,
-                    luc: 0,
-                    spd: 0,
-                    int: 0,
-                    acc: 0,
-                    vit: 1,
-                    agi: 0,
-                },
-                set: {
-                    type: "",
-                },
-            },
-            {
-                id: "weapon1", name: "Мечи", icon: "⚔️", count: 1, type: "weapon",
-                description: "Оружие со статами",
-                stats: {
-                    str: 1,
-                    def: 0,
-                    luc: 0,
-                    spd: 2,
-                    int: 0,
-                    acc: 0,
-                    vit: 0,
-                    agi: 0,
-                },
-                set: {
-                    type: "",
-                },
-                buffs: {
-                    value: 0,
-                    type: "",
-                },
-            },
-            {
-                id: "potion1",
-                name: "Зелье маны",
-                icon: "️🧪",
-                count: 2,
-                type: "potion",
-                description: "Восполняет ману на 1 ед.",
-                buffs: {
-                    value: 1,
-                    type: "mp",
-                },
-            },
-        ]);
-
+        const inventory = useInventoryState() as any;
         return {
             char,
             inventory,
         };
     },
+
     methods: {
         onUpChars(val: number, type: string): void {
             this.char.character.game_stats.freeCount = this.char.character.game_stats.freeCount - 1;
@@ -72,36 +22,17 @@ export default defineComponent({
         },
         profPercentage(exp:number, needExp: number): any {
             return (exp / needExp) * 100;
-        }
+        },
+
     },
     computed: {
-        // Процент HP
-        // hpPercentage() {
-        //     return (this.maxHp / this.maxHp) * 100;
-        // },
-        // // Процент MP
-        // mpPercentage() {
-        //     return (this.maxMp / this.maxMp) * 100;
-        // },
-        // Процент EXP
-        expPercentage(): any {
-            const expNeeded = this.char.character.game_stats.level * 10;
-            // Если опыт превышает необходимый для уровня
-            if (this.char.character.game_stats.currentExp >= expNeeded) {
-                const excessExp = this.char.character.game_stats.currentExp - expNeeded;
-                this.char.setUpLevel();
-                this.char.character.game_stats.currentExp = excessExp; // Переносим избыточный опыт
-
-                // Рекурсивно проверяем, не хватает ли избыточного опыта для следующего уровня
-                if (this.char.character.game_stats.currentExp >= this.char.character.game_stats.level * 10) {
-                    return this.expPercentage;
-                }
-            }
-            return (this.char.character.game_stats.currentExp / expNeeded) * 100;
-        },
+        expPercentage() {
+            let currentExp = this.char.character.game_stats.currentExp;
+            let getExpToNext = 10 + (this.char.character.game_stats.level - 1) * 2;
+            return (currentExp / getExpToNext) * 100
+        }
     },
-    mounted() {
-    }
+    mounted() {}
 });
 </script>
 
@@ -109,29 +40,9 @@ export default defineComponent({
     <div class="char">
         <button class="char__button button" type="button" data-bs-toggle="modal"
                 data-bs-target="#chars-stats">
-            <nuxt-img class="char__image" :src="`/images/sprites/persons/${char.character.species}/icon-${char.character.species}.png`"
-                      alt="Иконка персонажа" />
+            <img class="char__image" :src="`/images/sprites/persons/${char.character.species}/icon-${char.character.species}.png`"
+                      alt="Иконка персонажа">
         </button>
-        <div class="char__health">
-<!--            <div class="char__wrap">-->
-<!--                <ProgressBar class="char__hp" :value="hpPercentage" :showValue="false"></ProgressBar>-->
-<!--                <div class="char__description">-->
-<!--                    Здоровье-->
-<!--                    <div class="char__value">-->
-<!--                        {{ maxHp }}/{{ maxHp }}-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="char__wrap">-->
-<!--                <ProgressBar class="char__mp" :value="mpPercentage" :showValue="false"></ProgressBar>-->
-<!--                <div class="char__description">-->
-<!--                    Мана-->
-<!--                    <div class="char__value">-->
-<!--                        {{ maxMp }}/{{ maxMp }}-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-        </div>
     </div>
     <Modal size="lg" id="chars-stats">
         <div class="block">
@@ -223,7 +134,7 @@ export default defineComponent({
                     <div class="block__exp">
                         <ProgressBar class="block__progress" :value="expPercentage" :showValue="false"></ProgressBar>
                         <div class="block__value">
-                            Опыт {{ char.character.game_stats.currentExp }}/{{ char.character.game_stats.level * 10 }}
+                            Опыт {{ char.character.game_stats.currentExp }}/{{ 10 + (char.character.game_stats.level - 1) * 2 }}
                         </div>
                     </div>
                 </div>
@@ -248,7 +159,7 @@ export default defineComponent({
             </div>
             <div class="block__wrap">
                 <Equip />
-                <Inventory :inventory="inventory" />
+                <Inventory :inventory="inventory.items" />
             </div>
         </div>
     </Modal>

@@ -24,9 +24,11 @@ export default defineComponent({
         this.backgroundMusic = new Howl({
             src: ["/sounds/pages/town/main-theme.mp3"],
             loop: true,
-            volume: 0.3
+            volume: 0.2
         });
-        this.backgroundMusic.play();
+        window.addEventListener("click", () => {
+            this.backgroundMusic.play();
+        }, {once: true})
     }
 });
 </script>

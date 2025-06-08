@@ -1,0 +1,210 @@
+.assassin {
+    display: block;
+    transform: scale(2);
+    image-rendering: pixelated;
+    /* Для кроссбраузерности */
+    image-rendering: crisp-edges;
+    z-index: 16;
+    background-image: url("/images/sprites/persons/assassin/assassin.png");
+    background-repeat: no-repeat;
+    height: 128px;
+    width: 288px;
+}
+
+.assassin--left {
+    transform: scaleX(-2) scaleY(2);
+}
+
+.assassin--idle {
+    animation: assassin-idle;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes assassin-idle {
+    0% { background-position: 0 0; } /* Кадр 1 */
+    16.5% { background-position: -288px 0; } /* Кадр 2 */
+    25% { background-position: -576px 0; } /* Кадр 3 */
+    37.5% { background-position: -864px 0; } /* Кадр 4 */
+    50% { background-position: -1152px 0; } /* Кадр 5 */
+    62.5% { background-position: -1440px 0; } /* Кадр 6 */
+    75% { background-position: -1728px 0; } /* Кадр 7 */
+    87.5% { background-position: -2016px 0; } /* Кадр 8 */
+    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+}
+
+.assassin--run {
+    animation: assassin-run;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes assassin-run {
+    0% { background-position: 0 -128px; } /* Кадр 1 */
+    16.5% { background-position: -288px -128px; } /* Кадр 2 */
+    25% { background-position: -576px -128px; } /* Кадр 3 */
+    37.5% { background-position: -864px -128px; } /* Кадр 4 */
+    50% { background-position: -1152px -128px; } /* Кадр 5 */
+    62.5% { background-position: -1440px -128px; } /* Кадр 6 */
+    75% { background-position: -1728px -128px; } /* Кадр 7 */
+    87.5% { background-position: -2016px -128px; } /* Кадр 8 */
+    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+}
+
+.assassin--attack {
+    animation: assassin-attack;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes assassin-attack {
+    0% { background-position: 0 -640px; }       /* Кадр 1: Начальная позиция */
+    16.66% { background-position: -288px -1152px; }  /* Кадр 2: Подготовка к атаке */
+    33.33% { background-position: -576px -1152px; }  /* Кадр 3: Замах */
+    50% { background-position: -864px -1152px; }    /* Кадр 4: Пик атаки */
+    66.66% { background-position: -1152px -1152px; } /* Кадр 5: Откат */
+    83.33% { background-position: -1440px -1152px; } /* Кадр 6: Возврат в стойку */
+    100% { background-position: 0 0; }
+}
+
+.assassin--attack1 {
+    animation: assassin-attack1;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes assassin-attack1 {
+    0% { background-position: 0 -1280px; } /* Кадр 1 */
+    16.5% { background-position: -288px -1280px; } /* Кадр 2 */
+    25% { background-position: -576px -1280px; } /* Кадр 3 */
+    37.5% { background-position: -864px -1280px; } /* Кадр 4 */
+    50% { background-position: -1152px -1280px; } /* Кадр 5 */
+    62.5% { background-position: -1440px -1280px; } /* Кадр 6 */
+    75% { background-position: -1728px -1280px; } /* Кадр 7 */
+    87.5% { background-position: -2016px -1280px; } /* Кадр 8 */
+    100% { background-position: 0 0; } /* Возвращаемся к первому кадру */
+}
+
+.assassin--attack2 {
+    animation: assassin-attack2;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes assassin-attack2 {
+    0% { background-position: 0 -1408px; } /* Кадр 1 (0px) */
+    8.25% { background-position: -288px -1408px; } /* Кадр 2 (288px) */
+    12.5% { background-position: -576px -1408px; } /* Кадр 3 (576px) */
+    18.75% { background-position: -864px -1408px; } /* Кадр 4 (864px) */
+    25% { background-position: -1152px -1408px; } /* Кадр 5 (1152px) */
+    31.25% { background-position: -1440px -1408px; } /* Кадр 6 (1440px) */
+    37.5% { background-position: -1728px -1408px; } /* Кадр 7 (1728px) */
+    43.75% { background-position: -2016px -1408px; } /* Кадр 8 (2016px) */
+    50% { background-position: -2304px -1408px; } /* Кадр 9 (2304px) */
+    56.25% { background-position: -2592px -1408px; } /* Кадр 10 (2592px) */
+    62.5% { background-position: -2880px -1408px; } /* Кадр 11 (2880px) */
+    68.75% { background-position: -3168px -1408px; } /* Кадр 12 (3168px) */
+    75% { background-position: -3456px -1408px; } /* Кадр 13 (3456px) */
+    81.25% { background-position: -3744px -1408px; } /* Кадр 14 (3744px) */
+    87.5% { background-position: -4032px -1408px; } /* Кадр 15 (4032px) */
+    93.75% { background-position: -4320px -1408px; } /* Кадр 16 (4320px) */
+    100% { background-position: -4608px -1408px; } /* Кадр 17 (4608px) */
+    100% { background-position: 0 0; } /* Возврат в начало (Кадр 18) */
+}
+
+.assassin--attack3 {
+    animation: assassin-attack3;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes assassin-attack3 {
+    0% { background-position: 0 -1536px; } /* Кадр 1 (0px) */
+    10% { background-position: -288px -1536px; } /* Кадр 2 (288px) */
+    20% { background-position: -576px -1536px; } /* Кадр 3 (576px) */
+    30% { background-position: -864px -1536px; } /* Кадр 4 (864px) */
+    40% { background-position: -1152px -1536px; } /* Кадр 5 (1152px) */
+    50% { background-position: -1440px -1536px; } /* Кадр 6 (1440px) */
+    60% { background-position: -1728px -1536px; } /* Кадр 7 (1728px) */
+    70% { background-position: -2016px -1536px; } /* Кадр 8 (2016px) */
+    80% { background-position: -2304px -1536px; } /* Кадр 9 (2304px) */
+    90% { background-position: -2592px -1536px; } /* Кадр 10 (2592px) */
+    100% { background-position: 0 0; } /* Возврат в начало */
+}
+
+.assassin--buff {
+    animation: assassin-buff;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes assassin-buff {
+    0% { background-position: 0 -1664px; }           /* Кадр 1 (0px) */
+    9.091% { background-position: -288px -1664px; } /* Кадр 2 (288px) */
+    18.182% { background-position: -576px -1664px; } /* Кадр 3 (576px) */
+    27.273% { background-position: -864px -1664px; } /* Кадр 4 (864px) */
+    36.364% { background-position: -1152px -1664px; } /* Кадр 5 (1152px) */
+    45.455% { background-position: -1440px -1664px; } /* Кадр 6 (1440px) */
+    54.545% { background-position: -1728px -1664px; } /* Кадр 7 (1728px) */
+    63.636% { background-position: -2016px -1664px; } /* Кадр 8 (2016px) */
+    72.727% { background-position: -2304px -1664px; } /* Кадр 9 (2304px) */
+    81.818% { background-position: -2592px -1664px; } /* Кадр 10 (2592px) */
+    90.909% { background-position: -2880px -1664px; } /* Кадр 11 (2880px) */
+    100% { background-position: -3168px -1664px; }   /* Кадр 12 (3168px) */
+}
+
+.assassin--hit {
+    animation: assassin-hit;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes assassin-hit {
+    0% { background-position: 0 -1792px; }       /* Кадр 1: Начальная позиция */
+    16.66% { background-position: -288px -1792px; }  /* Кадр 2: Подготовка к атаке */
+    33.33% { background-position: -576px -1792px; }  /* Кадр 3: Замах */
+    50% { background-position: -864px -1792px; }    /* Кадр 4: Пик атаки */
+    66.66% { background-position: -1152px -1792px; } /* Кадр 5: Откат */
+    83.33% { background-position: -1440px -1792px; } /* Кадр 6: Возврат в стойку */
+    100% { background-position: 0 0; }
+}
+
+.assassin--death {
+    animation: assassin-death;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    background-repeat: no-repeat;
+    animation-timing-function: steps(1, end);
+}
+
+@keyframes assassin-death {
+    0% { background-position: 0 -1920px; }
+    8.33% { background-position: -288px -1920px; }
+    16.66% { background-position: -576px -1920px; }
+    25% { background-position: -864px -1920px; }
+    33.33% { background-position: -1152px -1920px; }
+    41.66% { background-position: -1440px -1920px; }
+    50% { background-position: -1728px -1920px; }
+    58.33% { background-position: -2016px -1920px; }
+    66.66% { background-position: -2304px -1920px; }
+    75% { background-position: -2592px -1920px; }
+    83.33% { background-position: -2880px -1920px; }
+    91.66% { background-position: -3168px -1920px; }
+    100% { background-position: 0 0; }
+}

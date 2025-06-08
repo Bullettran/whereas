@@ -4,10 +4,6 @@
     border-bottom: 2px solid var(--grey);
 }
 
-.equip__title {
-    margin-bottom: 12px;
-}
-
 .equip__items {
     display: grid;
     grid-template-columns: repeat(4, 40px);
@@ -40,4 +36,22 @@
 .equip__item--weapon {
     width: 40px;
     height: 40px;
+}
+
+.equip__wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.equip__gold {
+    display: flex;
+    align-items: center;
+    grid-column-gap: 8px;
+}
+
+.equip__icon {
+    width: 24px;
+    height: 24px;
 }
