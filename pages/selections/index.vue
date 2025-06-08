@@ -328,7 +328,7 @@ export default defineComponent({
                 <div class="selections__person animate">
                     <div
                         v-if="currentChoice"
-                        :class="`selections__animate ${currentChoice} ${currentChoice}--death`"
+                        :class="`selections__animate ${currentChoice} ${currentChoice}--idle`"
                     ></div>
                 </div>
 

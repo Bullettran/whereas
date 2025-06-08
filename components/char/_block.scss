@@ -32,7 +32,7 @@
 }
 
 .block__progress {
-    width: 100px;
+    width: 200px;
     height: 20px;
     background: var(--black1);
     border: 1px solid #fff;
@@ -41,6 +41,12 @@
 
 :deep(.block__progress .p-progressbar-value) {
     background: linear-gradient(90deg, #D4A017 0%, #FFD700 100%);
+}
+
+.block__levels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 18px;
 }
 
 .block__exp {

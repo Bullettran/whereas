@@ -28,7 +28,7 @@ export default defineComponent({
     computed: {
         expPercentage() {
             let currentExp = this.char.character.game_stats.currentExp;
-            let getExpToNext = 10 + (this.char.character.game_stats.level - 1) * 2;
+            let getExpToNext = 10 + (this.char.character.game_stats.level - 1) * 5;
             return (currentExp / getExpToNext) * 100
         }
     },
@@ -89,24 +89,24 @@ export default defineComponent({
                                 </button>
                             </div>
                         </li>
-                        <li class="characteristic__item">
-                            <div class="characteristic__name">Меткость</div>
-                            <div class="characteristic__value">
-                                {{ char.character.stats.hitChance }}%
-                                <button v-if="char.character.game_stats.freeCount" class="characteristic__plus button" type="button"
-                                        @click="onUpChars(1, 'hitChance')">+
-                                </button>
-                            </div>
-                        </li>
-                        <li class="characteristic__item">
-                            <div class="characteristic__name">Шанс уворота</div>
-                            <div class="characteristic__value">
-                                {{ char.character.stats.dodge }}
-                                <button v-if="char.character.game_stats.freeCount" class="characteristic__plus button" type="button"
-                                        @click="onUpChars(1, 'dodge')">+
-                                </button>
-                            </div>
-                        </li>
+<!--                        <li class="characteristic__item">-->
+<!--                            <div class="characteristic__name">Меткость</div>-->
+<!--                            <div class="characteristic__value">-->
+<!--                                {{ char.character.stats.hitChance }}%-->
+<!--                                <button v-if="char.character.game_stats.freeCount" class="characteristic__plus button" type="button"-->
+<!--                                        @click="onUpChars(1, 'hitChance')">+-->
+<!--                                </button>-->
+<!--                            </div>-->
+<!--                        </li>-->
+<!--                        <li class="characteristic__item">-->
+<!--                            <div class="characteristic__name">Шанс уворота</div>-->
+<!--                            <div class="characteristic__value">-->
+<!--                                {{ char.character.stats.dodge }}-->
+<!--                                <button v-if="char.character.game_stats.freeCount" class="characteristic__plus button" type="button"-->
+<!--                                        @click="onUpChars(1, 'dodge')">+-->
+<!--                                </button>-->
+<!--                            </div>-->
+<!--                        </li>-->
                         <li class="characteristic__item">
                             <div class="characteristic__name">Скорость</div>
                             <div class="characteristic__value">
@@ -127,16 +127,18 @@ export default defineComponent({
                         </li>
                     </ul>
                 </div>
-                <div class="block__line"></div>
-                <div class="block__wrapper">
-                    <h3 class="block__title">Профессии</h3>
+                <div class="block__levels">
                     <div class="block__level">Ур. {{ char.character.game_stats.level }}</div>
                     <div class="block__exp">
                         <ProgressBar class="block__progress" :value="expPercentage" :showValue="false"></ProgressBar>
                         <div class="block__value">
-                            Опыт {{ char.character.game_stats.currentExp }}/{{ 10 + (char.character.game_stats.level - 1) * 2 }}
+                            Опыт {{ char.character.game_stats.currentExp }}/{{ 10 + (char.character.game_stats.level - 1) * 5 }}
                         </div>
                     </div>
+                </div>
+                <div class="block__line"></div>
+                <div class="block__wrapper">
+                    <h3 class="block__title">Профессии</h3>
                 </div>
 
                 <div class="block__professions prof">

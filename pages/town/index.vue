@@ -128,7 +128,10 @@ export default defineComponent({
         },
     },
     async created() {
-        await this.fetchCharacter();
+        const isDataLoaded = this.char.isSelectedSpecies && localStorage.getItem("person");
+        if (!isDataLoaded) {
+            await this.fetchCharacter();
+        }
         this.soundHover = new Howl({
             src: ["/sounds/pages/town/hover.mp3"],
             loop: false,

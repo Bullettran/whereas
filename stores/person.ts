@@ -59,7 +59,7 @@ export const usePersonState = defineStore("person", {
         },
 
         setExpChar(amount: number) {
-            const getExpToNext = (level: number) => 10 + (level - 1) * 2;
+            const getExpToNext = (level: number) => 10 + (level - 1) * 5;
             this.character.game_stats.currentExp += amount;
             while (this.character.game_stats.currentExp >= getExpToNext(this.character.game_stats.level)) {
                 this.character.game_stats.currentExp -= getExpToNext(this.character.game_stats.level);

@@ -33,11 +33,9 @@ export default defineComponent({
         closeReward() {
             this.generatedRewards.forEach((el: any) => {
                 this.inventory.addItem(el, el.quantity);
-                // @ts-ignore
-                this.inventory.addGold(this.gold);
-                // @ts-ignore
-                this.char.setExpChar(this.exp);
             })
+            this.char.setExpChar(this.exp);
+            this.inventory.addGold(this.gold);
             this.$emit("close", this.generatedRewards);
         },
     },
@@ -65,6 +63,12 @@ export default defineComponent({
                 <img class="reward__image" src="/images/components/global/gold.png" alt="Изображение золота">
             </div>
             <div class="reward__value">Золото +{{gold}}</div>
+        </div>
+        <div class="reward__gold" v-if="exp > 0">
+            <div class="reward__picture">
+                <img class="reward__image" src="/images/components/global/exp.png" alt="Изображение опыта">
+            </div>
+            <div class="reward__value">Опыт +{{exp}}</div>
         </div>
         <div class="reward__buttons">
             <button class="reward__button button button--metal" @click="closeReward" data-bs-dismiss="modal" aria-label="Закрыть">Забрать</button>
